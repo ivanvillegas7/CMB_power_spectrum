@@ -52,7 +52,7 @@ void BackgroundCosmology::solve(){
   // For this Utils::linspace(x_start, x_end, npts) is useful
   //=============================================================================
 
-  double npts = 100;
+  double npts = 1000;
 
   Vector x_array = Utils::linspace(x_start, x_end, npts);
 
@@ -209,7 +209,7 @@ double BackgroundCosmology::get_OmegaK(double x) const{
     
 double BackgroundCosmology::get_luminosity_distance_of_x(double x) const{
   
-  return get_comoving_distance_of_x(x)/exp(-x);
+  return get_comoving_distance_of_x(x)*exp(-x);
 }
 
 double BackgroundCosmology::get_angular_distance_of_x(double x) const{
@@ -282,7 +282,7 @@ void BackgroundCosmology::info() const{
 void BackgroundCosmology::output(const std::string filename) const{
   const double x_min = -10.0;
   const double x_max =  0.0;
-  const int    n_pts =  100;
+  const int    n_pts =  1000;
   
   Vector x_array = Utils::linspace(x_min, x_max, n_pts);
 
