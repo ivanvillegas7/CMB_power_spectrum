@@ -3,4 +3,4 @@ This repository will store the code used to compute the CMB power spectrum. I wi
 
 Compile the code running [ make ]. The code runs from Main.cpp and then proceeds to go through the different milestones one by one untill we have the CMB power spectra in the end. If you get it compiled then run it as [ ./cmb ]. If you want to compile this on your computer you need to install the GSL library first.
 
-After running the code, you will need to run the Python codes, simply running main.py. This will generate all the relevant plots.
+After running the code, you will need to run the Python codes, simply running main.py. This will generate relevant plots and will print some relevant information.
