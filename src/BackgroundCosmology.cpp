@@ -33,7 +33,7 @@ BackgroundCosmology::BackgroundCosmology(
   H0     = Constants.H0_over_h*h;                                                                        // The Hubble parameter today in 1/s
 
   OmegaR       = 2*(pow(pi, 2)/30)*(pow(k_B*TCMB, 4)/(pow(h_bar, 3)*pow(c, 5)))*(8*pi*G/(3*pow(H0, 2))); // Photon density today
-  OmegaNu      = 0;                                                                                      // Neutrino density today
+  OmegaNu      = Neff*(7./8.)*pow(4./11., 4./3.)*OmegaR;                                                                                      // Neutrino density today
   OmegaLambda  = 1-(OmegaB+OmegaR+OmegaNu+OmegaCDM+OmegaK);                                              // Dark energy (Λ) density
 
 }
@@ -183,7 +183,9 @@ double BackgroundCosmology::get_OmegaR(double x) const{
 
 double BackgroundCosmology::get_OmegaNu(double x) const{ 
 
-  return 0.0;
+  if(x == 0.0) return OmegaNu;
+  
+  return OmegaNu*pow(H0, 2)/(exp(2*x)*pow(Hp_of_x(x), 2));
 }
 
 double BackgroundCosmology::get_OmegaCDM(double x) const{ 
@@ -296,6 +298,7 @@ void BackgroundCosmology::output(const std::string filename) const{
     fp << get_OmegaCDM(x)                 << " ";
     fp << get_OmegaLambda(x)              << " ";
     fp << get_OmegaR(x)                   << " ";
+    fp << get_OmegaNu(x)                   << " ";
     fp << get_luminosity_distance_of_x(x) << " ";
     fp << ddHpddx_of_x(x)                 << " ";
     fp << t_of_x(x)                       << " ";
