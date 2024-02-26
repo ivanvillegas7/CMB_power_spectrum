@@ -49,12 +49,14 @@ def cosmology()->(np.array(float), np.array(float)):
     OmegaLambda: np.array(float) = data_cos[:, 6]
     
     OmegaR: np.array(float) = data_cos[:, 7]
+
+    OmegaNu: np.array(float) = data_cos[:, 8]
     
-    d_L: np.array(float) = data_cos[:, 8]/(1e9*sc.constants.parsec)
+    d_L: np.array(float) = data_cos[:, 9]/(1e9*sc.constants.parsec)
     
-    ddHp: np.array(float) = data_cos[:, 9]/(100*1e3/(1e9*sc.constants.parsec))
+    ddHp: np.array(float) = data_cos[:, 10]/(100*1e3/(1e9*sc.constants.parsec))
     
-    t: np.array(float) = data_cos[:, 10]/(1e9*365*24*60*60)
+    t: np.array(float) = data_cos[:, 11]/(1e9*365*24*60*60)
     
     z: np.array(float) = np.zeros(len(x))
     
@@ -63,8 +65,10 @@ def cosmology()->(np.array(float), np.array(float)):
         z[i] = np.exp(-x[i])-1
         
     OmegaM:np.array(float) = OmegaB+OmegaCDM
+
+    OmegaRel:np.array(float) = OmegaR+OmegaNu
     
-    index_M_R: int = np.argmin(np.abs(OmegaR-OmegaM))
+    index_M_R: int = np.argmin(np.abs(OmegaRel-OmegaM))
     
     index_M_Lambda: int = np.argmin(np.abs(OmegaLambda-OmegaM))
         
@@ -135,7 +139,8 @@ def cosmology()->(np.array(float), np.array(float)):
                      np.zeros(index_M_Lambda-index_M_R+1),\
                      1*np.ones(index_M_Lambda-index_M_R+1),\
                      color='lightsteelblue', label='Matter domination')
-    plt.plot(x, OmegaR, label=r'$\Omega_\gamma$', color='darkorange')
+    plt.plot(x, OmegaRel, label=r'$\Omega_R=\Omega_\gamma+\Omega_\nu$',\
+             color='darkorange')
     plt.fill_between(x[0:index_M_R+1], np.zeros(index_M_R+1),\
                      1*np.ones(index_M_R+1), color='bisque',\
                      label='Radiation domination')
