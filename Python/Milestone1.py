@@ -299,7 +299,7 @@ def MCMC_supernova_fit():
     
     OmegaK: np.array(float) = data[:, 3]
     
-    #chi2_min: minimum value of chi2, identifying the index of the best fit.
+    #chi2_min: minimum value of χ², identifying the index of the best fit.
     
     chi2_min: float = min(chi2)
     
