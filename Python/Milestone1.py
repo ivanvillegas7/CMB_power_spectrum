@@ -287,7 +287,7 @@ def MCMC_supernova_fit():
     
     #Assign the different variables to its corresponding data.
     
-    #chi2: chi square values for each combination of fitting parameters
+    #chi2: χ² values for each combination of fitting parameters
     
     chi2: np.array(float) = data[:, 0]
     
