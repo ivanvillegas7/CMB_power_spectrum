@@ -307,10 +307,13 @@ def MCMC_supernova_fit():
     
     OmegaLambda: np.array(float) = np.ones(len(OmegaM))-OmegaM-OmegaK
     
-    #Plot the 1σ deviation from the best fit, along with rhe values compatible
+    #Plot the 1σ and 2σ deviation from the best fit, along with rhe values compatible
     #with a flat Universe.
     
     plt.figure()
+    plt.plot(OmegaM[chi2 < chi2_min + 8.02],\
+             OmegaLambda[chi2 < chi2_min + 8.02], marker='.', ls='none',\
+                 label=r'$2\sigma$')
     plt.plot(OmegaM[chi2 < chi2_min + 3.53],\
              OmegaLambda[chi2 < chi2_min + 3.53], marker='.', ls='none',\
                  label=r'$1\sigma$')
