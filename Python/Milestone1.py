@@ -525,6 +525,6 @@ def milestone1():
         None.
     """
     
-    #supernova()
+    supernova()
     
     MCMC_supernova_fit()
