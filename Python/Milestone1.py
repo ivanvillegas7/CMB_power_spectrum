@@ -157,12 +157,23 @@ def cosmology()->(np.array(float), np.array(float)):
 
     OmegaRel:np.array(float) = OmegaR+OmegaNu
     
+    #Define the second derivative of the scale factor with respect to the
+    #cosmological time
+    
+    a_dotdot: np.array(float) = Hp**2*np.exp(-x)+Hp[-1]**2*\
+                                (-3*OmegaM*np.exp(-2*x)-\
+                                 4*OmegaRel*np.exp(-3*x))/2
+    
     #Get the indeces when the cuantity of cold matter is the same (or most 
     #similar) to the cuantity of relativistic particles.
     
     index_M_R: int = np.argmin(np.abs(OmegaRel-OmegaM))
     
     index_M_Lambda: int = np.argmin(np.abs(OmegaLambda-OmegaM))
+    
+    #Get the index when the Universe starts its accelerated expansion.
+    
+    index: int = np.argmin(np.abs(a_dotdot))
     
     #Make the different plots and save them. 
         
@@ -183,44 +194,14 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ [$\frac{100\text{ km}}{\text{Mpc s}}$]')
     plt.savefig('../Plots/Milestone I/dHp_over_Hp.pdf')
-    """
-    Hp_R: np.array(float) = Hp[-1]*np.exp(-x[-1])*np.exp(-3*x[0:index_M_R])*\
-                            np.sqrt(OmegaRel[0:index_M_R])
-                                
-    eta_R: np.array(float) = c/Hp[0:index_M_R]
-    
-    Hp_M: np.arrya(float) = Hp[-1]*np.exp(-x[-1])*\
-                            np.sqrt(OmegaM[index_M_R:index_M_Lambda]*\
-                                    np.exp(-5*x[index_M_R:index_M_Lambda]))
-    
-    eta_M: np.array(float) = eta[np.argmax(OmegaM)]+\
-                             2*c*(1/Hp[index_M_R:index_M_Lambda]-\
-                                  1/Hp[np.argmax(OmegaM)])
-                                 
-    Hp_L: np.arrya(float) = np.exp(x[index_M_Lambda:])*Hp[-1]*np.exp(-x[-1])*\
-                            np.sqrt(OmegaLambda[index_M_Lambda:])
-    
-    eta_L: np.array(float) = eta[np.argmax(OmegaLambda)]-\
-                             3*c*(np.exp(-2*x[index_M_Lambda:])/\
-                                  Hp[index_M_Lambda:]-\
-                                  np.exp(-2*x[np.argmax(OmegaLambda)])/\
-                                  Hp[np.argmax(OmegaLambda)])
-    """
+        
     plt.figure()
     plt.plot(x, eta*Hp/c)
     plot(x, eta*Hp/c, index_M_R, index_M_Lambda)
-    """
-    plt.plot(x[0:index_M_R], Hp_R*eta_R/c,\
-             label=r'Radiation domination analytical solution')
-    plt.plot(x[index_M_R:index_M_Lambda], Hp_M*eta_M/c,\
-             label=r'Matter domination analytical solution')
-    plt.plot(x[index_M_Lambda:], Hp_L*eta_L/c,\
-             label=r'Dark energy analytical solution')
-    """
-    plt.title(r'$\frac{\eta(x)\mathcal{H}(x)}{c}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ vs $x$')
+    plt.title(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$\frac{\eta(x)\mathcal{H}(x)}{c}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ [$\frac{100\text{ km Gyr}}{\text{Mpc s}}$]')
+    plt.ylabel(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$ [$\frac{100\text{ km Gyr}}{\text{Mpc s}}$]')
     plt.savefig('../Plots/Milestone I/eta_times_Hp_over_c.pdf')
     
     plt.figure()
@@ -285,9 +266,10 @@ def cosmology()->(np.array(float), np.array(float)):
     #of domination. Print the age of the Universe and the conformal time today.
     
     print(f'\nTIMES\n\
-                  x     z         t [Gyr]\n\
+                  x       z      t [Gyr]\n\
           M-R:  {x[index_M_R]:.2f}  {z[index_M_R]:.2f}     {t[index_M_R]:.2f}\n\
-          M_Λ:   {x[index_M_Lambda]:.2f}    {z[index_M_Lambda]:.2f}    {t[index_M_Lambda]:.2f}\n')
+          M_Λ:  {x[index_M_Lambda]:.2f}     {z[index_M_Lambda]:.2f}    {t[index_M_Lambda]:.2f}\n\
+          ä=0:  {x[index]:.2f}     {z[index]:.2f}    {t[index]:.2f}\n')
     
     print(f'Age of the Universe: t(0)≈{t[-1]:.2f} Gyr.\n')
     
@@ -325,6 +307,10 @@ def MCMC_supernova_fit():
     
     chi2: np.array(float) = data[:, 0]
     
+    #H: fitted Hubble factor parameter.
+    
+    H: np.array(float) = 100*data[:, 1]
+    
     #OmegaM: fitted cold matter parameter.
     
     OmegaM: np.array(float) = data[:, 2]
@@ -341,8 +327,8 @@ def MCMC_supernova_fit():
     
     OmegaLambda: np.array(float) = np.ones(len(OmegaM))-OmegaM-OmegaK
     
-    #Plot the 1σ and 2σ deviation from the best fit, along with rhe values compatible
-    #with a flat Universe.
+    #Plot the 1σ and 2σ deviation from the best fit, along with rhe values 
+    #compatible with a flat Universe.
     
     plt.figure()
     plt.plot(OmegaM[chi2 < chi2_min + 8.02],\
@@ -438,6 +424,30 @@ def MCMC_supernova_fit():
     plt.grid(True)
     plt.savefig('../Plots/Milestone I/OmegaK_hist.pdf')
     
+    #Define the parameters for the gaussian fit for OmegaK, compute them
+    #and get the gaussian distribution.
+    
+    mu_H: float
+    
+    std_H: float
+    
+    mu_H, std_H = sc.stats.norm.fit(H)
+    
+    pdf_H: np.array(float) = sc.stats.norm.pdf(H, mu_H, std_H)
+    
+    #Plot and save the histogram.
+    
+    plt.figure()
+    plt.hist(H, bins=n_bins, density=True)
+    plt.plot(H, pdf_H, marker='o', ls='none')
+    plt.xlabel(r'$H_0$')
+    plt.title(r'Posterior for $H_0$')
+    plt.vlines(H[chi2==chi2_min], 0, max(pdf_H), linestyles='dashed',\
+               label='Best fit value', color='black')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('../Plots/Milestone I/H0_hist.pdf')
+    
 def supernova():
     
     """
@@ -515,6 +525,6 @@ def milestone1():
         None.
     """
     
-    supernova()
+    #supernova()
     
     MCMC_supernova_fit()
