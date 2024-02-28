@@ -105,7 +105,7 @@ void BackgroundCosmology::solve(){
   // the spline t_of_x_spline 
   //=============================================================================
 
-  Vector t_ini{1./(2.*H_of_x(0.0))};
+  Vector t_ini{1./(2.*H_of_x(x_start))};
   
   ode.solve(dtdx, x_array, t_ini);
 
