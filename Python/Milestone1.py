@@ -52,7 +52,7 @@ def plot(x: np.array(float), y: np.array(float), i1: int, i2:int):
     
     plt.fill_between(x[i2-1:], min(y)*np.ones(len(x)-i2+1),\
                      max(y)*np.ones(len(x)-i2+1), color='lightgreen',\
-                     label=r'Dark Eenrgy ($\Lambda$) domination')
+                     label=r'Dark Energy ($\Lambda$) domination')
     plt.fill_between(x[i1:i2+1], min(y)*np.ones(i2-i1+1),\
                      max(y)*np.ones(i2-i1+1), color='lightsteelblue',\
                      label='Matter domination')
@@ -183,10 +183,40 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ [$\frac{100\text{ km}}{\text{Mpc s}}$]')
     plt.savefig('../Plots/Milestone I/dHp_over_Hp.pdf')
+    """
+    Hp_R: np.array(float) = Hp[-1]*np.exp(-x[-1])*np.exp(-3*x[0:index_M_R])*\
+                            np.sqrt(OmegaRel[0:index_M_R])
+                                
+    eta_R: np.array(float) = c/Hp[0:index_M_R]
     
+    Hp_M: np.arrya(float) = Hp[-1]*np.exp(-x[-1])*\
+                            np.sqrt(OmegaM[index_M_R:index_M_Lambda]*\
+                                    np.exp(-5*x[index_M_R:index_M_Lambda]))
+    
+    eta_M: np.array(float) = eta[np.argmax(OmegaM)]+\
+                             2*c*(1/Hp[index_M_R:index_M_Lambda]-\
+                                  1/Hp[np.argmax(OmegaM)])
+                                 
+    Hp_L: np.arrya(float) = np.exp(x[index_M_Lambda:])*Hp[-1]*np.exp(-x[-1])*\
+                            np.sqrt(OmegaLambda[index_M_Lambda:])
+    
+    eta_L: np.array(float) = eta[np.argmax(OmegaLambda)]-\
+                             3*c*(np.exp(-2*x[index_M_Lambda:])/\
+                                  Hp[index_M_Lambda:]-\
+                                  np.exp(-2*x[np.argmax(OmegaLambda)])/\
+                                  Hp[np.argmax(OmegaLambda)])
+    """
     plt.figure()
     plt.plot(x, eta*Hp/c)
     plot(x, eta*Hp/c, index_M_R, index_M_Lambda)
+    """
+    plt.plot(x[0:index_M_R], Hp_R*eta_R/c,\
+             label=r'Radiation domination analytical solution')
+    plt.plot(x[index_M_R:index_M_Lambda], Hp_M*eta_M/c,\
+             label=r'Matter domination analytical solution')
+    plt.plot(x[index_M_Lambda:], Hp_L*eta_L/c,\
+             label=r'Dark energy analytical solution')
+    """
     plt.title(r'$\frac{\eta(x)\mathcal{H}(x)}{c}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -229,12 +259,16 @@ def cosmology()->(np.array(float), np.array(float)):
                      label=r'Dark Energy ($\Lambda$) domination')
     plt.plot(x, OmegaM, label=r'$\Omega_M=\Omega_B+\Omega_{CDM}$',\
              color='royalblue')
+    plt.plot(x, OmegaB, label=r'$\Omega_B$', ls='dashed', color='darkblue')
+    plt.plot(x, OmegaCDM, label=r'$\Omega_{CDM}$', ls='dashed', color='cyan')
     plt.fill_between(x[index_M_R:index_M_Lambda+1],\
                      np.zeros(index_M_Lambda-index_M_R+1),\
                      np.ones(index_M_Lambda-index_M_R+1),\
                      color='lightsteelblue', label='Matter domination')
     plt.plot(x, OmegaRel, label=r'$\Omega_R=\Omega_\gamma+\Omega_\nu$',\
              color='darkorange')
+    plt.plot(x, OmegaNu, label=r'$\Omega_\nu$', ls='dashed', color='red')
+    plt.plot(x, OmegaR, label=r'$\Omega_\gamma$', ls='dashed', color='y')
     plt.fill_between(x[0:index_M_R+1], np.zeros(index_M_R+1),\
                      np.ones(index_M_R+1), color='bisque',\
                      label='Radiation domination')
