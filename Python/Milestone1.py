@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 
 #Define function 'plot()'.
 
-def plot(x: np.array(float), y: np.array(float), i1: int, i2:int):
+def plot(x: np.array(float), y: np.array(float), i1: int, i2:int, i3: int):
     
     """
     Plot function for illustrating different epochs of cosmological evolution.
@@ -38,6 +38,8 @@ def plot(x: np.array(float), y: np.array(float), i1: int, i2:int):
             Index indicating the start of matter domination epoch.
         i2 : int
             Index indicating the start of dark energy domination epoch.
+        i3 : int
+            Index indicating the start of the accelerated expansion.
 
     Returns:
         None.
@@ -179,7 +181,7 @@ def cosmology()->(np.array(float), np.array(float)):
         
     plt.figure()
     plt.plot(x, ddHp/Hp)
-    plot(x, ddHp/Hp, index_M_R, index_M_Lambda)
+    plot(x, ddHp/Hp, index_M_R, index_M_Lambda, index)
     plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -188,7 +190,7 @@ def cosmology()->(np.array(float), np.array(float)):
     
     plt.figure()
     plt.plot(x, dHp/Hp)
-    plot(x, dHp/Hp, index_M_R, index_M_Lambda)
+    plot(x, dHp/Hp, index_M_R, index_M_Lambda, index)
     plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -197,7 +199,7 @@ def cosmology()->(np.array(float), np.array(float)):
         
     plt.figure()
     plt.plot(x, eta*Hp/c)
-    plot(x, eta*Hp/c, index_M_R, index_M_Lambda)
+    plot(x, eta*Hp/c, index_M_R, index_M_Lambda, index)
     plt.title(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -206,7 +208,7 @@ def cosmology()->(np.array(float), np.array(float)):
     
     plt.figure()
     plt.plot(x, Hp)
-    plot(x, Hp, index_M_R, index_M_Lambda)
+    plot(x, Hp, index_M_R, index_M_Lambda, index)
     plt.title(r'$\mathcal{H}(x)$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -216,16 +218,17 @@ def cosmology()->(np.array(float), np.array(float)):
 
     plt.figure()
     plt.plot(x, t)
-    plot(x, t, index_M_R, index_M_Lambda)
+    plot(x, t, index_M_R, index_M_Lambda, index)
     plt.title(r'$t(x)$ vs $x$')
     plt.grid(True)
+    plt.yscale('log')
     plt.xlabel(r'$x$')
     plt.ylabel(r'$t(x)$ [Gyr]')
     plt.savefig('../Plots/Milestone I/t.pdf')
 
     plt.figure()
     plt.plot(x, eta/c)
-    plot(x, eta/c, index_M_R, index_M_Lambda)
+    plot(x, eta/c, index_M_R, index_M_Lambda, index)
     plt.title(r'$\frac{\eta(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.yscale('log')
@@ -256,7 +259,7 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.legend()
     plt.title(r'$\Omega_i(x)$ vs $x$')
     plt.grid(True)
-    plt.xlim(-10, 0)
+    plt.xlim(-15, 0)
     plt.ylim(0, 1)
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\Omega_i(x)$')
@@ -267,13 +270,13 @@ def cosmology()->(np.array(float), np.array(float)):
     
     print(f'\nTIMES\n\
                   x       z      t [Gyr]\n\
-          M-R:  {x[index_M_R]:.2f}  {z[index_M_R]:.2f}     {t[index_M_R]:.2f}\n\
-          M_Λ:  {x[index_M_Lambda]:.2f}     {z[index_M_Lambda]:.2f}    {t[index_M_Lambda]:.2f}\n\
-          ä=0:  {x[index]:.2f}     {z[index]:.2f}    {t[index]:.2f}\n')
+          M-R:  {x[index_M_R]:.2f}  {z[index_M_R]:.2f}     {t[index_M_R]}\n\
+          M_Λ:  {x[index_M_Lambda]:.2f}     {z[index_M_Lambda]:.2f}    {t[index_M_Lambda]}\n\
+          ä=0:  {x[index]:.2f}     {z[index]:.2f}    {t[index]}\n')
     
-    print(f'Age of the Universe: t(0)≈{t[-1]:.2f} Gyr.\n')
+    print(f'Age of the Universe: t(0)≈{t[np.argmin(np.abs(x))]:.2f} Gyr.\n')
     
-    print(f'Conformal time today: η(0)/c≈{eta[-1]/c:.2f} Gyr.\n')
+    print(f'Conformal time today: η(0)/c≈{eta[np.argmin(np.abs(x))]/c:.2f} Gyr.\n')
     
     #Return redshift (z) and luminosity distance (d_L) in a tuple.
     
@@ -506,6 +509,19 @@ def supernova():
     plt.xlim(0, 1.4)
     plt.ylim(0, 10)
     plt.savefig('../Plots/Milestone I/supernova_fit.pdf')
+    
+    plt.figure()
+    plt.errorbar(z, d_L/z, d_L_error/z, marker='.', ls='none',\
+                 label='Supernovae observations')
+    plt.plot(z_cos, d_L_cos/z_cos, label='Computed curve')
+    plt.title(r'$d_L(z)/z$ vs $z$')
+    plt.legend()
+    plt.grid(True)
+    plt.xlabel(r'$z$')
+    plt.ylabel(r'$d_L(z)/z$ [Gpc]')
+    plt.xlim(0, 1.4)
+    plt.ylim(3.5, 8)
+    plt.savefig('../Plots/Milestone I/supernova_fit_over_z.pdf')
        
 def milestone1():
     
@@ -524,6 +540,8 @@ def milestone1():
     Returns:
         None.
     """
+    
+    #Run the functions.
     
     supernova()
     
