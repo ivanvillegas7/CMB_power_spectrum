@@ -211,12 +211,12 @@ double BackgroundCosmology::get_OmegaK(double x) const{
     
 double BackgroundCosmology::get_luminosity_distance_of_x(double x) const{
   
-  return get_comoving_distance_of_x(x)*exp(-x);
+  return get_r_of_x(x)*exp(-x);
 }
 
 double BackgroundCosmology::get_angular_distance_of_x(double x) const{
   
-  return get_comoving_distance_of_x(x)*exp(-x);
+  return get_r_of_x(x)*exp(x);
 }
 
 double BackgroundCosmology::get_comoving_distance_of_x(double x) const{
@@ -226,6 +226,26 @@ double BackgroundCosmology::get_comoving_distance_of_x(double x) const{
   //=============================================================================  
 
   return eta_of_x(0)-eta_of_x(x);
+}
+
+double BackgroundCosmology::get_r_of_x(double x) const{
+
+  if (get_OmegaK(x)==0) return get_comoving_distance_of_x(x);
+  
+  else if (get_OmegaK(x)>0)
+  {
+    double term = sqrt(abs(get_OmegaK(x)))*H0*get_comoving_distance_of_x(x)/Constants.c;
+
+    return get_comoving_distance_of_x(x)*sinh(term)/term;
+  }
+
+  else
+  {
+    double term = sqrt(abs(get_OmegaK(x)))*H0*get_comoving_distance_of_x(x)/Constants.c;
+
+    return get_comoving_distance_of_x(x)*sin(term)/term;
+  }
+
 }
 
 double BackgroundCosmology::eta_of_x(double x) const{
@@ -282,7 +302,7 @@ void BackgroundCosmology::info() const{
 // Output some data to file
 //====================================================
 void BackgroundCosmology::output(const std::string filename) const{
-  const double x_min = -10.0;
+  const double x_min = -15.0;
   const double x_max =  0.0;
   const int    n_pts =  1000;
   
