@@ -199,7 +199,7 @@ def cosmology()->(np.array(float), np.array(float)):
         
     plt.figure()
     plt.plot(x, eta*Hp/(c*1.02*1e4))
-    plot(x, eta*Hp/c, index_M_R, index_M_Lambda, index)
+    plot(x, eta*Hp/(c*1.02*1e4), index_M_R, index_M_Lambda, index)
     plt.title(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
