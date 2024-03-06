@@ -269,10 +269,10 @@ def cosmology()->(np.array(float), np.array(float)):
     #of domination. Print the age of the Universe and the conformal time today.
     
     print(f'\nTIMES\n\
-                  x       z      t [Gyr]\n\
-          M-R:  {x[index_M_R]:.2f}  {z[index_M_R]:.2f}     {t[index_M_R]}\n\
-          M_Λ:  {x[index_M_Lambda]:.2f}     {z[index_M_Lambda]:.2f}    {t[index_M_Lambda]}\n\
-          ä=0:  {x[index]:.2f}     {z[index]:.2f}    {t[index]}\n')
+                  x       z       t [Gyr]\n\
+          M-R:  {x[index_M_R]:.2f}  {z[index_M_R]:.2f}     {t[index_M_R]*1e5:.2f}e-5\n\
+          M_Λ:  {x[index_M_Lambda]:.2f}     {z[index_M_Lambda]:.2f}    {t[index_M_Lambda]:.2f}\n\
+          ä=0:  {x[index]:.2f}     {z[index]:.2f}    {t[index]:.2f}\n')
     
     print(f'Age of the Universe: t(0)≈{t[np.argmin(np.abs(x))]:.2f} Gyr.\n')
     
@@ -326,6 +326,8 @@ def MCMC_supernova_fit():
     
     chi2_min: float = min(chi2)
     
+    index: int = np.argmin(chi2)
+    
     #Compute the corresponding fitting parameter for dark energy (OmegaLambda).
     
     OmegaLambda: np.array(float) = np.ones(len(OmegaM))-OmegaM-OmegaK
@@ -373,7 +375,7 @@ def MCMC_supernova_fit():
     plt.plot(OmegaLambda, pdf_Lambda, marker='o', ls='none')
     plt.xlabel(r'$\Omega_\Lambda$')
     plt.title(r'Posterior for $\Omega_\Lambda$')
-    plt.vlines(OmegaLambda[chi2==chi2_min], 0, max(pdf_Lambda),\
+    plt.vlines(OmegaLambda[index], 0, max(pdf_Lambda),\
                linestyles='dashed', label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
@@ -397,7 +399,7 @@ def MCMC_supernova_fit():
     plt.plot(OmegaM, pdf_M, marker='o', ls='none')
     plt.xlabel(r'$\Omega_M$')
     plt.title(r'Posterior for $\Omega_M$')
-    plt.vlines(OmegaM[chi2==chi2_min], 0, max(pdf_M), linestyles='dashed',\
+    plt.vlines(OmegaM[index], 0, max(pdf_M), linestyles='dashed',\
                label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
@@ -421,7 +423,7 @@ def MCMC_supernova_fit():
     plt.plot(OmegaK, pdf_K, marker='o', ls='none')
     plt.xlabel(r'$\Omega_K$')
     plt.title(r'Posterior for $\Omega_K$')
-    plt.vlines(OmegaK[chi2==chi2_min], 0, max(pdf_K), linestyles='dashed',\
+    plt.vlines(OmegaK[index], 0, max(pdf_K), linestyles='dashed',\
                label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
@@ -445,7 +447,7 @@ def MCMC_supernova_fit():
     plt.plot(H, pdf_H, marker='o', ls='none')
     plt.xlabel(r'$H_0$')
     plt.title(r'Posterior for $H_0$')
-    plt.vlines(H[chi2==chi2_min], 0, max(pdf_H), linestyles='dashed',\
+    plt.vlines(H[index], 0, max(pdf_H), linestyles='dashed',\
                label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
@@ -453,9 +455,9 @@ def MCMC_supernova_fit():
 
     #Print thge best fitting parameters
 
-    print(f'\nParameters\n\
-              χ²    Ω_M    Ω_k    Ω_Λ    H_0\n\
-              {chi2_min:.2f}    {OmegaM[chi2==chi2_min]:.2f}    {OmegaK[chi2==chi2_min]:.2f}    {OmegaLambda[chi2==chi2_min]:.2f}    {H[chi2==chi2_min]:.2f}\n')
+    print(f'\nPARAMETERS\n\
+                χ²     Ω_M     Ω_k     Ω_Λ      H_0\n\
+              {chi2_min:.2f}    {OmegaM[index]:.2f}    {OmegaK[index]:.2f}    {OmegaLambda[index]:.2f}    {H[index]:.2f}\n')
     
 def supernova():
     
@@ -549,6 +551,6 @@ def milestone1():
     
     #Run the functions.
     
-    supernova()
-    
     MCMC_supernova_fit()
+    
+    supernova()
