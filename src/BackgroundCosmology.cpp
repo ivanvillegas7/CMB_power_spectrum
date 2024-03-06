@@ -230,20 +230,24 @@ double BackgroundCosmology::get_comoving_distance_of_x(double x) const{
 
 double BackgroundCosmology::get_r_of_x(double x) const{
 
-  if (get_OmegaK(x)==0) return get_comoving_distance_of_x(x);
-  
-  else if (get_OmegaK(x)>0)
-  {
-    double term = sqrt(abs(get_OmegaK(x)))*H0*get_comoving_distance_of_x(x)/Constants.c;
+  double OmegaK = get_OmegaK(x);
 
-    return get_comoving_distance_of_x(x)*sinh(term)/term;
+  double comov_dist = get_comoving_distance_of_x(x);
+
+  if (OmegaK==0) return get_comoving_distance_of_x(x);
+  
+  else if (OmegaK>0)
+  {
+    double term = sqrt(abs(OmegaK))*H0*comov_dist/Constants.c;
+
+    return comov_dist*sinh(term)/term;
   }
 
   else
   {
-    double term = sqrt(abs(get_OmegaK(x)))*H0*get_comoving_distance_of_x(x)/Constants.c;
+    double term = sqrt(abs(OmegaK))*H0*comov_dist/Constants.c;
 
-    return get_comoving_distance_of_x(x)*sin(term)/term;
+    return comov_dist*sin(term)/term;
   }
 
 }
