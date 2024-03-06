@@ -450,6 +450,12 @@ def MCMC_supernova_fit():
     plt.legend()
     plt.grid(True)
     plt.savefig('../Plots/Milestone I/H0_hist.pdf')
+
+    #Print thge best fitting parameters
+
+    print(f'\nParameters\n\
+              χ²    Ω_M    Ω_k    Ω_Λ    H_0\n\
+              {chi2_min:.2f}    {OmegaM[chi2==chi2_min]:.2f}    {OmegaK[chi2==chi2_min]:.2f}    {OmegaLambda[chi2==chi2_min]:.2f}    {H[chi2==chi2_min]:.2f}\n')
     
 def supernova():
     
