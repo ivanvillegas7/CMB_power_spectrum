@@ -66,7 +66,7 @@ def main():
     
     #Milestone4.main()
     
-    #print('Milestone IV has been concluded.')
+    #print('The project has been concluded.')
     
 #Run the main function of the project and execute the visualization of data.
 
