@@ -234,21 +234,14 @@ double BackgroundCosmology::get_r_of_x(double x) const{
 
   double comov_dist = get_comoving_distance_of_x(x);
 
+  double term = sqrt(abs(OmegaK))*H0*comov_dist/Constants.c;
+
   if (OmegaK==0) return get_comoving_distance_of_x(x);
+ 
+  else if (OmegaK>0) return comov_dist*sinh(term)/term;
   
-  else if (OmegaK>0)
-  {
-    double term = sqrt(abs(OmegaK))*H0*comov_dist/Constants.c;
 
-    return comov_dist*sinh(term)/term;
-  }
-
-  else
-  {
-    double term = sqrt(abs(OmegaK))*H0*comov_dist/Constants.c;
-
-    return comov_dist*sin(term)/term;
-  }
+  else return comov_dist*sin(term)/term;
 
 }
 
