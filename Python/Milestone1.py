@@ -456,8 +456,8 @@ def MCMC_supernova_fit():
     #Print thge best fitting parameters
 
     print(f'\nPARAMETERS\n\
-                χ²     Ω_M     Ω_k     Ω_Λ      H_0\n\
-              {chi2_min:.2f}    {OmegaM[index]:.2f}    {OmegaK[index]:.2f}    {OmegaLambda[index]:.2f}    {H[index]:.2f}\n')
+          χ²     Ω_M     Ω_k     Ω_Λ      H_0\n\
+        {chi2_min:.2f}    {OmegaM[index]:.2f}    {OmegaK[index]:.2f}    {OmegaLambda[index]:.2f}    {H[index]:.2f}\n')
     
 def supernova():
     
