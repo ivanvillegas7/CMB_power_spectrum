@@ -20,10 +20,6 @@ BackgroundCosmology::BackgroundCosmology(
   TCMB(TCMB)
 {
 
-  //=============================================================================
-  // TODO: Compute OmegaR, OmegaNu, OmegaLambda, H0, ...
-  //=============================================================================
-
   const double pi     = M_PI;
   const double k_B    = Constants.k_b;                                                                   // J/K
   const double h_bar  = Constants.hbar;                                                                  // J*s
@@ -46,11 +42,6 @@ BackgroundCosmology::BackgroundCosmology(
 void BackgroundCosmology::solve(){
 
   Utils::StartTiming("Eta");
-    
-  //=============================================================================
-  // TODO: Set the range of x and the number of points for the splines
-  // For this Utils::linspace(x_start, x_end, npts) is useful
-  //=============================================================================
 
   double npts = 1000;
 
@@ -59,21 +50,12 @@ void BackgroundCosmology::solve(){
   // The ODE for deta/dx
   ODEFunction detadx = [&](double x, const double *eta, double *detadx){
 
-    //=============================================================================
-    // TODO: Set the rhs of the detadx ODE
-    //=============================================================================
-
     const double c = Constants.c; // m/s
 
     detadx[0] = c/Hp_of_x(x);
 
     return GSL_SUCCESS;
   };
-
-  //=============================================================================
-  // TODO: Set the initial condition, set up the ODE system, solve and make
-  // the spline eta_of_x_spline 
-  //=============================================================================
 
   Vector eta_ini{0.0};
 
@@ -91,19 +73,10 @@ void BackgroundCosmology::solve(){
   // The ODE for deta/dx
   ODEFunction dtdx = [&](double x, const double *t, double *dtdx){
 
-    //=============================================================================
-    // TODO: Set the rhs of the dtdx ODE
-    //=============================================================================
-
     dtdx[0] = 1/H_of_x(x);
 
     return GSL_SUCCESS;
   };
-
-  //=============================================================================
-  // TODO: Set the initial condition, set up the ODE system, solve and make
-  // the spline t_of_x_spline 
-  //=============================================================================
 
   Vector t_ini{1./(2.*H_of_x(x_start))};
   
@@ -114,7 +87,6 @@ void BackgroundCosmology::solve(){
   t_of_x_spline.create(x_array, t_array, "t");
 
   Utils::EndTiming("t");
-  
 }
 
 //====================================================
@@ -134,10 +106,6 @@ double BackgroundCosmology::Hp_of_x(double x) const{
 }
 
 double BackgroundCosmology::dHpdx_of_x(double x) const{
-
-  //=============================================================================
-  // TODO: Implement...
-  //=============================================================================
   
   double a = exp(x);
 
@@ -151,10 +119,6 @@ double BackgroundCosmology::dHpdx_of_x(double x) const{
 }
 
 double BackgroundCosmology::ddHpddx_of_x(double x) const{
-
-  //=============================================================================
-  // TODO: Implement...
-  //=============================================================================
 
   double a = exp(x);
 
@@ -221,10 +185,6 @@ double BackgroundCosmology::get_angular_distance_of_x(double x) const{
 
 double BackgroundCosmology::get_comoving_distance_of_x(double x) const{
 
-  //=============================================================================
-  // TODO: Implement...
-  //=============================================================================  
-
   return eta_of_x(0)-eta_of_x(x);
 }
 
@@ -240,9 +200,7 @@ double BackgroundCosmology::get_r_of_x(double x) const{
  
   else if (OmegaK>0) return comov_dist*sinh(term)/term;
   
-
   else return comov_dist*sin(term)/term;
-
 }
 
 double BackgroundCosmology::eta_of_x(double x) const{
@@ -323,4 +281,3 @@ void BackgroundCosmology::output(const std::string filename) const{
   };
   std::for_each(x_array.begin(), x_array.end(), print_data);
 }
-
