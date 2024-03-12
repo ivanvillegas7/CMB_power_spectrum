@@ -199,12 +199,12 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.savefig('../Plots/Milestone I/dHp_over_Hp.pdf')
         
     plt.figure()
-    plt.plot(x, eta*Hp/(c*1.02*1e-1))
-    plot(x, eta*Hp/(c*1.02*1e-1), index_M_R, index_M_Lambda, index)
-    plt.title(r'$100\frac{\eta(x)\mathcal{H}(x)}{c}$ vs $x$')
+    plt.plot(x, eta*Hp/(100*c*1.02*1e-1))
+    plot(x, eta*Hp/(100*c*1.02*1e-1), index_M_R, index_M_Lambda, index)
+    plt.title(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$100\frac{\eta(x)\mathcal{H}(x)}{c}$')
+    plt.ylabel(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$')
     plt.savefig('../Plots/Milestone I/eta_times_Hp_over_c.pdf')
     
     plt.figure()
