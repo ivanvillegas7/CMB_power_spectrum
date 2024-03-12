@@ -181,7 +181,7 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$ [$\frac{100\text{ km}}{\text{Mpc s}}$]')
+    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$')
     plt.savefig('../Plots/Milestone I/ddHp_over_Hp.pdf')
     
     plt.figure()
@@ -190,7 +190,7 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ [$\frac{100\text{ km}}{\text{Mpc s}}$]')
+    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$')
     plt.savefig('../Plots/Milestone I/dHp_over_Hp.pdf')
         
     plt.figure()
