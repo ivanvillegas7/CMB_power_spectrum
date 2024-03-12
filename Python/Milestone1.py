@@ -158,9 +158,9 @@ def cosmology()->(np.array(float), np.array(float)):
     #Define the second derivative of the scale factor with respect to the
     #cosmological time
     
-    a_dotdot: np.array(float) = Hp**2*np.exp(-x)+Hp[-1]**2*\
-                                (-3*OmegaM*np.exp(-2*x)-\
-                                 4*OmegaRel*np.exp(-3*x))/2
+    a_dotdot: np.array(float) = Hp**2*np.exp(-x)+(Hp[-1]*np.exp(-2*x[-1]))**2*\
+                                (-3*OmegaM*np.exp(-x)*Hp-\
+                                 4*OmegaRel*np.exp(-2*x)*Hp)/(2*Hp*np.exp(-x))
     
     #Get the indeces when the cuantity of cold matter is the same (or most 
     #similar) to the cuantity of relativistic particles.
