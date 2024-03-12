@@ -209,7 +209,7 @@ def cosmology()->(np.array(float), np.array(float)):
     
     plt.figure()
     plt.plot(x, 100*Hp)
-    plot(x, Hp, index_M_R, index_M_Lambda, index)
+    plot(x, 100*Hp, index_M_R, index_M_Lambda, index)
     plt.title(r'$\mathcal{H}(x)$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
