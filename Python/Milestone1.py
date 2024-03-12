@@ -107,11 +107,11 @@ def cosmology()->(np.array(float), np.array(float)):
     
     #Hp: conformal Hubble factor.
     
-    Hp: np.array(float) = data_cos[:, 2]/(100*1e3/(1e9*sc.constants.parsec))
+    Hp: np.array(float) = data_cos[:, 2]/(100*1e3/(1e6*sc.constants.parsec))
     
     #dHp: first derivative of Hp with respect to x.
     
-    dHp: np.array(float) = data_cos[:, 3]/(100*1e3/(1e9*sc.constants.parsec))
+    dHp: np.array(float) = data_cos[:, 3]/(100*1e3/(1e6*sc.constants.parsec))
     
     #OmegaB relative density of baryonic (ordinary) matter.
     
@@ -139,7 +139,7 @@ def cosmology()->(np.array(float), np.array(float)):
     
     #ddHp: second derivative of Hp with respect to x.
     
-    ddHp: np.array(float) = data_cos[:, 10]/(100*1e3/(1e9*sc.constants.parsec))
+    ddHp: np.array(float) = data_cos[:, 10]/(100*1e3/(1e6*sc.constants.parsec))
     
     #t: cosmological time.
     
@@ -199,8 +199,8 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.savefig('../Plots/Milestone I/dHp_over_Hp.pdf')
         
     plt.figure()
-    plt.plot(x, eta*Hp/(c*1.02*1e4))
-    plot(x, eta*Hp/(c*1.02*1e4), index_M_R, index_M_Lambda, index)
+    plt.plot(x, eta*Hp/(c*1.02*1e-1))
+    plot(x, eta*Hp/(c*1.02*1e-1), index_M_R, index_M_Lambda, index)
     plt.title(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -208,12 +208,12 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.savefig('../Plots/Milestone I/eta_times_Hp_over_c.pdf')
     
     plt.figure()
-    plt.plot(x, Hp)
+    plt.plot(x, 100*Hp)
     plot(x, Hp, index_M_R, index_M_Lambda, index)
     plt.title(r'$\mathcal{H}(x)$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$\mathcal{H}(x)$ [$\frac{100\text{ km}}{\text{Mpc s}}$]')
+    plt.ylabel(r'$\mathcal{H}(x)$ [$\frac{\text{ km}}{\text{Mpc s}}$]')
     plt.yscale('log')
     plt.savefig('../Plots/Milestone I/Hp.pdf')
 
