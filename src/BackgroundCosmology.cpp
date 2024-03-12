@@ -50,9 +50,7 @@ void BackgroundCosmology::solve(){
   // The ODE for deta/dx
   ODEFunction detadx = [&](double x, const double *eta, double *detadx){
 
-    const double c = Constants.c; // m/s
-
-    detadx[0] = c/Hp_of_x(x);
+    detadx[0] = Constants.c/Hp_of_x(x);
 
     return GSL_SUCCESS;
   };
@@ -95,9 +93,7 @@ void BackgroundCosmology::solve(){
 
 double BackgroundCosmology::H_of_x(double x) const{
 
-  double a = exp(x);
-
-  return H0*pow((OmegaB+OmegaCDM)*pow(a, -3)+(OmegaR+OmegaNu)*pow(a, -4)+OmegaK*pow(a, -2)+OmegaLambda, 1./2.);
+  return H0*sqrt((OmegaB+OmegaCDM)*exp(-3*x)+(OmegaR+OmegaNu)*exp(-4*x)+OmegaK*exp(-2*x)+OmegaLambda);
 }
 
 double BackgroundCosmology::Hp_of_x(double x) const{
@@ -106,10 +102,10 @@ double BackgroundCosmology::Hp_of_x(double x) const{
 }
 
 double BackgroundCosmology::dHpdx_of_x(double x) const{
-  
+
   double a = exp(x);
 
-  double dHdx = (pow(H0, 2)/(2*H_of_x(x)))*(-2*OmegaK*pow(a, -2)-3*(OmegaB+OmegaCDM)*pow(a, -3)-4*(OmegaNu+OmegaR)*pow(a, -4));
+  double dHdx = (pow(H0, 2)/(2*H_of_x(x)))*(-2*OmegaK*exp(-2*x)-3*(OmegaB+OmegaCDM)*exp(-3*x)-4*(OmegaNu+OmegaR)*exp(-4*x));
 
   return Hp_of_x(x)+a*dHdx;
 }
@@ -118,9 +114,9 @@ double BackgroundCosmology::ddHpddx_of_x(double x) const{
 
   double a = exp(x);
 
-  double dHdx = (pow(H0, 2)/(2*H_of_x(x)))*(-2*OmegaK*pow(a, -2)-3*(OmegaB+OmegaCDM)*pow(a, -3)-4*(OmegaNu+OmegaR)*pow(a, -4));
+  double dHdx = (pow(H0, 2)/(2*H_of_x(x)))*(-2*OmegaK*exp(-2*x)-3*(OmegaB+OmegaCDM)*exp(-3*x)-4*(OmegaNu+OmegaR)*exp(-4*x));
 
-  double ddHddx = pow(H0, 2)*((4*pow(a, -2)*OmegaK+16*pow(a, -4)*(OmegaR+OmegaNu)+9*pow(a, -3)*(OmegaB+OmegaCDM))*H_of_x(x)-2*pow(dHdx/H0, 2))/(2*H_of_x(x));
+  double ddHddx = pow(H0, 2)*((4*exp(-2*x)*OmegaK+16*exp(-4*x)*(OmegaR+OmegaNu)+9*exp(-3*x)*(OmegaB+OmegaCDM))*H_of_x(x)-2*pow(dHdx/H0, 2))/(2*H_of_x(x));
 
   return 2*dHpdx_of_x(x)-Hp_of_x(x)+a*ddHddx;
 }
@@ -252,8 +248,8 @@ void BackgroundCosmology::info() const{
 //====================================================
 void BackgroundCosmology::output(const std::string filename) const{
   const double x_min = -15.0;
-  const double x_max =  0.0;
-  const int    n_pts =  1000;
+  const double x_max = 0.0;
+  const int    n_pts = 1000;
   
   Vector x_array = Utils::linspace(x_min, x_max, n_pts);
 
