@@ -268,7 +268,7 @@ def cosmology()->(np.array(float), np.array(float)):
                   x       z       t [Gyr]\n\
           M-R:  {x[index_M_R]:.2f}  {z[index_M_R]:.2f}     {t[index_M_R]*1e5:.2f}e-5\n\
           M_Λ:  {x[index_M_Lambda]:.2f}     {z[index_M_Lambda]:.2f}    {t[index_M_Lambda]:.2f}\n\
-          ä=0:  {x[index]:.2f}     {z[index]:.2f}    {t[index]:.2f}\n')
+          ä=0:  {x[index]:.2f}     {z[index]:.2f}     {t[index]:.2f}\n')
     
     print(f'Age of the Universe: t(0)≈{t[np.argmin(np.abs(x))]:.2f} Gyr.\n')
     
