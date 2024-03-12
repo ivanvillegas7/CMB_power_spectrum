@@ -109,26 +109,20 @@ double BackgroundCosmology::dHpdx_of_x(double x) const{
   
   double a = exp(x);
 
-  double root = (OmegaB+OmegaCDM)*pow(a, -3)+(OmegaR+OmegaNu)*pow(a, -4)+OmegaK*pow(a, -2)+OmegaLambda;
+  double dHdx = (pow(H0, 2)/(2*H_of_x(x)))*(-2*OmegaK*pow(a, -2)-3*(OmegaB+OmegaCDM)*pow(a, -3)-4*(OmegaNu+OmegaR)*pow(a, -4));
 
-  double drootdx = -3*(OmegaB+OmegaCDM)*pow(a, -3)-4*(OmegaR+OmegaNu)*pow(a, -4)-2*OmegaK*pow(a, -2);
-
-  double ddrootddx = 9*(OmegaB+OmegaCDM)*pow(a, -3)+16*(OmegaR+OmegaNu)*pow(a, -4)+4*OmegaK*pow(a, -2);
-
-  return Hp_of_x(x)+a*H0*drootdx/(2*pow(root, 1./2.));
+  return Hp_of_x(x)+a*dHdx;
 }
 
 double BackgroundCosmology::ddHpddx_of_x(double x) const{
 
   double a = exp(x);
 
-  double in_root = (OmegaB+OmegaCDM)*pow(a, -3)+(OmegaR+OmegaNu)*pow(a, -4)+OmegaK*pow(a, -2)+OmegaLambda;
+  double dHdx = (pow(H0, 2)/(2*H_of_x(x)))*(-2*OmegaK*pow(a, -2)-3*(OmegaB+OmegaCDM)*pow(a, -3)-4*(OmegaNu+OmegaR)*pow(a, -4));
 
-  double din_rootdx = -3*(OmegaB+OmegaCDM)*pow(a, -3)-4*(OmegaR+OmegaNu)*pow(a, -4)-2*OmegaK*pow(a, -2);
+  double ddHddx = pow(H0, 2)*((4*pow(a, -2)*OmegaK+16*pow(a, -4)*(OmegaR+OmegaNu)+9*pow(a, -3)*(OmegaB+OmegaCDM))*H_of_x(x)-2*pow(dHdx/H0, 2))/(2*H_of_x(x));
 
-  double ddin_rootddx = 9*(OmegaB+OmegaCDM)*pow(a, -3)+16*(OmegaR+OmegaNu)*pow(a, -4)+4*OmegaK*pow(a, -2);
-
-  return 2*dHpdx_of_x(x)-Hp_of_x(x)+(a*H0/2)*(ddin_rootddx/pow(in_root, 1./2.)-din_rootdx/(2*pow(in_root, 3./2.)));
+  return 2*dHpdx_of_x(x)-Hp_of_x(x)+a*ddHddx;
 }
 
 double BackgroundCosmology::get_OmegaB(double x) const{ 
