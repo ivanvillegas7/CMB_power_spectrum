@@ -154,11 +154,16 @@ def cosmology()->(np.array(float), np.array(float)):
     OmegaM:np.array(float) = OmegaB+OmegaCDM
 
     OmegaRel:np.array(float) = OmegaR+OmegaNu
+
+    #Define the index for today (x=0)
+    
+    today: int = np.argmin(np.abs(x))
     
     #Define the second derivative of the scale factor with respect to the
     #cosmological time
     
-    a_dotdot: np.array(float) = Hp**2*np.exp(-x)+(Hp[-1]*np.exp(-2*x[-1]))**2*\
+    a_dotdot: np.array(float) = Hp**2*np.exp(-x)+\
+                                (Hp[today]*np.exp(-2*x[today]))**2*\
                                 (-3*OmegaM*np.exp(-x)*Hp-\
                                  4*OmegaRel*np.exp(-2*x)*Hp)/(2*Hp*np.exp(-x))
     
@@ -270,9 +275,9 @@ def cosmology()->(np.array(float), np.array(float)):
           M_Λ:  {x[index_M_Lambda]:.2f}     {z[index_M_Lambda]:.2f}    {t[index_M_Lambda]:.2f}\n\
           ä=0:  {x[index]:.2f}     {z[index]:.2f}     {t[index]:.2f}\n')
     
-    print(f'Age of the Universe: t(0)≈{t[np.argmin(np.abs(x))]:.2f} Gyr.\n')
+    print(f'Age of the Universe: t(0)≈{t[today]:.2f} Gyr.\n')
     
-    print(f'Conformal time today: η(0)/c≈{eta[np.argmin(np.abs(x))]/c:.2f} Gyr.\n')
+    print(f'Conformal time today: η(0)/c≈{eta[today]/c:.2f} Gyr.\n')
     
     #Return redshift (z) and luminosity distance (d_L) in a tuple.
     
