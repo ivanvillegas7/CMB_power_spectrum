@@ -504,7 +504,7 @@ def supernova():
     plt.figure()
     plt.errorbar(z, d_L, d_L_error, marker='.', ls='none',\
                  label='Supernovae observations')
-    plt.plot(z_cos, d_L_cos, label='Computed curve')
+    plt.plot(z_cos, d_L_cos, label='Fiduicial cosmology curve')
     plt.title(r'$d_L(z)$ vs $z$')
     plt.legend()
     plt.grid(True)
@@ -518,7 +518,7 @@ def supernova():
     plt.errorbar(z, d_L/z, d_L_error/z, marker='.', ls='none',\
                  label='Supernovae observations')
     plt.plot(z_cos[z_cos>0.015], d_L_cos[z_cos>0.015]/z_cos[z_cos>0.015],\
-             label='Computed curve')
+             label='Fiduicial cosmology curve')
     plt.title(r'$d_L(z)/z$ vs $z$')
     plt.legend()
     plt.grid(True)
