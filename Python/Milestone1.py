@@ -147,11 +147,7 @@ def cosmology()->(np.array(float), np.array(float)):
     
     #Define and compute redshift (z) from the given data.
     
-    z: np.array(float) = np.zeros(len(x))
-    
-    for i in range(len(x)):
-        
-        z[i] = np.exp(-x[i])-1
+    z: np.array(float) = np.exp(-x)-1
         
     #Define the omegas corresponding to cold and relativistic matter/particles.
         
