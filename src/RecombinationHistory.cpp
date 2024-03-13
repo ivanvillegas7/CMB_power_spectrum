@@ -197,13 +197,13 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
   const double alpha        = 1./137.;
   const double phi_2        = 0.448*log(epsilon_0/E_B);
   const double alpha_2      = 64*M_PI*pow(alpha/m_e, 2)*phi_2*sqrt(epsilon_0/(27*M_PI*E_B));
-  const double beta         = alpha_2*E_B*pow(m_e*E_B/(2*M_PI), 3./2.)*exp(-epsilon_0/E_B);
-  const double beta_2       = beta*exp(3*epsilon_0/(4*E_B));
+  const double almost_beta  = alpha_2*E_B*pow(m_e*E_B/(2*M_PI), 3./2.);
+  const double beta_2       = almost_beta*exp(-epsilon_0/(4*E_B));
   const double n_1s         = (1.0-X_e)*nH;
   const double lambda_alpha = H*pow(3*epsilon_0, 2)/(pow(8*M_PI, 2)*n_1s*hbar_square*hbar*pow(c, 3));
   const double C_r          = (lambda_2s1s+lambda_alpha)/(lambda_2s1s+lambda_alpha+beta_2);
   
-  dXedx[0] = C_r/H*(beta*(1-X_e)-nH*alpha_2*pow(X_e, 2));
+  dXedx[0] = C_r/H*(almost_beta*exp(-epsilon_0/E_B)*(1-X_e)-nH*alpha_2*pow(X_e, 2));
 
   return GSL_SUCCESS;
 }
@@ -294,6 +294,7 @@ double RecombinationHistory::ne_of_x(double x) const{
 }
 
 double RecombinationHistory::get_Yp() const{
+
   return Yp;
 }
 
