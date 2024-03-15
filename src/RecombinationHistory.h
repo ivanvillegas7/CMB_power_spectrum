@@ -42,16 +42,16 @@ class RecombinationHistory{
     void solve_number_density_electrons();
     
     //===============================================================
-    // [2] Compute tau and visibility functions
+    // [2] Compute τ and visibility functions
     //===============================================================
 
-    // The two things we need to solve: Xe/ne and tau
+    // The two things we need to solve: Xe/ne and τ
     void solve_for_optical_depth_tau();
 
     // Splines contained in this class
     Spline log_Xe_of_x_spline{"Xe"};
     Spline log_ne_of_x_spline{"log ne"};
-    Spline tau_of_x_spline{"tau"}; 
+    Spline tau_of_x_spline{"τ"}; 
     Spline g_tilde_of_x_spline{"g"};  
 
   public:

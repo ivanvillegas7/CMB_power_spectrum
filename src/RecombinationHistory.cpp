@@ -20,7 +20,7 @@ void RecombinationHistory::solve(){
   // Compute and spline Xe, ne
   solve_number_density_electrons();
    
-  // Compute and spline tau, dtaudx, ddtauddx, g, dgdx, ddgddx, ...
+  // Compute and spline τ, dτdx, ddτddx, g, dgdx, ddgddx, ...
   solve_for_optical_depth_tau();
 }
 
@@ -209,18 +209,18 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
 }
 
 //====================================================
-// Solve for the optical depth tau, compute the 
+// Solve for the optical depth τ, compute the 
 // visibility function and spline the result
 //====================================================
 
 void RecombinationHistory::solve_for_optical_depth_tau(){
-  Utils::StartTiming("opticaldepth");
+  Utils::StartTiming("Optical depth");
 
   // Set up x-arrays to integrate over. We split into three regions as we need extra points in reionisation
   const int npts = 1000;
   Vector x_array = Utils::linspace(x_start, x_end, npts);
 
-  // The ODE system dtau/dx, dtau_noreion/dx and dtau_baryon/dx
+  // The ODE system dτ/dx, dτ_noreion/dx and dτ_baryon/dx
   ODEFunction dtaudx = [&](double x, const double *tau, double *dtaudx){
 
     // Set the derivative for photon optical depth
@@ -230,10 +230,17 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
   };
 
   //=============================================================================
-  // TODO: Set up and solve the ODE and make tau splines
+  // TODO: Set up and solve the ODE and make τ splines
   //=============================================================================
-  //...
-  //...
+  
+  Vector tau_ini{0.0};
+
+  ODESolver ode;
+  ode.solve(dtaudx, x_array, tau_ini);
+
+  auto tau_array = ode.get_data_by_component(0);
+
+  tau_of_x_spline.create(x_array, tau_array, "τ");
 
   //=============================================================================
   // TODO: Compute visibility functions and spline everything
@@ -241,7 +248,9 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
   //...
   //...
 
-  Utils::EndTiming("opticaldepth");
+
+
+  Utils::EndTiming("Optical depth");
 }
 
 //====================================================

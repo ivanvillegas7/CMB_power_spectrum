@@ -35,19 +35,19 @@ BackgroundCosmology::BackgroundCosmology(
 }
 
 //====================================================
-// Do all the solving. Compute eta(x)
+// Do all the solving. Compute η(x)
 //====================================================
 
 // Solve the background
 void BackgroundCosmology::solve(){
 
-  Utils::StartTiming("Eta");
+  Utils::StartTiming("η");
 
   double npts = 1000;
 
   Vector x_array = Utils::linspace(x_start, x_end, npts);
 
-  // The ODE for deta/dx
+  // The ODE for dη/dx
   ODEFunction detadx = [&](double x, const double *eta, double *detadx){
 
     detadx[0] = Constants.c/Hp_of_x(x);
@@ -62,13 +62,13 @@ void BackgroundCosmology::solve(){
 
   auto eta_array = ode.get_data_by_component(0);
 
-  eta_of_x_spline.create(x_array, eta_array, "eta");
+  eta_of_x_spline.create(x_array, eta_array, "η");
 
-  Utils::EndTiming("Eta");
+  Utils::EndTiming("η");
 
   Utils::StartTiming("t");
 
-  // The ODE for deta/dx
+  // The ODE for dt/dx
   ODEFunction dtdx = [&](double x, const double *t, double *dtdx){
 
     dtdx[0] = 1/H_of_x(x);

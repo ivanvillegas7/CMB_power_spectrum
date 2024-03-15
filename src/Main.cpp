@@ -6,7 +6,8 @@
 #include "SupernovaFitting.h"
 
 int main(int argc, char **argv){
-  Utils::StartTiming("Everything");
+  Utils::StartTiming("CMB power spectrum");
+  Utils::StartTiming("Milestone I");
 
   //=========================================================================
   // Parameters
@@ -42,16 +43,18 @@ int main(int argc, char **argv){
 
   // Do the supernova fits. Uncomment when you are ready to run this
   // Make sure you read the comments on the top of src/SupernovaFitting.h
-  // mcmc_fit_to_supernova_data("data/supernovadata.txt", "Results/results_supernovafitting.txt");
+  //mcmc_fit_to_supernova_data("data/supernovadata.txt", "Results/results_supernovafitting.txt");
 
   // Remove when Module II is completed
-  Utils::EndTiming("Everything");
+  Utils::EndTiming("Milestone I");
   return 0;
 
   //=========================================================================
   // Module II
   //=========================================================================
   
+  Utils::StartTiming("Milestone II");
+
   // Solve the recombination history
   RecombinationHistory rec(&cosmo, Yp);
   rec.solve();
@@ -61,13 +64,15 @@ int main(int argc, char **argv){
   rec.output("Results/recombination.txt");
   
   // Remove when Module III is completed
-  Utils::EndTiming("Everything");
+  Utils::EndTiming("Milestone II");
   return 0;
 
   //=========================================================================
   // Module III
   //=========================================================================
- 
+  
+  Utils::StartTiming("Milestone III");
+
   // Solve the perturbations
   Perturbations pert(&cosmo, &rec);
   pert.solve();
@@ -78,18 +83,21 @@ int main(int argc, char **argv){
   pert.output(kvalue, "Results/perturbations_k0.01.txt");
   
   // Remove when Module IV is completed
-  Utils::EndTiming("Everything");
+  Utils::EndTiming("Milestone III");
   return 0;
   
   //=========================================================================
   // Module IV
   //=========================================================================
 
+  Utils::StartTiming("Milestone IV");
+
   PowerSpectrum power(&cosmo, &rec, &pert, A_s, n_s, kpivot_mpc);
   power.solve();
   power.output("Results/cells.txt");
 
-  Utils::EndTiming("Everything");
+  Utils::EndTiming("Milestone IV");
+  Utils::EndTiming("CMB power spectrum");
   
   // Remove when module is completed
   return 0;
