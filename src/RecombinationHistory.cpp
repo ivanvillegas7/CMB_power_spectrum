@@ -42,7 +42,7 @@ void RecombinationHistory::solve_number_density_electrons(){
 
   // Save index of when leaving Saha regime and start using Peebles
   int idx_Peebles_transition   = 0;
-  double Xe_Peebles_transition = 0;
+  double Xe_Peebles_transition = 0.99;
 
   // Calculate recombination history
   bool saha_regime = true;

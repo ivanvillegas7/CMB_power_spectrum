@@ -21,15 +21,15 @@ BackgroundCosmology::BackgroundCosmology(
 {
 
   const double pi     = M_PI;
-  const double k_B    = Constants.k_b;                                                                   // J/K
-  const double h_bar  = Constants.hbar;                                                                  // J*s
-  const double c      = Constants.c;                                                                     // m/s
-  const double G      = Constants.G;                                                                     // m³/(kg*s²)
+  const double k_B    = Constants.k_b;  // J/K
+  const double h_bar  = Constants.hbar; // J*s
+  const double c      = Constants.c;    // m/s
+  const double G      = Constants.G;    // m³/(kg*s²)
 
-  H0     = Constants.H0_over_h*h;                                                                        // The Hubble parameter today in 1/s
+  H0 = Constants.H0_over_h*h; // The Hubble parameter today in 1/s
 
   OmegaR       = 2*(pow(pi, 2)/30)*(pow(k_B*TCMB, 4)/(pow(h_bar, 3)*pow(c, 5)))*(8*pi*G/(3*pow(H0, 2))); // Photon density today
-  OmegaNu      = Neff*(7./8.)*pow(4./11., 4./3.)*OmegaR;                                                                                      // Neutrino density today
+  OmegaNu      = Neff*(7./8.)*pow(4./11., 4./3.)*OmegaR;                                                 // Neutrino density today
   OmegaLambda  = 1-(OmegaB+OmegaR+OmegaNu+OmegaCDM+OmegaK);                                              // Dark energy (Λ) density
 
 }
@@ -103,24 +103,19 @@ double BackgroundCosmology::Hp_of_x(double x) const{
 
 double BackgroundCosmology::dHpdx_of_x(double x) const{
 
-  double a = exp(x);
-
   double dHdx = (pow(H0, 2)/(2*H_of_x(x)))*(-2*OmegaK*exp(-2*x)-3*(OmegaB+OmegaCDM)*exp(-3*x)-4*(OmegaNu+OmegaR)*exp(-4*x));
 
-  return Hp_of_x(x)+a*dHdx;
+  return Hp_of_x(x)+exp(x)*dHdx;
 }
 
 double BackgroundCosmology::ddHpddx_of_x(double x) const{
 
-  double a = exp(x);
+  double dHdx = (dHpdx_of_x(x)-Hp_of_x(x))*exp(-x);
 
-  double dHdx = (pow(H0, 2)/(2*H_of_x(x)))*(-2*OmegaK*exp(-2*x)-3*(OmegaB+OmegaCDM)*exp(-3*x)-4*(OmegaNu+OmegaR)*exp(-4*x));
+  double ddHddx = pow(H0, 2)*(4*exp(-2*x)*OmegaK+16*exp(-4*x)*(OmegaR+OmegaNu)+9*exp(-3*x)*(OmegaB+OmegaCDM)-2*pow(dHdx/H0, 2))/(2*H_of_x(x));
 
-  double ddHddx = pow(H0, 2)*((4*exp(-2*x)*OmegaK+16*exp(-4*x)*(OmegaR+OmegaNu)+9*exp(-3*x)*(OmegaB+OmegaCDM))*H_of_x(x)-2*pow(dHdx/H0, 2))/(2*H_of_x(x));
-
-  return 2*dHpdx_of_x(x)-Hp_of_x(x)+a*ddHddx;
+  return 2*dHpdx_of_x(x)-Hp_of_x(x)+exp(x)*ddHddx;
 }
-
 double BackgroundCosmology::get_OmegaB(double x) const{ 
 
   if(x == 0.0) return OmegaB;
@@ -263,7 +258,7 @@ void BackgroundCosmology::output(const std::string filename) const{
     fp << get_OmegaCDM(x)                 << " ";
     fp << get_OmegaLambda(x)              << " ";
     fp << get_OmegaR(x)                   << " ";
-    fp << get_OmegaNu(x)                   << " ";
+    fp << get_OmegaNu(x)                  << " ";
     fp << get_luminosity_distance_of_x(x) << " ";
     fp << ddHpddx_of_x(x)                 << " ";
     fp << t_of_x(x)                       << " ";
