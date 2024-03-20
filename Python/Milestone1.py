@@ -66,7 +66,7 @@ def plot(x: np.array(float), y: np.array(float), i1: int, i2:int, i3: int):
     plt.xlim(min(x), max(x))
     plt.ylim(min(y), max(y))
     plt.legend()
-            
+           
 def cosmology()->(np.array(float), np.array(float)):
     
     """
@@ -93,57 +93,57 @@ def cosmology()->(np.array(float), np.array(float)):
     
     #Read the data from 'cosmology.txt' in folder 'Results'.
     
-    data_cos = np.loadtxt('../Results/cosmology.txt')
+    data = np.loadtxt('../Results/cosmology.txt')
     
     #Assign the different variables to its corresponding data.
     
     #x=ln(a), main time variable.
     
-    x: np.array(float) = data_cos[:, 0]
+    x: np.array(float) = data[:, 0]
     
     #eta: conformal time.
     
-    eta: np.array(float) = data_cos[:, 1]/(1e9*365*24*60*60)
+    eta: np.array(float) = data[:, 1]
     
     #Hp: conformal Hubble factor.
     
-    Hp: np.array(float) = data_cos[:, 2]/(100*1e3/(1e6*sc.constants.parsec))
+    Hp: np.array(float) = data[:, 2]
     
     #dHp: first derivative of Hp with respect to x.
     
-    dHp: np.array(float) = data_cos[:, 3]/(100*1e3/(1e6*sc.constants.parsec))
+    dHp: np.array(float) = data[:, 3]
     
     #OmegaB relative density of baryonic (ordinary) matter.
     
-    OmegaB: np.array(float) = data_cos[:, 4]
+    OmegaB: np.array(float) = data[:, 4]
     
     #OmegaCDM: relative density of cold dark matter.
     
-    OmegaCDM: np.array(float) = data_cos[:, 5]
+    OmegaCDM: np.array(float) = data[:, 5]
     
     #OmegaLambda: relative density of dark energy.
     
-    OmegaLambda: np.array(float) = data_cos[:, 6]
+    OmegaLambda: np.array(float) = data[:, 6]
     
     #OmegaR: relative density of radiation (photons).
     
-    OmegaR: np.array(float) = data_cos[:, 7]
+    OmegaR: np.array(float) = data[:, 7]
     
     #OmegaNu: relative density of neutrinos.
 
-    OmegaNu: np.array(float) = data_cos[:, 8]
+    OmegaNu: np.array(float) = data[:, 8]
     
     #d_L: distante luminosity.
     
-    d_L: np.array(float) = data_cos[:, 9]/(1e9*sc.constants.parsec)
+    d_L: np.array(float) = data[:, 9]/(1e9*sc.constants.parsec)
     
     #ddHp: second derivative of Hp with respect to x.
     
-    ddHp: np.array(float) = data_cos[:, 10]/(100*1e3/(1e6*sc.constants.parsec))
+    ddHp: np.array(float) = data[:, 10]
     
     #t: cosmological time.
     
-    t: np.array(float) = data_cos[:, 11]/(1e9*365*24*60*60)
+    t: np.array(float) = data[:, 11]/(1e9*365*24*60*60)
     
     #Define and compute redshift (z) from the given data.
     
@@ -183,6 +183,10 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.figure()
     plt.plot(x, ddHp/Hp)
     plot(x, ddHp/Hp, index_M_R, index_M_Lambda, index)
+    plt.plot(x[0:index_M_R], np.ones(index_M_R), ls='dashed')
+    plt.plot(x[index_M_R:index_M_Lambda],\
+             np.ones(index_M_Lambda-index_M_R)/4, ls='dashed')
+    plt.plot(x[index_M_Lambda:], np.ones(len(x)-index_M_Lambda), ls='dashed')
     plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -192,15 +196,19 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.figure()
     plt.plot(x, dHp/Hp)
     plot(x, dHp/Hp, index_M_R, index_M_Lambda, index)
+    plt.plot(x[0:index_M_R], -np.ones(index_M_R), ls='dashed')
+    plt.plot(x[index_M_R:index_M_Lambda],\
+             -np.ones(index_M_Lambda-index_M_R)/2, ls='dashed')
+    plt.plot(x[index_M_Lambda:], -np.ones(len(x)-index_M_Lambda), ls='dashed')
     plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$')
     plt.savefig('../Plots/Milestone I/dHp_over_Hp.pdf')
-        
+    
     plt.figure()
-    plt.plot(x, eta*Hp/(100*c*1.02*1e-1))
-    plot(x, eta*Hp/(100*c*1.02*1e-1), index_M_R, index_M_Lambda, index)
+    plt.plot(x, eta*Hp/c)
+    plot(x, eta*Hp/c, index_M_R, index_M_Lambda, index)
     plt.title(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -208,12 +216,13 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.savefig('../Plots/Milestone I/eta_times_Hp_over_c.pdf')
     
     plt.figure()
-    plt.plot(x, 100*Hp)
-    plot(x, 100*Hp, index_M_R, index_M_Lambda, index)
+    plt.plot(x, Hp/(100*1e3/(1e6*sc.constants.parsec)))
+    plot(x, Hp/(100*1e3/(1e6*sc.constants.parsec)), index_M_R, index_M_Lambda,\
+         index)
     plt.title(r'$\mathcal{H}(x)$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$\mathcal{H}(x)$ [$\frac{\text{ km}}{\text{Mpc s}}$]')
+    plt.ylabel(r'$\mathcal{H}(x)$ [$\frac{100\text{ km}}{\text{Mpc s}}$]')
     plt.yscale('log')
     plt.savefig('../Plots/Milestone I/Hp.pdf')
 
@@ -228,8 +237,8 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.savefig('../Plots/Milestone I/t.pdf')
 
     plt.figure()
-    plt.plot(x, eta/c)
-    plot(x, eta/c, index_M_R, index_M_Lambda, index)
+    plt.plot(x, eta/(1e9*365*24*60*60*c))
+    plot(x, eta/(1e9*365*24*60*60*c), index_M_R, index_M_Lambda, index)
     plt.title(r'$\frac{\eta(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.yscale('log')
@@ -277,7 +286,7 @@ def cosmology()->(np.array(float), np.array(float)):
     
     print(f'Age of the Universe: t(0)≈{t[today]:.2f} Gyr.\n')
     
-    print(f'Conformal time today: η(0)/c≈{eta[today]/c:.2f} Gyr.\n')
+    print(f'Conformal time today: η(0)/c≈{eta[today]/(1e9*365*24*60*60*c):.2f} Gyr.\n')
     
     #Return redshift (z) and luminosity distance (d_L) in a tuple.
     
@@ -343,6 +352,9 @@ def MCMC_supernova_fit():
     plt.plot(OmegaM[chi2 < chi2_min + 3.53],\
              OmegaLambda[chi2 < chi2_min + 3.53], marker='.', ls='none',\
                  label=r'$1\sigma$')
+    plt.plot(OmegaM[chi2 == chi2_min],\
+                 OmegaLambda[chi2 == chi2_min], marker='.', ls='none',\
+                     label='Best fit')
     plt.plot(np.linspace(0, 1), 1-np.linspace(0, 1), ls='dashed',\
              label='Flat Universe', color='black')
     plt.grid(True)
@@ -532,7 +544,7 @@ def supernova():
     plt.xlim(0, 1.4)
     plt.ylim(3.5, 8)
     plt.savefig('../Plots/Milestone I/supernova_fit_over_z.pdf')
-       
+    
 def milestone1():
     
     """
