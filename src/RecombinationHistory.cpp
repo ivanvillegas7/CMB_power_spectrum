@@ -277,9 +277,9 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
 Vector RecombinationHistory::get_time_results() const{
   Vector res(7);
 
-  // Using the tau spline and binary search for value method to find tau = 1
+  // Using the τ spline and binary search for value method to find τ = 1
   std::pair<double,double> xrange(-10.0,-5.0);  // Range of x-value to search in
-  // x and z value when tau equals one, x_star and z_star
+  // x and z value when τ equals one, x_star and z_star
   res[0] = Utils::binary_search_for_value(tau_of_x_spline,1.0,xrange);
   res[1] = 1/exp(res[0]) - 1;
 
@@ -359,11 +359,11 @@ void RecombinationHistory::info() const{
   std::cout << "Yp:          " << Yp          << "\n";
   std::cout << std::endl;
 } 
-// Print values of x and z for last scattering, using tau(x) = tau(z) = 1;
+// Print values of x and z for last scattering, using τ(x) = τ(z) = 1;
 void RecombinationHistory::print_time_results() const{
   Vector times = get_time_results();
 
-  std::cout << "\nTime for last scattering,\ntau(x_star) = tau(z_star) = 1:\n";
+  std::cout << "\nTime for last scattering,\nτ(x_star) = τ(z_star) = 1:\n";
   std::cout << "x_star:      " << times[0] << "\n";
   std::cout << "z_star:      " << times[1] << "\n";
   
