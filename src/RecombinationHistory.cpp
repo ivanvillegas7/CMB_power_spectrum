@@ -42,7 +42,7 @@ void RecombinationHistory::solve_number_density_electrons(){
 
   // Save index of when leaving Saha regime and start using Peebles
   int idx_Peebles_transition   = 0;
-  double Xe_Peebles_transition = 0.99;
+  double Xe_Peebles_transition = 0.01;
 
   // Calculate recombination history
   bool saha_regime = true;
@@ -65,6 +65,9 @@ void RecombinationHistory::solve_number_density_electrons(){
     // Are we still in the Saha regime?
     if(Xe_current < Xe_saha_limit)
       saha_regime = false;
+      idx_Peebles_transition = i;
+      Xe_Peebles_transition = Xe_current;
+      x_Saha_to_Peebles = x_array[i];
 
     if(saha_regime){
       
@@ -87,7 +90,6 @@ void RecombinationHistory::solve_number_density_electrons(){
       //...
       //...
 
-
       // Integrate equation from x(i-1) to x(i) and fetch Xe(i)
       Vector x_array_current{x_array[i-1],x_array[i]};
       Vector Xe_current{Xe_arr[i-1]};
@@ -101,13 +103,13 @@ void RecombinationHistory::solve_number_density_electrons(){
       //=============================================================================
       // TODO: Set up IC, solve the ODE and fetch the result 
       //=============================================================================
-      //...
-      //...
 
       Vector peebles_ini{0.0};
-      peebles_Xe_ode.solve(peebles_Xe_ode, x_array_current, peebles_ini);
+      peebles_Xe_ode.solve(dXedx, x_array_current, peebles_ini);
       auto solution = peebles_Xe_ode.get_data_by_component(0);
       double Xe_now = solution.back();
+
+      Xe_current={Xe_now};
     
     }
   }
@@ -123,6 +125,7 @@ void RecombinationHistory::solve_number_density_electrons(){
   Vector log_ne_arr           = log(ne_arr);
 
   log_Xe_of_x_spline.create(x_array,log_Xe_arr,"log Xe");
+  log_Xe_of_x_spline_only_Saha.create(x_array,log_Xe_arr_only_Saha,"log Xe Saha");
   log_ne_of_x_spline.create(x_array,log_ne_arr,"log ne");
 
   Utils::EndTiming("Xe");
@@ -166,8 +169,9 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   // Determine if we have to use the Taylor approximation in the second order equation
   else if (rhs_Saha > 1e+9) Xe = 1.0;
 
-  else Xe = rhs_Saha*(-1 + sqrt(1.0+4.0/rhs_Saha))/2.0;
+  else Xe = rhs_Saha*(-1. + sqrt(1.0+4.0/rhs_Saha))/2.0;
 
+  // Return electron fraction and number density
   return std::pair<double,double>(Xe, Xe*nH);
 }
 
@@ -204,7 +208,7 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
   const double E_B = k_b*T_B;
 
   // Expression needed in dXedx
-  const double alpha        = 1./137.;//get correct units
+  const double alpha        = pow(Constants.eV/Constants.J, 2)/(4*M_PI*epsilon_0*hbar*c);
   const double phi_2        = 0.448*log(epsilon_0/E_B);
   const double alpha_2      = 64*M_PI*pow(alpha/m_e, 2)*phi_2*sqrt(epsilon_0/(27*M_PI*E_B));
   const double almost_beta  = alpha_2*E_B*pow(m_e*E_B/(2*M_PI), 3./2.);
@@ -255,10 +259,12 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
   //=============================================================================
   // TODO: Compute visibility functions and spline everything
   //=============================================================================
-  //...
-  //...
 
+  Vector g_tilde_array{};
 
+  for (int i = 0; i < npts_rec_arrays; i++) g_tilde_array[i]=-dtaudx_of_x(x_array[i]*exp(-tau_of_x(x_array[i])));
+
+  g_tilde_of_x_spline.create(x_array, g_tilde_array, "g̃");
 
   Utils::EndTiming("Optical depth");
 }
@@ -266,6 +272,29 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
 //====================================================
 // Get methods
 //====================================================
+
+// Get times for last scattering, in x and z
+Vector RecombinationHistory::get_time_results() const{
+  Vector res(7);
+
+  // Using the tau spline and binary search for value method to find tau = 1
+  std::pair<double,double> xrange(-10.0,-5.0);  // Range of x-value to search in
+  // x and z value when tau equals one, x_star and z_star
+  res[0] = Utils::binary_search_for_value(tau_of_x_spline,1.0,xrange);
+  res[1] = 1/exp(res[0]) - 1;
+
+  // Using Xe spline to search for Xe = 0.5, the spline is log so search for log(0.5)
+  res[2] = Utils::binary_search_for_value(log_Xe_of_x_spline,log(0.5),xrange);
+  res[3] = 1/exp(res[2]) - 1;
+
+  // Using Xe_saha_only spline to search for Xe = 0.5, the spline is log so search for log(0.5)
+  res[4] = Utils::binary_search_for_value(log_Xe_of_x_spline_only_Saha,log(0.5),xrange);
+  res[5] = 1/exp(res[4]) - 1;
+
+  // From adhoc way of finding recombination end time, return x_rec_end
+  res[6] = x_rec_end;
+  return res;
+}
 
 double RecombinationHistory::get_number_density_H(double x) const{
   
@@ -307,6 +336,10 @@ double RecombinationHistory::Xe_of_x(double x) const{
   return exp(log_Xe_of_x_spline(x));
 }
 
+double RecombinationHistory::Xe_of_x_Saha_approx(double x) const{
+  return exp(log_Xe_of_x_spline_only_Saha(x));
+}
+
 double RecombinationHistory::ne_of_x(double x) const{
 
   return exp(log_ne_of_x_spline(x));
@@ -326,7 +359,52 @@ void RecombinationHistory::info() const{
   std::cout << "Yp:          " << Yp          << "\n";
   std::cout << std::endl;
 } 
+// Print values of x and z for last scattering, using tau(x) = tau(z) = 1;
+void RecombinationHistory::print_time_results() const{
+  Vector times = get_time_results();
 
+  std::cout << "\nTime for last scattering,\ntau(x_star) = tau(z_star) = 1:\n";
+  std::cout << "x_star:      " << times[0] << "\n";
+  std::cout << "z_star:      " << times[1] << "\n";
+  
+  std::cout << "\nTime for half-way recombination,\nXe(x_rec) = Xe(z_rec) = 0.5:\n";
+  std::cout << "x_rec:      " << times[2] << "\n";
+  std::cout << "z_rec:      " << times[3] << "\n";
+  
+  std::cout << "\nTime for half-way recombination using only Saha approximation:\n";
+  std::cout << "x_rec_Saha: " << times[4] << "\n";
+  std::cout << "z_rec_Saha: " << times[5] << "\n";
+
+  std::cout << "\nTime for transition between Saha and Peebles regime:\n";
+  std::cout << "x_Peebles:  " << x_Saha_to_Peebles << "\n";
+
+  std::cout << "\nTime for recombination end:\n";
+  std::cout << "x_rec_end:  " << times[6] << "\n";
+  std::cout << std::endl;
+}
+
+// Save values of x and z for last scattering to file
+void RecombinationHistory::save_time_results(const std::string filename) const{
+  Vector times = get_time_results();
+
+  std::ofstream fp(filename.c_str());
+  fp << std::setprecision(10);
+  fp << "x_star:     " << times[0] << " ";
+  fp << "z_star:     " << times[1] << "\n";
+  
+  fp << "x_rec:      " << times[2] << " ";
+  fp << "z_rec:      " << times[3] << "\n";
+  
+  fp << "x_rec_Saha: " << times[4] << " ";
+  fp << "z_rec_Saha: " << times[5] << "\n";
+
+  fp << "x_Peebles:  " << x_Saha_to_Peebles << " ";
+  fp << "z_Peebles:  " << 1/exp(x_Saha_to_Peebles) - 1 << "\n";
+
+  fp << "x_rec_end:  " << times[6] << " ";
+  fp << "z_rec_end:  " << 1/exp(times[6]) - 1 << " ";
+  fp.close();
+}
 //====================================================
 // Output the data computed to file
 //====================================================

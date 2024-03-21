@@ -33,6 +33,10 @@ int main(int argc, char **argv){
   // Module I
   //=========================================================================
 
+  // Do the supernova fits.
+  // Make sure you read the comments on the top of src/SupernovaFitting.h
+  //mcmc_fit_to_supernova_data("data/supernovadata.txt", "Results/results_supernovafitting.txt");
+
   // Set up and solve the background
   BackgroundCosmology cosmo(h, OmegaB, OmegaCDM, OmegaK, Neff, TCMB);
   cosmo.solve();
@@ -41,13 +45,9 @@ int main(int argc, char **argv){
   // Output background evolution quantities
   cosmo.output("Results/cosmology.txt");
 
-  // Do the supernova fits. Uncomment when you are ready to run this
-  // Make sure you read the comments on the top of src/SupernovaFitting.h
-  //mcmc_fit_to_supernova_data("data/supernovadata.txt", "Results/results_supernovafitting.txt");
-
-  // Remove when Module II is completed
   Utils::EndTiming("Milestone I");
-  return 0;
+  // Remove when Module II is completed
+  //return 0;
 
   //=========================================================================
   // Module II
@@ -60,8 +60,11 @@ int main(int argc, char **argv){
   rec.solve();
   rec.info();
 
-  // Output recombination quantities
+  // Output recombination quantities and times
   rec.output("Results/recombination.txt");
+  //rec.save_time_results("Results/recombination_times.txt");
+  // Print recombination times
+  //rec.print_time_results();
   
   // Remove when Module III is completed
   Utils::EndTiming("Milestone II");

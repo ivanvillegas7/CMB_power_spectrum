@@ -22,11 +22,17 @@ class RecombinationHistory{
     const double x_start  = Constants.x_start;
     const double x_end    = Constants.x_end;
     
+    // Adhoc method for finding the time of 
+    double x_rec_end;
+
     // Numbers of points of Xe,ne array (modify as you see fit)
     const int npts_rec_arrays = 4000;
   
     // Xe for when to switch between Saha and Peebles
     const double Xe_saha_limit = 0.99;
+
+    // Store the x-value in transition between regimes
+    double x_Saha_to_Peebles = 0;
 
     //===============================================================
     // [1] Computation of Xe (Saha and Peebles equation)
@@ -42,17 +48,18 @@ class RecombinationHistory{
     void solve_number_density_electrons();
     
     //===============================================================
-    // [2] Compute tau and visibility functions
+    // [2] Compute τ and visibility functions
     //===============================================================
 
-    // The two things we need to solve: Xe/ne and tau
+    // The two things we need to solve: Xe/ne and τ
     void solve_for_optical_depth_tau();
 
     // Splines contained in this class
-    Spline log_Xe_of_x_spline{"Xe"};
+    Spline log_Xe_of_x_spline{"log Xe"};
+    Spline log_Xe_of_x_spline_only_Saha{"log Xe Saha"};
     Spline log_ne_of_x_spline{"log ne"};
-    Spline tau_of_x_spline{"tau"}; 
-    Spline g_tilde_of_x_spline{"g"};  
+    Spline tau_of_x_spline{"τ"}; 
+    Spline g_tilde_of_x_spline{"g̃"};
 
   public:
 
@@ -68,8 +75,12 @@ class RecombinationHistory{
     // Print some useful info about the class
     void info() const;
 
+    // Print results of last scattering from recombination class
+    void print_time_results() const;
+
     // Output some data to file
     void output(const std::string filename) const;
+    void save_time_results(const std::string filename) const;
 
     // Get functions that we must implement
     double tau_of_x(double x) const;
@@ -79,10 +90,12 @@ class RecombinationHistory{
     double dgdx_tilde_of_x(double x) const;
     double ddgddx_tilde_of_x(double x) const;
     double Xe_of_x(double x) const;
+    double Xe_of_x_Saha_approx(double x) const;
     double ne_of_x(double x) const;
     double get_Yp() const;
 
     double get_number_density_H(double x) const;
+    Vector get_time_results() const;
 };
 
 #endif
