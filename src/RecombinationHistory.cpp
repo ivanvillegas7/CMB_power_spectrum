@@ -87,6 +87,11 @@ void RecombinationHistory::solve_number_density_electrons(){
       //...
       //...
 
+
+      // Integrate equation from x(i-1) to x(i) and fetch Xe(i)
+      Vector x_array_current{x_array[i-1],x_array[i]};
+      Vector Xe_current{Xe_arr[i-1]};
+
       // The Peebles ODE equation
       ODESolver peebles_Xe_ode;
       ODEFunction dXedx = [&](double x, const double *Xe, double *dXedx){
@@ -98,6 +103,11 @@ void RecombinationHistory::solve_number_density_electrons(){
       //=============================================================================
       //...
       //...
+
+      Vector peebles_ini{0.0};
+      peebles_Xe_ode.solve(peebles_Xe_ode, x_array_current, peebles_ini);
+      auto solution = peebles_Xe_ode.get_data_by_component(0);
+      double Xe_now = solution.back();
     
     }
   }
@@ -194,7 +204,7 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
   const double E_B = k_b*T_B;
 
   // Expression needed in dXedx
-  const double alpha        = 1./137.;
+  const double alpha        = 1./137.;//get correct units
   const double phi_2        = 0.448*log(epsilon_0/E_B);
   const double alpha_2      = 64*M_PI*pow(alpha/m_e, 2)*phi_2*sqrt(epsilon_0/(27*M_PI*E_B));
   const double almost_beta  = alpha_2*E_B*pow(m_e*E_B/(2*M_PI), 3./2.);
