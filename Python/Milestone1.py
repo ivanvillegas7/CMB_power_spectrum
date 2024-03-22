@@ -140,10 +140,6 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.figure()
     plt.plot(x, ddHp/Hp)
     aux.plot(x, ddHp/Hp, index_M_R, index_M_Lambda, index)
-    plt.plot(x[0:index_M_R], np.ones(index_M_R), ls='dashed')
-    plt.plot(x[index_M_R:index_M_Lambda],\
-             np.ones(index_M_Lambda-index_M_R)/4, ls='dashed')
-    plt.plot(x[index_M_Lambda:], np.ones(len(x)-index_M_Lambda), ls='dashed')
     plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -153,10 +149,6 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.figure()
     plt.plot(x, dHp/Hp)
     aux.plot(x, dHp/Hp, index_M_R, index_M_Lambda, index)
-    plt.plot(x[0:index_M_R], -np.ones(index_M_R), ls='dashed')
-    plt.plot(x[index_M_R:index_M_Lambda],\
-             -np.ones(index_M_Lambda-index_M_R)/2, ls='dashed')
-    plt.plot(x[index_M_Lambda:], -np.ones(len(x)-index_M_Lambda), ls='dashed')
     plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
