@@ -136,7 +136,7 @@ def cosmology()->(np.array(float), np.array(float)):
     index: int = np.argmin(np.abs(a_dotdot))
     
     #Make the different plots and save them. 
-        
+    
     plt.figure()
     plt.plot(x, ddHp/Hp)
     aux.plot(x, ddHp/Hp, index_M_R, index_M_Lambda, index)
@@ -414,7 +414,7 @@ def MCMC_supernova_fit():
     plt.legend()
     plt.grid(True)
     plt.savefig('../Plots/Milestone I/H0_hist.pdf')
-
+    
     #Print thge best fitting parameters
 
     print(f'\nPARAMETERS\n\
@@ -458,7 +458,7 @@ def supernova():
     d_L_error: np.array(float) = data_sup[:, 2]
     
     #Define and get both redshift and lumnosity distance from the function
-    #'cosmology()'.
+    #'cosmology()' and compute the luminosity distance with the MCMC best fit.
     
     z_cos: np.array(float)
     
@@ -469,7 +469,7 @@ def supernova():
     params: np.array(float) = MCMC_supernova_fit()
     
     d_L_MCMC: np.array(float) = aux.D_L(z_cos, params[0], params[1], params[2],\
-                                        params[3], params[4])
+                                        params[3], params[4])/(1e6)
     
     #Plot the observational data (with error bars) and the fit from the data
     #given by the function 'cosmology()'.
@@ -478,6 +478,7 @@ def supernova():
     plt.errorbar(z, d_L, d_L_error, marker='.', ls='none',\
                  label='Supernovae observations')
     plt.plot(z_cos, d_L_cos, label='Fiduicial cosmology curve')
+    plt.plot(z_cos, d_L_MCMC, label='MCMC best fit')
     plt.title(r'$d_L(z)$ vs $z$')
     plt.legend()
     plt.grid(True)
@@ -499,8 +500,10 @@ def supernova():
     plt.grid(True)
     plt.xlabel(r'$z$')
     plt.ylabel(r'$d_L(z)/z$ [Gpc]')
+    
     plt.xlim(0, 1.4)
     plt.ylim(3.5, 8)
+    
     plt.savefig('../Plots/Milestone I/supernova_fit_over_z.pdf')
     
 def milestone1():

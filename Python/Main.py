@@ -27,7 +27,7 @@ Uncoment while completing milestones.
 def main():
     
     """
-    Main functionality for computing the cMB power spectrum.
+    Main functionality for computing the CMB power spectrum.
 
     This function coordinates the execution of different milestones in the
     project. It runs the code related to solving the background cosmology of
