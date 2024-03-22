@@ -22,50 +22,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-#Define function 'plot()'.
-
-def plot(x: np.array(float), y: np.array(float), i1: int, i2:int, i3: int):
-    
-    """
-    Plot function for illustrating different epochs of cosmological evolution.
-
-    Parameters:
-        x : numpy array of float
-            X-coordinates for the plot.
-        y : numpy array of float
-            Y-coordinates for the plot.
-        i1 : int
-            Index indicating the start of matter domination epoch.
-        i2 : int
-            Index indicating the start of dark energy domination epoch.
-        i3 : int
-            Index indicating the start of the accelerated expansion.
-
-    Returns:
-        None.
-
-    This function plots different epochs of cosmological evolution based on the
-    provided data.
-
-    It fills the regions corresponding to radiation domination, matter
-    domination, and dark energy domination with different colors, and marks the
-    epoch limits with dashed vertical lines.
-    """
-    
-    plt.fill_between(x[i2-1:], min(y)*np.ones(len(x)-i2+1),\
-                     max(y)*np.ones(len(x)-i2+1), color='lightgreen',\
-                     label=r'Dark Energy ($\Lambda$) domination')
-    plt.fill_between(x[i1:i2+1], min(y)*np.ones(i2-i1+1),\
-                     max(y)*np.ones(i2-i1+1), color='lightsteelblue',\
-                     label='Matter domination')
-    plt.fill_between(x[0:i1+1], min(y)*np.ones(i1+1), max(y)*np.ones(i1+1),\
-                     color='bisque', label='Radiation domination')
-    plt.vlines(x[i1], min(y), max(y), ls='dashed', color='black',\
-               label='Epoch limits')
-    plt.vlines(x[i2], min(y), max(y), ls='dashed', color='black')
-    plt.xlim(min(x), max(x))
-    plt.ylim(min(y), max(y))
-    plt.legend()
+import auxiliar as aux
            
 def cosmology()->(np.array(float), np.array(float)):
     
@@ -182,33 +139,33 @@ def cosmology()->(np.array(float), np.array(float)):
         
     plt.figure()
     plt.plot(x, ddHp/Hp)
-    plot(x, ddHp/Hp, index_M_R, index_M_Lambda, index)
+    aux.plot(x, ddHp/Hp, index_M_R, index_M_Lambda, index)
     plt.plot(x[0:index_M_R], np.ones(index_M_R), ls='dashed')
     plt.plot(x[index_M_R:index_M_Lambda],\
              np.ones(index_M_Lambda-index_M_R)/4, ls='dashed')
     plt.plot(x[index_M_Lambda:], np.ones(len(x)-index_M_Lambda), ls='dashed')
-    plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$ vs $x$')
+    plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{d^2\mathcal{H}(x)}{dx^2}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$')
+    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{d^2\mathcal{H}(x)}{dx^2}$')
     plt.savefig('../Plots/Milestone I/ddHp_over_Hp.pdf')
     
     plt.figure()
     plt.plot(x, dHp/Hp)
-    plot(x, dHp/Hp, index_M_R, index_M_Lambda, index)
+    aux.plot(x, dHp/Hp, index_M_R, index_M_Lambda, index)
     plt.plot(x[0:index_M_R], -np.ones(index_M_R), ls='dashed')
     plt.plot(x[index_M_R:index_M_Lambda],\
              -np.ones(index_M_Lambda-index_M_R)/2, ls='dashed')
     plt.plot(x[index_M_Lambda:], -np.ones(len(x)-index_M_Lambda), ls='dashed')
-    plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ vs $x$')
+    plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{d\mathcal{H}(x)}{dx}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$')
+    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{d\mathcal{H}(x)}{dx}$')
     plt.savefig('../Plots/Milestone I/dHp_over_Hp.pdf')
     
     plt.figure()
     plt.plot(x, eta*Hp/c)
-    plot(x, eta*Hp/c, index_M_R, index_M_Lambda, index)
+    aux.plot(x, eta*Hp/c, index_M_R, index_M_Lambda, index)
     plt.title(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -217,18 +174,18 @@ def cosmology()->(np.array(float), np.array(float)):
     
     plt.figure()
     plt.plot(x, Hp/(100*1e3/(1e6*sc.constants.parsec)))
-    plot(x, Hp/(100*1e3/(1e6*sc.constants.parsec)), index_M_R, index_M_Lambda,\
+    aux.plot(x, Hp/(100*1e3/(1e6*sc.constants.parsec)), index_M_R, index_M_Lambda,\
          index)
     plt.title(r'$\mathcal{H}(x)$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$\mathcal{H}(x)$ [$\frac{100\text{ km}}{\text{Mpc s}}$]')
+    plt.ylabel(r'$\mathcal{H}(x)$ [$\frac{100 km}{Mpc s}$]')
     plt.yscale('log')
     plt.savefig('../Plots/Milestone I/Hp.pdf')
 
     plt.figure()
     plt.plot(x, t)
-    plot(x, t, index_M_R, index_M_Lambda, index)
+    aux.plot(x, t, index_M_R, index_M_Lambda, index)
     plt.title(r'$t(x)$ vs $x$')
     plt.grid(True)
     plt.yscale('log')
@@ -238,7 +195,7 @@ def cosmology()->(np.array(float), np.array(float)):
 
     plt.figure()
     plt.plot(x, eta/(1e9*365*24*60*60*c))
-    plot(x, eta/(1e9*365*24*60*60*c), index_M_R, index_M_Lambda, index)
+    aux.plot(x, eta/(1e9*365*24*60*60*c), index_M_R, index_M_Lambda, index)
     plt.title(r'$\frac{\eta(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.yscale('log')
@@ -471,6 +428,8 @@ def MCMC_supernova_fit():
     print(f'\nPARAMETERS\n\
           χ²     Ω_M     Ω_k     Ω_Λ      H_0\n\
         {chi2_min:.2f}    {OmegaM[index]:.2f}    {OmegaK[index]:.2f}    {OmegaLambda[index]:.2f}    {H[index]:.2f}\n')
+        
+    return(H[index], OmegaM[index], OmegaK[index], 0, OmegaLambda[index])
     
 def supernova():
     
@@ -515,6 +474,8 @@ def supernova():
     
     z_cos, d_L_cos = cosmology()
     
+    d_L_MCMC: np.array(float) = np.array(aux.D_L(z_cos, MCMC_supernova_fit()))
+    
     #Plot the observational data (with error bars) and the fit from the data
     #given by the function 'cosmology()'.
     
@@ -536,6 +497,8 @@ def supernova():
                  label='Supernovae observations')
     plt.plot(z_cos[z_cos>0.015], d_L_cos[z_cos>0.015]/z_cos[z_cos>0.015],\
              label='Fiduicial cosmology curve')
+    plt.plot(z_cos[z_cos>0.015], d_L_MCMC[z_cos>0.015]/z_cos[z_cos>0.015],\
+             label='MCMC best fit')
     plt.title(r'$d_L(z)/z$ vs $z$')
     plt.legend()
     plt.grid(True)
