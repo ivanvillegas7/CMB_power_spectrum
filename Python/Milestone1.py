@@ -10,7 +10,7 @@ This script contains all the relevant functions for analysing and plotting the
 results of running the C++ codes related to solving the background cosmology of
 the Universe.
 
-Here you can find the functions 'plot()', 'cosmology()', 'supernova()' and
+Here you can find the functions 'cosmology()', 'supernova()' and
 'milestone1()'. All of them are explained below.
 """
 
@@ -144,10 +144,10 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.plot(x[index_M_R:index_M_Lambda],\
              np.ones(index_M_Lambda-index_M_R)/4, ls='dashed')
     plt.plot(x[index_M_Lambda:], np.ones(len(x)-index_M_Lambda), ls='dashed')
-    plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{d^2\mathcal{H}(x)}{dx^2}$ vs $x$')
+    plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{d^2\mathcal{H}(x)}{dx^2}$')
+    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$')
     plt.savefig('../Plots/Milestone I/ddHp_over_Hp.pdf')
     
     plt.figure()
@@ -157,10 +157,10 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.plot(x[index_M_R:index_M_Lambda],\
              -np.ones(index_M_Lambda-index_M_R)/2, ls='dashed')
     plt.plot(x[index_M_Lambda:], -np.ones(len(x)-index_M_Lambda), ls='dashed')
-    plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{d\mathcal{H}(x)}{dx}$ vs $x$')
+    plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{d\mathcal{H}(x)}{dx}$')
+    plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$')
     plt.savefig('../Plots/Milestone I/dHp_over_Hp.pdf')
     
     plt.figure()
@@ -179,7 +179,7 @@ def cosmology()->(np.array(float), np.array(float)):
     plt.title(r'$\mathcal{H}(x)$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
-    plt.ylabel(r'$\mathcal{H}(x)$ [$\frac{100 km}{Mpc s}$]')
+    plt.ylabel(r'$\mathcal{H}(x)$ [$\frac{100 \text{km}}{\text{Mpc s}}$]')
     plt.yscale('log')
     plt.savefig('../Plots/Milestone I/Hp.pdf')
 
@@ -438,7 +438,7 @@ def supernova():
 
     This function reads supernova data from a file, computes the luminosity
     distance using cosmological calculations, and generates a plot comparing
-    the computed curve with the observed supernova data.
+    the fiduicial cosmology curve and the MCMC bets fit with the observed supernova data.
     
     Parameters:
         None.
@@ -516,8 +516,7 @@ def milestone1():
 
     This function serves as the entry point for the supernova analysis program.
     It calls the 'supernova()' function to analyze supernova data and generate
-    plots, followed by the 'MCMC_supernova_fit()' function to show the best
-    fitting parameters computed after having used Markov Chain Monte Carlo.
+    plots.
     
     Parameters:
         None.
@@ -527,7 +526,5 @@ def milestone1():
     """
     
     #Run the functions.
-    
-    MCMC_supernova_fit()
     
     supernova()
