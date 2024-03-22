@@ -59,6 +59,11 @@ def plot(x: np.array(float), y: np.array(float), i1: int, i2:int, i3: int):
     plt.ylim(min(y), max(y))
     plt.legend()
     
+def E(x: float, H0: float, Omega_M: float, Omega_K: float, Omega_R: float,\
+      Omega_Lambda: float):
+
+    return np.sqrt(Omega_M*(1+x)**3+Omega_K*(1+x)**2+Omega_R*(1+x)**4+Omega_Lambda)
+    
 def D_L(z: np.array(float), H0: float, Omega_M: float, Omega_K: float,\
         Omega_R: float, Omega_Lambda: float):
 
@@ -89,16 +94,14 @@ def D_L(z: np.array(float), H0: float, Omega_M: float, Omega_K: float,\
     distances are returned as a list.
     """
     
-    E: np.array(float)
-    
-    E = np.sqrt(Omega_M*(1+z)**3+Omega_K*(1+z)**2+Omega_R*(1+z)**4+Omega_Lambda)
-    
     d_L: List[float] = []
     
     for i in range(len(z)):
 
         x: np.array = np.array(np.linspace(0, z[i]))
     
-        d_L.append(((sc.constants.c/H0)*(1+z[i])*sc.integrate.simpson(E(x), x)))
+        d_L.append(((sc.constants.c/H0)*(1+z[i])\
+                    *sc.integrate.simpson(E(x, H0, Omega_M, Omega_K, Omega_R,\
+                                            Omega_Lambda), x)))
         
-    return d_L
+    return np.array(d_L)

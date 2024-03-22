@@ -466,7 +466,10 @@ def supernova():
     
     z_cos, d_L_cos = cosmology()
     
-    d_L_MCMC: np.array(float) = np.array(aux.D_L(z_cos, MCMC_supernova_fit()))
+    params: np.array(float) = MCMC_supernova_fit()
+    
+    d_L_MCMC: np.array(float) = aux.D_L(z_cos, params[0], params[1], params[2],\
+                                        params[3], params[4])
     
     #Plot the observational data (with error bars) and the fit from the data
     #given by the function 'cosmology()'.
