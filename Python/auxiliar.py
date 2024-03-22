@@ -61,6 +61,33 @@ def plot(x: np.array(float), y: np.array(float), i1: int, i2:int, i3: int):
     
 def D_L(z: np.array(float), H0: float, Omega_M: float, Omega_K: float,\
         Omega_R: float, Omega_Lambda: float):
+
+    """
+    Calculates the luminosity distance for a given redshift using the cosmological parameters.
+
+    Parameters:
+        z : np.array(float)
+            Array of redshift values.
+        H0 : float
+            Hubble constant at present time.
+        Omega_M : float
+            Matter density parameter.
+        Omega_K : float
+            Curvature density parameter.
+        Omega_R : float
+            Radiation density parameter.
+        Omega_Lambda : float
+            Dark energy density parameter.
+
+    Returns:
+        d_L : List[float]
+            Luminosity distance corresponding to the given redshifts.
+
+    The function calculates the luminosity distance using the given redshift values and
+    the cosmological parameters. It computes the E(z) term and then integrates to find the
+    corresponding luminosity distance for each redshift value. The resulting luminosity
+    distances are returned as a list.
+    """
     
     E: np.array(float)
     
