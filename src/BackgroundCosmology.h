@@ -28,7 +28,7 @@ class BackgroundCosmology{
     double x_end   = Constants.x_end;
 
     // Splines to be made
-    Spline eta_of_x_spline{"η"};
+    Spline eta_of_x_spline{"eta"};
     Spline t_of_x_spline{"t"};
  
   public:

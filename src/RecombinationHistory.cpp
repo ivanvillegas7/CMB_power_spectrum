@@ -48,7 +48,7 @@ void RecombinationHistory::solve_number_density_electrons(){
   bool saha_regime = true;
 
   // Used later if we want to not compute the solution using Saha all the way in later milestones
-  bool break_Saha_solution = false;
+  //bool break_Saha_solution = false;
 
   for(int i = 0; i < npts_rec_arrays; i++){
 
@@ -63,11 +63,13 @@ void RecombinationHistory::solve_number_density_electrons(){
     const double ne_current = Xe_ne_data.second;
 
     // Are we still in the Saha regime?
-    if(Xe_current < Xe_saha_limit)
+    if(Xe_current < Xe_saha_limit){
+
       saha_regime = false;
       idx_Peebles_transition = i;
       Xe_Peebles_transition = Xe_current;
       x_Saha_to_Peebles = x_array[i];
+    }
 
     if(saha_regime){
       
@@ -87,8 +89,6 @@ void RecombinationHistory::solve_number_density_electrons(){
       // exit the for-loop!)
       // Implement rhs_peebles_ode
       //==============================================================
-      //...
-      //...
 
       // Integrate equation from x(i-1) to x(i) and fetch Xe(i)
       Vector x_array_current{x_array[i-1],x_array[i]};
@@ -104,12 +104,12 @@ void RecombinationHistory::solve_number_density_electrons(){
       // TODO: Set up IC, solve the ODE and fetch the result 
       //=============================================================================
 
-      Vector peebles_ini{0.0};
+      Vector peebles_ini{Xe_arr.back()};
       peebles_Xe_ode.solve(dXedx, x_array_current, peebles_ini);
       auto solution = peebles_Xe_ode.get_data_by_component(0);
       double Xe_now = solution.back();
-
-      Xe_current={Xe_now};
+      //Xe_current={Xe_now};
+      Xe_arr[i]=Xe_now;
     
     }
   }
@@ -138,6 +138,7 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   const double a = exp(x);
  
   // Physical constants
+  const double c         = Constants.c;
   const double k_b       = Constants.k_b;
   const double G         = Constants.G;
   const double m_e       = Constants.m_e;
@@ -159,7 +160,7 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   //=============================================================================
 
   // Right hand side of Saha equation
-  const double rhs_Saha = pow(m_e*T_B/(2*M_PI), 3./2.)*exp(-epsilon_0/(k_b*T_B))/nH;
+  const double rhs_Saha = pow(m_e*pow(c, 2)*k_b*T_B/(2*M_PI), 3./2.)*pow(c/hbar, 3)*exp(-epsilon_0/(k_b*T_B))/nH;
 
   // Calculate Xe
 
@@ -193,6 +194,7 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
   const double sigma_T     = Constants.sigma_T;
   const double lambda_2s1s = Constants.lambda_2s1s;
   const double epsilon_0   = Constants.epsilon_0;
+  const double q_e         = Constants.eV;
 
   // Cosmological parameters
   const double T_B         = cosmo->get_TCMB()/a;  // Baryon temperature approximation
@@ -208,16 +210,16 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
   const double E_B = k_b*T_B;
 
   // Expression needed in dXedx
-  const double alpha        = pow(Constants.eV/Constants.J, 2)/(4*M_PI*epsilon_0*hbar*c);
+  const double alpha        = pow(q_e, 2)/(4*M_PI*epsilon_0*hbar*c);
   const double phi_2        = 0.448*log(epsilon_0/E_B);
-  const double alpha_2      = 64*M_PI*pow(alpha/m_e, 2)*phi_2*sqrt(epsilon_0/(27*M_PI*E_B));
+  const double alpha_2      = 64*M_PI*pow(alpha/(m_e*c), 2)*hbar_square*c*phi_2*sqrt(epsilon_0/(27*M_PI*E_B));
   const double almost_beta  = alpha_2*E_B*pow(m_e*E_B/(2*M_PI), 3./2.);
   const double beta_2       = almost_beta*exp(-epsilon_0/(4*E_B));
   const double n_1s         = (1.0-X_e)*nH;
-  const double lambda_alpha = H*pow(3*epsilon_0, 2)/(pow(8*M_PI, 2)*n_1s*hbar_square*hbar*pow(c, 3));
+  const double lambda_alpha = H*pow(3*epsilon_0/(hbar*c), 2)/(pow(8*M_PI, 2)*n_1s*hbar_square*hbar*pow(c, 3));
   const double C_r          = (lambda_2s1s+lambda_alpha)/(lambda_2s1s+lambda_alpha+beta_2);
   
-  dXedx[0] = C_r/H*(almost_beta*exp(-epsilon_0/E_B)*(1-X_e)-nH*alpha_2*pow(X_e, 2));
+  dXedx[0] = (hbar/epsilon_0)*C_r/H*(almost_beta*exp(-epsilon_0/E_B)*(1-X_e)-nH*alpha_2*pow(X_e, 2));
 
   return GSL_SUCCESS;
 }
@@ -231,7 +233,7 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
   Utils::StartTiming("Optical depth");
 
   // Set up x-arrays to integrate over. We split into three regions as we need extra points in reionisation
-  const int npts = 1000;
+  const int npts = 4000;
   Vector x_array = Utils::linspace(x_start, x_end, npts);
 
   // The ODE system dτ/dx, dτ_noreion/dx and dτ_baryon/dx
@@ -254,13 +256,20 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
 
   auto tau_array = ode.get_data_by_component(0);
 
-  tau_of_x_spline.create(x_array, tau_array, "τ");
+  Vector tau_0(npts_rec_arrays);
+
+  for (int i = 0; i < npts_rec_arrays; i++)
+  {
+    tau_0[i]=tau_array[i]-tau_array.back();
+  }
+  
+  tau_of_x_spline.create(x_array, tau_0, "τ");
 
   //=============================================================================
   // TODO: Compute visibility functions and spline everything
   //=============================================================================
 
-  Vector g_tilde_array{};
+  Vector g_tilde_array(npts_rec_arrays, 0.0);
 
   for (int i = 0; i < npts_rec_arrays; i++) g_tilde_array[i]=-dtaudx_of_x(x_array[i]*exp(-tau_of_x(x_array[i])));
 
@@ -278,8 +287,7 @@ Vector RecombinationHistory::get_time_results() const{
   Vector res(7);
 
   // Using the τ spline and binary search for value method to find τ = 1
-  std::pair<double,double> xrange(-10.0,-5.0);  // Range of x-value to search in
-  // x and z value when τ equals one, x_star and z_star
+  std::pair<double,double> xrange(-10.0, 0.0);  // Range of x-value to search in x and z value when τ equals one, x_star and z_star
   res[0] = Utils::binary_search_for_value(tau_of_x_spline,1.0,xrange);
   res[1] = 1/exp(res[0]) - 1;
 
@@ -298,7 +306,7 @@ Vector RecombinationHistory::get_time_results() const{
 
 double RecombinationHistory::get_number_density_H(double x) const{
   
-  return (1-Yp)*3*pow(cosmo->get_H0(), 2)*cosmo->get_OmegaB(0.0)/(8*M_PI*Constants.G*Constants.m_H*exp(-3*x));
+  return pow(Constants.c*Constants.hbar/Constants.epsilon_0, 4)*(1-Yp)*3*pow(cosmo->get_H0(), 2)*cosmo->get_OmegaB(0.0)/(8*M_PI*Constants.G*Constants.m_H*exp(-3*x));
 }
 
 double RecombinationHistory::tau_of_x(double x) const{
@@ -410,7 +418,7 @@ void RecombinationHistory::save_time_results(const std::string filename) const{
 //====================================================
 void RecombinationHistory::output(const std::string filename) const{
   std::ofstream fp(filename.c_str());
-  const int npts       = 5000;
+  const int npts       = 4000;
   const double x_min   = x_start;
   const double x_max   = x_end;
 

@@ -33,6 +33,8 @@ int main(int argc, char **argv){
   // Module I
   //=========================================================================
 
+  std::cout<<"\n";
+
   // Do the supernova fits.
   // Make sure you read the comments on the top of src/SupernovaFitting.h
   //mcmc_fit_to_supernova_data("data/supernovadata.txt", "Results/results_supernovafitting.txt");
@@ -46,8 +48,7 @@ int main(int argc, char **argv){
   cosmo.output("Results/cosmology.txt");
 
   Utils::EndTiming("Milestone I");
-  // Remove when Module II is completed
-  //return 0;
+  std::cout<<"\n";
 
   //=========================================================================
   // Module II
@@ -62,12 +63,14 @@ int main(int argc, char **argv){
 
   // Output recombination quantities and times
   rec.output("Results/recombination.txt");
-  //rec.save_time_results("Results/recombination_times.txt");
+  rec.save_time_results("Results/recombination_times.txt");
   // Print recombination times
-  //rec.print_time_results();
+  rec.print_time_results();
   
-  // Remove when Module III is completed
   Utils::EndTiming("Milestone II");
+  std::cout<<"\n";
+
+  // Remove when Module III is completed
   return 0;
 
   //=========================================================================
@@ -84,9 +87,11 @@ int main(int argc, char **argv){
   // Output perturbation quantities
   double kvalue = 0.01 / Constants.Mpc;
   pert.output(kvalue, "Results/perturbations_k0.01.txt");
+
+  Utils::EndTiming("Milestone III");
+  std::cout<<"\n";
   
   // Remove when Module IV is completed
-  Utils::EndTiming("Milestone III");
   return 0;
   
   //=========================================================================
@@ -100,6 +105,7 @@ int main(int argc, char **argv){
   power.output("Results/cells.txt");
 
   Utils::EndTiming("Milestone IV");
+  std::cout<<"\n";
   Utils::EndTiming("CMB power spectrum");
   
   // Remove when module is completed
