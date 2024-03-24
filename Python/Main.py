@@ -50,7 +50,7 @@ def main():
     
     #Print a message saying that the execution of the code is over.
     
-    print('Milestone I has been concluded.') #Remove when Milestone II is completed
+    print('Milestone I has been concluded.')
     
     """
     Uncoment while completing milestones.
@@ -58,13 +58,15 @@ def main():
     
     #Milestone2.main()
     
-    #print('Milestone II has been concluded.') #Remove when Milestone III is completed
+    #print('Milestone II has been concluded.')
     
     #Milestone3.main()
     
-    #print('Milestone III has been concluded.') #Remove when Milestone IV is completed
+    #print('Milestone III has been concluded.')
     
     #Milestone4.main()
+    
+    #print('Milestone IV has been concluded.')
     
     #print('The project has been concluded.')
     

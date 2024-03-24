@@ -54,7 +54,7 @@ def cosmology()->(np.array(float), np.array(float)):
     
     #Assign the different variables to its corresponding data.
     
-    #x=ln(a), main time variable.
+    #x=ln(a): main time variable.
     
     x: np.array(float) = data[:, 0]
     
