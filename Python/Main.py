@@ -14,15 +14,11 @@ related to each milestone and calls the main function of the milestone.
 
 import Milestone1
 
-"""
-Uncoment while completing milestones.
-"""
+import Milestone2
 
-#import Milestone2
+import Milestone3
 
-#import Milestone3
-
-#import Milestone4
+import Milestone4
         
 def main():
     
@@ -50,23 +46,23 @@ def main():
     
     #Print a message saying that the execution of the code is over.
     
-    print('Milestone I has been concluded.')
+    print('Milestone I has been concluded.\n')
+    
+    Milestone2.milestone2()
+    
+    print('Milestone II has been concluded.\n')
     
     """
     Uncoment while completing milestones.
     """
     
-    #Milestone2.main()
+    #Milestone3.milestone3()
     
-    #print('Milestone II has been concluded.')
+    #print('Milestone III has been concluded.\n')
     
-    #Milestone3.main()
+    #Milestone4.milestone4()
     
-    #print('Milestone III has been concluded.')
-    
-    #Milestone4.main()
-    
-    #print('Milestone IV has been concluded.')
+    #print('Milestone IV has been concluded.\n')
     
     #print('The project has been concluded.')
     
