@@ -55,9 +55,9 @@ class RecombinationHistory{
     void solve_for_optical_depth_tau();
 
     // Splines contained in this class
-    Spline log_Xe_of_x_spline{"log Xe"};
-    Spline log_Xe_of_x_spline_only_Saha{"log Xe Saha"};
-    Spline log_ne_of_x_spline{"log ne"};
+    Spline log_Xe_of_x_spline{"X_e"};
+    Spline log_Xe_of_x_spline_only_Saha{"X_e Saha"};
+    Spline log_ne_of_x_spline{"n_e"};
     Spline tau_of_x_spline{"τ"}; 
     Spline g_tilde_of_x_spline{"g̃"};
 

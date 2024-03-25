@@ -43,6 +43,7 @@ void RecombinationHistory::solve_number_density_electrons(){
   // Save index of when leaving Saha regime and start using Peebles
   int idx_Peebles_transition   = 0;
   double Xe_Peebles_transition = 0.01;
+  int count = 0;
 
   // Calculate recombination history
   bool saha_regime = true;
@@ -66,9 +67,15 @@ void RecombinationHistory::solve_number_density_electrons(){
     if(Xe_current < Xe_saha_limit){
 
       saha_regime = false;
-      idx_Peebles_transition = i;
-      Xe_Peebles_transition = Xe_current;
-      x_Saha_to_Peebles = x_array[i];
+
+      if (count==0)
+      {
+        idx_Peebles_transition = i;
+        Xe_Peebles_transition = Xe_current;
+        x_Saha_to_Peebles = x_array[i];
+        count++;
+      }
+      
     }
 
     if(saha_regime){
@@ -118,7 +125,7 @@ void RecombinationHistory::solve_number_density_electrons(){
   // TODO: Spline the result. Implement and make sure the Xe_of_x, ne_of_x 
   // functions are working
   //=============================================================================
-  
+
   // Spline the result in logarithmic form. Used in get Xe_of_x and ne_of_x methods
   Vector log_Xe_arr           = log(Xe_arr);
   Vector log_Xe_arr_only_Saha = log(Xe_arr_only_Saha);
@@ -160,17 +167,17 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   //=============================================================================
 
   // Right hand side of Saha equation
-  const double rhs_Saha = pow(m_e*pow(c, 2)*k_b*T_B/(2*M_PI), 3./2.)*pow(c/hbar, 3)*exp(-epsilon_0/(k_b*T_B))/nH;
+  const double rhs_Saha = pow(m_e*pow(c, 2)*k_b*T_B/(2*M_PI), 3./2.)*pow(c*hbar/pow(epsilon_0, 2), 3)*exp(-epsilon_0/(k_b*T_B))/nH;
 
   // Calculate Xe
 
   // If near endpoint, take care of instability and set solution to basically zero
-  if (rhs_Saha < 1e-20) Xe = 1e-20;
+  if (rhs_Saha<1e-20) Xe = 1e-20;
 
   // Determine if we have to use the Taylor approximation in the second order equation
-  else if (rhs_Saha > 1e+9) Xe = 1.0;
+  else if (rhs_Saha>1e+9) Xe = 1.0;
 
-  else Xe = rhs_Saha*(-1. + sqrt(1.0+4.0/rhs_Saha))/2.0;
+  else Xe = rhs_Saha*(-1.+sqrt(1.0+4.0/rhs_Saha))/2.0;
 
   // Return electron fraction and number density
   return std::pair<double,double>(Xe, Xe*nH);
@@ -291,7 +298,7 @@ Vector RecombinationHistory::get_time_results() const{
   res[0] = Utils::binary_search_for_value(tau_of_x_spline,1.0,xrange);
   res[1] = 1/exp(res[0]) - 1;
 
-  // Using Xe spline to search for Xe = 0.5, the spline is log so search for log(0.5)
+  // Using Xe spline to search for X_e = 0.5, the spline is log so search for log(0.5)
   res[2] = Utils::binary_search_for_value(log_Xe_of_x_spline,log(0.5),xrange);
   res[3] = 1/exp(res[2]) - 1;
 
@@ -306,7 +313,7 @@ Vector RecombinationHistory::get_time_results() const{
 
 double RecombinationHistory::get_number_density_H(double x) const{
   
-  return pow(Constants.c*Constants.hbar/Constants.epsilon_0, 4)*(1-Yp)*3*pow(cosmo->get_H0(), 2)*cosmo->get_OmegaB(0.0)/(8*M_PI*Constants.G*Constants.m_H*exp(-3*x));
+  return (1-Yp)*3*pow(cosmo->get_H0(), 2)*cosmo->get_OmegaB(0.0)/(8*M_PI*Constants.G*Constants.m_H*exp(-3*x));
 }
 
 double RecombinationHistory::tau_of_x(double x) const{
@@ -371,7 +378,7 @@ void RecombinationHistory::info() const{
 void RecombinationHistory::print_time_results() const{
   Vector times = get_time_results();
 
-  std::cout << "\nTime for last scattering,\nτ(x_star) = τ(z_star) = 1:\n";
+  std::cout << "Time for last scattering,\nτ(x_star) = τ(z_star) = 1:\n";
   std::cout << "x_star:      " << times[0] << "\n";
   std::cout << "z_star:      " << times[1] << "\n";
   
