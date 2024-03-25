@@ -92,8 +92,8 @@ void RecombinationHistory::solve_number_density_electrons(){
 
       //==============================================================
       // TODO: Compute X_e from current time until today by solving 
-      // the Peebles equation (NB: if you solve all in one go remember to
-      // exit the for-loop!)
+      // the Peebles equation (NB: if you solve all in one go remember
+      // to exit the for-loop!)
       // Implement rhs_peebles_ode
       //==============================================================
 
@@ -158,6 +158,9 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   const double T_B = cosmo->get_TCMB()/a;  // Baryon temperature approximation
   const double nH  = get_number_density_H(x);
 
+  //Save FLOPS
+  const double E_TB = T_B*k_b;
+
   // Electron fraction and number density
   double Xe = 0.0;
   double ne = 0.0;
@@ -167,7 +170,7 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   //=============================================================================
 
   // Right hand side of Saha equation
-  const double rhs_Saha = pow(m_e*pow(c, 2)*k_b*T_B/(2*M_PI), 3./2.)*pow(c*hbar/pow(epsilon_0, 2), 3)*exp(-epsilon_0/(k_b*T_B))/nH;
+  const double rhs_Saha = pow(sqrt(m_e*pow(c, 2)*E_TB/(2*M_PI))/(hbar*c), 3)*exp(-epsilon_0/E_TB)/nH;
 
   // Calculate Xe
 
@@ -232,12 +235,12 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
 }
 
 //====================================================
-// Solve for the optical depth τ, compute the 
+// Solve for the optical depth (τ), compute the 
 // visibility function and spline the result
 //====================================================
 
 void RecombinationHistory::solve_for_optical_depth_tau(){
-  Utils::StartTiming("Optical depth");
+  Utils::StartTiming("τ");
 
   // Set up x-arrays to integrate over. We split into three regions as we need extra points in reionisation
   const int npts = 4000;
@@ -282,7 +285,7 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
 
   g_tilde_of_x_spline.create(x_array, g_tilde_array, "g̃");
 
-  Utils::EndTiming("Optical depth");
+  Utils::EndTiming("τ");
 }
 
 //====================================================
@@ -294,7 +297,7 @@ Vector RecombinationHistory::get_time_results() const{
   Vector res(7);
 
   // Using the τ spline and binary search for value method to find τ = 1
-  std::pair<double,double> xrange(-10.0, 0.0);  // Range of x-value to search in x and z value when τ equals one, x_star and z_star
+  std::pair<double,double> xrange(x_start, x_end);  // Range of x-value to search in x and z value when τ equals one, x_star and z_star
   res[0] = Utils::binary_search_for_value(tau_of_x_spline,1.0,xrange);
   res[1] = 1/exp(res[0]) - 1;
 
