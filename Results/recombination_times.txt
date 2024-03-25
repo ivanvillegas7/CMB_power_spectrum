@@ -1,5 +1,5 @@
 x_star:     -5.960464478e-07 z_star:     5.960466254e-07
 x_rec:      -5.960464478e-07 z_rec:      5.960466254e-07
 x_rec_Saha: -5.960464478e-07 z_rec_Saha: 5.960466254e-07
-x_Peebles:  0 z_Peebles:  0
+x_Peebles:  -13.51494806 z_Peebles:  740400.6311
 x_rec_end:  0 z_rec_end:  0 
