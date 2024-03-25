@@ -43,8 +43,6 @@ void BackgroundCosmology::solve(){
 
   Utils::StartTiming("η");
 
-  double npts = 1000;
-
   Vector x_array = Utils::linspace(x_start, x_end, npts);
 
   // The ODE for dη/dx
@@ -242,11 +240,8 @@ void BackgroundCosmology::info() const{
 // Output some data to file
 //====================================================
 void BackgroundCosmology::output(const std::string filename) const{
-  const double x_min = -15.0;
-  const double x_max = 0.0;
-  const int    n_pts = 1000;
   
-  Vector x_array = Utils::linspace(x_min, x_max, n_pts);
+  Vector x_array = Utils::linspace(x_start, x_end, npts);
 
   std::ofstream fp(filename.c_str());
   auto print_data = [&] (const double x) {

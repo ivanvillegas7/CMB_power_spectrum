@@ -428,11 +428,8 @@ void RecombinationHistory::save_time_results(const std::string filename) const{
 //====================================================
 void RecombinationHistory::output(const std::string filename) const{
   std::ofstream fp(filename.c_str());
-  const int npts       = 4000;
-  const double x_min   = x_start;
-  const double x_max   = x_end;
 
-  Vector x_array = Utils::linspace(x_min, x_max, npts);
+  Vector x_array = Utils::linspace(x_start, x_end, npts_rec_arrays);
   auto print_data = [&] (const double x) {
     fp << x                    << " ";
     fp << Xe_of_x(x)           << " ";

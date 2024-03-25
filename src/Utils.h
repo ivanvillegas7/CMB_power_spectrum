@@ -36,7 +36,7 @@ extern struct ConstantsAndUnits {
   const double c           = 2.99792458e8 * m/s;          // Speed of light
   const double G           = 6.67430e-11 * N*m*m/(kg*kg); // Gravitational constant
   const double hbar        = 1.054571817e-34 * J*s;       // Reduced Plancks constant
-  const double sigma_T     = 6.6524587158e-29 * m*m;      // Thomas scattering cross-section
+  const double sigma_T     = 6.6524587158e-29 * m*m;      // Thompson's scattering cross-section
   const double lambda_2s1s = 8.227 / s;                   // Transition time between 2s and 1s in Hydrogen
   const double H0_over_h   = 100 * km/s/Mpc;              // H0 / h
   const double epsilon_0   = 13.605693122994 * eV;        // Ionization energy for the ground state of hydrogen
