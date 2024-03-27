@@ -63,9 +63,9 @@ int main(int argc, char **argv){
 
   // Output recombination quantities and times
   rec.output("Results/recombination.txt");
-  rec.save_time_results("Results/recombination_times.txt");
-  // Print recombination times
-  rec.print_time_results();
+
+  //Print sound horizon at decoupling
+  rec.sound_horizon();
   
   Utils::EndTiming("Milestone II");
   std::cout<<"\n";

@@ -41,7 +41,7 @@ BackgroundCosmology::BackgroundCosmology(
 // Solve the background
 void BackgroundCosmology::solve(){
 
-  Utils::StartTiming("η");
+  Utils::StartTiming("Conformal time (η)");
 
   Vector x_array = Utils::linspace(x_start, x_end, npts);
 
@@ -62,9 +62,9 @@ void BackgroundCosmology::solve(){
 
   eta_of_x_spline.create(x_array, eta_array, "η");
 
-  Utils::EndTiming("η");
+  Utils::EndTiming("Conformal time (η)");
 
-  Utils::StartTiming("t");
+  Utils::StartTiming("Cosmological time (t)");
 
   // The ODE for dt/dx
   ODEFunction dtdx = [&](double x, const double *t, double *dtdx){
@@ -82,7 +82,7 @@ void BackgroundCosmology::solve(){
 
   t_of_x_spline.create(x_array, t_array, "t");
 
-  Utils::EndTiming("t");
+  Utils::EndTiming("Cosmological time (t)");
 }
 
 //====================================================

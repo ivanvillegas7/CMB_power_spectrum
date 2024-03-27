@@ -64,7 +64,6 @@ class BackgroundCosmology{
     double get_OmegaB(double x = 0.0) const; 
     double get_OmegaM(double x = 0.0) const; 
     double get_OmegaR(double x = 0.0) const;
-    double get_OmegaRtot(double x = 0.0) const; 
     double get_OmegaNu(double x = 0.0) const;
     double get_OmegaCDM(double x = 0.0) const; 
     double get_OmegaLambda(double x = 0.0) const; 
