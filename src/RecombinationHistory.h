@@ -65,7 +65,9 @@ class RecombinationHistory{
     Spline Xe_of_x_spline_only_Saha{"X_e Saha"};
     Spline log_ne_of_x_spline{"n_e"};
     Spline tau_of_x_spline{"τ"}; 
+    Spline dtau_of_x_spline{"dτ"}; 
     Spline g_tilde_of_x_spline{"g̃"};
+    Spline dg_tilde_of_x_spline{"dg̃"};
     Spline sound_horizon_of_x_spline{"s"};
 
   public:

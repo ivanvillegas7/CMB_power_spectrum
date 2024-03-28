@@ -249,7 +249,7 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
 //====================================================
 
 void RecombinationHistory::solve_for_optical_depth_tau(){
-  Utils::StartTiming("Optical depth (τ)");
+  Utils::StartTiming("Optical depth (τ) and visibility function (g̃)");
 
   // Set up x-arrays to integrate over. We split into three regions as we need extra points in reionisation
   const int npts = npts_rec_arrays;
@@ -287,6 +287,12 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
   
   tau_of_x_spline.create(x_array_tau, tau_arr, "τ");
 
+  Vector dtau(npts_rec_arrays);
+
+  for (int i=0; i < npts_rec_arrays; i++) dtau[i] = -Constants.c*ne_of_x(x_array[i])*Constants.sigma_T/(cosmo->H_of_x(x_array[i]));
+
+  dtau_of_x_spline.create(x_array, dtau, "dτ");
+
   //=============================================================================
   // TODO: Compute visibility functions and spline everything
   //=============================================================================
@@ -297,7 +303,13 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
 
   g_tilde_of_x_spline.create(x_array, g_tilde_array, "g̃");
 
-  Utils::EndTiming("Optical depth (τ)");
+  Vector dg_tilde(npts_rec_arrays);
+
+  for(int i=0; i < npts_rec_arrays; i++) dg_tilde[i] = exp(-tau_of_x(x_array[i]))*(dtaudx_of_x(x_array[i])*dtaudx_of_x(x_array[i])-ddtauddx_of_x(x_array[i]));
+  
+  dg_tilde_of_x_spline.create(x_array, dg_tilde, "dg̃");
+
+  Utils::EndTiming("Optical depth (τ) and visibility function (g̃)");
 }
 
 void RecombinationHistory::solve_for_sound_horizon(){
@@ -338,12 +350,12 @@ double RecombinationHistory::tau_of_x(double x) const{
 
 double RecombinationHistory::dtaudx_of_x(double x) const{
 
-  return tau_of_x_spline.deriv_x(x);
+  return dtau_of_x_spline(x);
 }
 
 double RecombinationHistory::ddtauddx_of_x(double x) const{
 
-  return tau_of_x_spline.deriv_xx(x);
+  return dtau_of_x_spline.deriv_x(x);
 }
 
 double RecombinationHistory::g_tilde_of_x(double x) const{
@@ -353,12 +365,12 @@ double RecombinationHistory::g_tilde_of_x(double x) const{
 
 double RecombinationHistory::dgdx_tilde_of_x(double x) const{
 
-  return g_tilde_of_x_spline.deriv_x(x);
+  return dg_tilde_of_x_spline(x);
 }
 
 double RecombinationHistory::ddgddx_tilde_of_x(double x) const{
 
-  return g_tilde_of_x_spline.deriv_xx(x);
+  return dg_tilde_of_x_spline.deriv_x(x);
 }
 
 double RecombinationHistory::Xe_of_x(double x) const{
@@ -404,6 +416,8 @@ void RecombinationHistory::info() const{
 void RecombinationHistory::sound_horizon() const{
   std::cout<<"Sound horizon at decoupling:\n";
   std::cout<<"r_s≡s(x_decoupling)="<<sound_horizon_of_x(x_Saha_to_Peebles)/Constants.Mpc<<" Mpc"<<"\n";
+  std::cout<<"x_decoupling="<<x_Saha_to_Peebles<<"\n";
+  std::cout<<"Index at decoupling: "<<idx_Peebles_transition<<"\n";
   std::cout<<std::endl;
 } 
 
@@ -415,16 +429,18 @@ void RecombinationHistory::output(const std::string filename) const{
 
   Vector x_array = Utils::linspace(x_start, x_end, npts_rec_arrays);
   auto print_data = [&] (const double x) {
-    fp << x                      << " ";
-    fp << Xe_of_x(x)             << " ";
-    fp << ne_of_x(x)             << " ";
-    fp << tau_of_x(x)            << " ";
-    fp << dtaudx_of_x(x)         << " ";
-    fp << ddtauddx_of_x(x)       << " ";
-    fp << g_tilde_of_x(x)        << " ";
-    fp << dgdx_tilde_of_x(x)     << " ";
-    fp << ddgddx_tilde_of_x(x)   << " ";
-    fp << Xe_of_x_Saha_approx(x) << " ";
+    fp << x                              << " ";
+    fp << Xe_of_x(x)                     << " ";
+    fp << ne_of_x(x)                     << " ";
+    fp << tau_of_x(x)                    << " ";
+    fp << dtaudx_of_x(x)                 << " ";
+    fp << ddtauddx_of_x(x)               << " ";
+    fp << g_tilde_of_x(x)                << " ";
+    fp << dgdx_tilde_of_x(x)             << " ";
+    fp << ddgddx_tilde_of_x(x)           << " ";
+    fp << Xe_of_x_Saha_approx(x)         << " ";
+    if (x>=-15.0) fp << cosmo->t_of_x(x) << " ";
+    else fp << 0.0                       << " ";
     fp << "\n";
   };
   std::for_each(x_array.begin(), x_array.end(), print_data);
