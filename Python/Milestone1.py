@@ -228,10 +228,10 @@ def cosmology()->(np.array(float), np.array(float)):
     #of domination. Print the age of the Universe and the conformal time today.
     
     print(f'\nTIMES\n\
-                  x       z       t [Gyr]\n\
-          M-R:  {x[index_M_R]:.2f}  {z[index_M_R]:.2f}     {t[index_M_R]*1e5:.2f}e-5\n\
-          M_Λ:  {x[index_M_Lambda]:.2f}     {z[index_M_Lambda]:.2f}    {t[index_M_Lambda]:.2f}\n\
-          ä=0:  {x[index]:.2f}     {z[index]:.2f}     {t[index]:.2f}\n')
+            x       z       t [Gyr]\n\
+    M-R:  {x[index_M_R]:.2f}  {z[index_M_R]:.2f}     {t[index_M_R]*1e5:.2f}e-5\n\
+    M_Λ:  {x[index_M_Lambda]:.2f}     {z[index_M_Lambda]:.2f}    {t[index_M_Lambda]:.2f}\n\
+    ä=0:  {x[index]:.2f}     {z[index]:.2f}     {t[index]:.2f}\n')
     
     print(f'Age of the Universe: t(0)≈{t[today]:.2f} Gyr.\n')
     
@@ -418,8 +418,8 @@ def MCMC_supernova_fit():
     #Print thge best fitting parameters
 
     print(f'PARAMETERS\n\
-          χ²     Ω_M     Ω_k     Ω_Λ      H_0\n\
-        {chi2_min:.2f}    {OmegaM[index]:.2f}    {OmegaK[index]:.2f}    {OmegaLambda[index]:.2f}    {H[index]:.2f}\n')
+      χ²     Ω_M     Ω_k     Ω_Λ      H_0\n\
+    {chi2_min:.2f}    {OmegaM[index]:.2f}    {OmegaK[index]:.2f}    {OmegaLambda[index]:.2f}    {H[index]:.2f}\n')
         
     return(H[index], OmegaM[index], OmegaK[index], 0, OmegaLambda[index])
     

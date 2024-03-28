@@ -6,6 +6,14 @@ Created on Fri Mar 22 11:20:46 2024
 @author: Iván Villegas Pérez
 """
 
+"""
+This script contains all the auxiliar functions for analysing and plotting the
+results of running the C++ codes related to computing the CMB power spectrum.
+
+Here you can find the functions 'plot()' and 'E()', 'D_L()' and 'find_value()'.
+All of them are explained below.
+"""
+
 import scipy as sc
 
 import numpy as np
@@ -62,13 +70,15 @@ def plot(x: np.array(float), y: np.array(float), i1: int, i2:int, i3: int):
 def E(z: float, H0: float, Omega_M: float, Omega_K: float, Omega_R: float,\
       Omega_Lambda: float):
 
-    return np.sqrt(Omega_M*(1+z)**3+Omega_K*(1+z)**2+Omega_R*(1+z)**4+Omega_Lambda)
+    return np.sqrt(Omega_M*(1+z)**3+Omega_K*(1+z)**2+Omega_R*(1+z)**4+\
+                   Omega_Lambda)
     
 def D_L(z: np.array(float), H0: float, Omega_M: float, Omega_K: float,\
         Omega_R: float, Omega_Lambda: float):
 
     """
-    Calculates the luminosity distance for a given redshift using the cosmological parameters.
+    Calculates the luminosity distance for a given redshift using the
+    cosmological parameters.
 
     Parameters:
         z : np.array(float)
@@ -88,10 +98,10 @@ def D_L(z: np.array(float), H0: float, Omega_M: float, Omega_K: float,\
         d_L : List[float]
             Luminosity distance corresponding to the given redshifts.
 
-    The function calculates the luminosity distance using the given redshift values and
-    the cosmological parameters. It computes the E(z) term and then integrates to find the
-    corresponding luminosity distance for each redshift value. The resulting luminosity
-    distances are returned as a list.
+    The function calculates the luminosity distance using the given redshift
+    values and the cosmological parameters. It computes the E(z) term and then
+    integrates to find the corresponding luminosity distance for each redshift
+    value. The resulting luminosity distances are returned as a list.
     """
     
     d_L: List[float] = []
@@ -105,3 +115,40 @@ def D_L(z: np.array(float), H0: float, Omega_M: float, Omega_K: float,\
                                             Omega_Lambda), x)))
         
     return np.array(d_L)
+
+def find_value(where: np.array(float), value: float):
+    
+    """
+    Find the index of the element in the array 'where' closest to the given
+    'value'.
+
+    Parameters:
+        where: np.array(float)
+            The array of values to search.
+        value: float
+            The value to find in the array.
+
+    Returns:
+        index: int
+            The index of the element in 'where' closest to the given 'value'.
+    """
+    
+    #Initialize the index variable
+    
+    index: int
+    
+    for i in range(1, len(where)):
+        
+        if where[i-1]<=value and where[i]>=value:
+            
+            index = i
+            
+            break
+        
+        elif where[i-1]>=value and where[i]<value:
+            
+            index = i
+            
+            break
+        
+    return index
