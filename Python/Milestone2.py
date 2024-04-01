@@ -20,8 +20,6 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-import auxiliar as aux
-
 def plots():
     
     """
@@ -141,7 +139,7 @@ def plots():
     plt.grid(True)
     plt.legend()
     plt.ylim(-1.1, 1.1)
-    plt.xlim(-7.0, -6.7)
+    plt.xlim(-7.0, -6.75)
     plt.savefig('../Plots/Milestone II/g_tilde and derivatives.pdf')
     
 def tables():
@@ -196,21 +194,21 @@ def tables():
     
     decoupling: int = int(input('\nIndex at decoupling: '))
     
-    last_scattering: int = aux.find_value(tau, 1.0)
+    last_scattering: int = np.argmin(np.abs(tau-1))
     
-    half_way: int = aux.find_value(X_e, 0.5)
+    half_way: int = np.argmin(np.abs(X_e-0.5))
     
-    half_way_Saha: int = aux.find_value(X_e_Saha, 0.5)
+    half_way_Saha: int = np.argmin(np.abs(X_e_Saha-0.5))
     
-    recombination: int = aux.find_value(X_e, 0.1)
+    recombination: int = np.argmin(np.abs(X_e-0.1))
     
     print(f'\nTIMES\n\
-                            x      z        t [Myr]\n\
-    Decoupling:           {x[decoupling]:.2f}  {z[decoupling]:.2f}     {t[decoupling]*1e3:.3f}\n\
-    Last scattering:      {x[last_scattering]:.2f}  {z[last_scattering]:.2f}     {t[last_scattering]*1e3:.3f}\n\
-    Half-way rec:         {x[half_way]:.2f}  {z[half_way]:.2f}     {t[half_way]*1e3:.3f}\n\
-    Half-way rec (Saha):  {x[half_way_Saha]:.2f}   {z[half_way_Saha]:.2f}     {t[half_way_Saha]*1e3:.3f}\n\
-    Recombination:        {x[recombination]:.2f}   {z[recombination]:.2f}     {t[recombination]*1e3:.3f}\n')
+                            x       z        t [Myr]\n\
+    Decoupling:           {x[decoupling]:.3f}  {z[decoupling]:.2f}     {t[decoupling]*1e3:.3f}\n\
+    Last scattering:      {x[last_scattering]:.3f}  {z[last_scattering]:.2f}     {t[last_scattering]*1e3:.3f}\n\
+    Half-way rec:         {x[half_way]:.3f}  {z[half_way]:.2f}     {t[half_way]*1e3:.3f}\n\
+    Half-way rec (Saha):  {x[half_way_Saha]:.3f}   {z[half_way_Saha]:.2f}     {t[half_way_Saha]*1e3:.3f}\n\
+    Recombination:        {x[recombination]:.3f}   {z[recombination]:.2f}     {t[recombination]*1e3:.3f}\n')
           
     return(last_scattering, recombination)
     
