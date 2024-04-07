@@ -104,6 +104,7 @@ class RecombinationHistory{
     double R_of_x(double x) const;
     double cs_of_x(double x) const;
     double sound_horizon_of_x(double x) const;
+    double get_number_density_B(double x) const;
     double get_number_density_H(double x) const;
 };
 

@@ -163,6 +163,7 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
 
   // Fetch cosmological parameters
   const double T_B = cosmo->get_TCMB()/a;  // Baryon temperature approximation
+  const double nB  = get_number_density_B(x);
   const double nH  = get_number_density_H(x);
 
   //Save FLOPS
@@ -178,7 +179,7 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
 
   // Right hand side of Saha equation
   const double brakets = m_e*pow(c, 2.)*E_TB/(2.*M_PI); 
-  const double rhs_Saha = pow(1./(c*hbar), 3)*brakets*sqrt(brakets)*exp(-eps_over_T);
+  const double rhs_Saha = pow(1./(c*hbar), 3)*brakets*sqrt(brakets)*exp(-eps_over_T)/nH;
 
   // Calculate Xe
 
@@ -338,9 +339,14 @@ void RecombinationHistory::solve_for_sound_horizon(){
 // Get methods
 //====================================================
 
+double RecombinationHistory::get_number_density_B(double x) const{
+  
+  return 3.*pow(cosmo->get_H0(), 2.)*cosmo->get_OmegaB(0.0)/(8.*M_PI*Constants.G*Constants.m_H*exp(3.*x));
+}
+
 double RecombinationHistory::get_number_density_H(double x) const{
   
-  return (1.-Yp)*3.*pow(cosmo->get_H0(), 2.)*cosmo->get_OmegaB(0.0)/(8.*M_PI*Constants.G*Constants.m_H*exp(3.*x));
+  return (1.-Yp)*get_number_density_B(x);
 }
 
 double RecombinationHistory::tau_of_x(double x) const{
@@ -393,7 +399,7 @@ double RecombinationHistory::get_Yp() const{
 }
 
 double RecombinationHistory::R_of_x(double x) const{
-  return 4.*cosmo->get_OmegaR(0.0)/(3.*cosmo->get_OmegaB(0.0));
+  return 4.*cosmo->get_OmegaR(x)/(3.*cosmo->get_OmegaB(x));
 }
 
 double RecombinationHistory::cs_of_x(double x) const{
@@ -410,7 +416,7 @@ double RecombinationHistory::sound_horizon_of_x(double x) const{
 void RecombinationHistory::info() const{
   std::cout<<"\n";
   std::cout<<"Info about recombination/reionization history class:\n";
-  std::cout<<"Yp: "<<Yp<<"\n";
+  std::cout<<"Yp:          "<<Yp<<"\n";
   std::cout<<std::endl;
 }
 void RecombinationHistory::sound_horizon() const{
