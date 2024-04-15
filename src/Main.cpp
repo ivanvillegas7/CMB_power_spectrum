@@ -22,7 +22,7 @@ int main(int argc, char **argv){
   double TCMB        = 2.7255;
 
   // Recombination parameters
-  double Yp          = 0.0; //0.245;
+  double Yp          = 0.0;//0.245;
 
   // Power-spectrum parameters
   double A_s         = 2.1e-9;
@@ -37,7 +37,7 @@ int main(int argc, char **argv){
 
   // Do the supernova fits.
   // Make sure you read the comments on the top of src/SupernovaFitting.h
-  mcmc_fit_to_supernova_data("data/supernovadata.txt", "Results/results_supernovafitting.txt");
+  //mcmc_fit_to_supernova_data("data/supernovadata.txt", "Results/results_supernovafitting.txt");
 
   // Set up and solve the background
   BackgroundCosmology cosmo(h, OmegaB, OmegaCDM, OmegaK, Neff, TCMB);
@@ -70,9 +70,6 @@ int main(int argc, char **argv){
   Utils::EndTiming("Milestone II");
   std::cout<<"\n";
 
-  // Remove when Module III is completed
-  return 0;
-
   //=========================================================================
   // Module III
   //=========================================================================
@@ -85,8 +82,14 @@ int main(int argc, char **argv){
   pert.info();
   
   // Output perturbation quantities
-  double kvalue = 0.01 / Constants.Mpc;
-  pert.output(kvalue, "Results/perturbations_k0.01.txt");
+  double kvalue1 = 0.1 / Constants.Mpc;
+  pert.output(kvalue1, "Results/perturbations_k1.txt");
+  double kvalue01 = 0.01 / Constants.Mpc;
+  pert.output(kvalue01, "Results/perturbations_k01.txt");
+  double kvalue001 = 0.001 / Constants.Mpc;
+  pert.output(kvalue001, "Results/perturbations_k001.txt");
+  double kvalue0001 = 0.0001 / Constants.Mpc;
+  pert.output(kvalue0001, "Results/perturbations_k0001.txt");
 
   Utils::EndTiming("Milestone III");
   std::cout<<"\n";
