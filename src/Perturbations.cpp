@@ -295,20 +295,20 @@ Vector Perturbations::set_ic_after_tight_coupling(
 
   // SET: Scalar quantities (Gravitational potental, baryons and CDM)
   double Psi                  = -1/(3/2+2*f_Nu/5);
-  Phi                         = -(1+2*f_Nu/5);
-  delta_CDM                   = -3*Psi/2;
-  delta_B                     = -3*Psi/2;
-  v_CDM                       = -ck_over_Hp*Psi/2;
-  v_B                         = -ck_over_Hp*Psi/2;
+  Phi                         = -(1+2*f_Nu/5);//Phi_tc;
+  delta_CDM                   = -3*Psi/2;//delta_CMB_tc;
+  delta_B                     = -3*Psi/2;//delta_B_tc;
+  v_CDM                       = -ck_over_Hp*Psi/2;//v_CDM_tc;
+  v_B                         = -ck_over_Hp*Psi/2;//v_B_tc;
 
   // SET: Photon temperature perturbations (Theta_ell)
-  Theta[0]                   = -Psi/2;
-  Theta[1]                   = ck_over_Hp*Psi/6;
-  if (polarization) Theta[2] = -(8/15)*ck_over_Hp*Theta[1]/dtaudx;
-  else Theta[2]              = -(8/15)*ck_over_Hp*Theta[1]/dtaudx;
+  Theta[0]                   = -Psi/2;//Theta_tc[0];
+  Theta[1]                   = ck_over_Hp*Psi/6;//Theta_tc[1];
+  if (polarization) Theta[2] = -(8/15)*ck_over_Hp*Theta[1]/dtaudx;//Theta_tc[2];
+  else Theta[2]              = -(8/15)*ck_over_Hp*Theta[1]/dtaudx;//Theta_tc[2];
   for (int l = 3; l <= n_ell_theta; l++)
   {
-    Theta[l]                 = -l*ck_over_Hp*Theta[l-1]/((2*l+1)*dtaudx);
+    Theta[l]                 = -l*ck_over_Hp*Theta[l-1]/((2*l+1)*dtaudx);//Theta_tc[l];
   }
 
   // SET: Photon polarization perturbations (Theta_p_ell)
@@ -324,12 +324,12 @@ Vector Perturbations::set_ic_after_tight_coupling(
 
   // SET: Neutrino perturbations (N_ell)
   if(neutrinos){
-    Nu[0]                    = -Psi/2;
-    Nu[1]                    = ck_over_Hp*Psi/6;
-    Nu[2]                    = (Psi+Phi)*pow(c*k*exp(x)/H0, 2)/(12*Omega_Nu);
+    Nu[0]                    = -Psi/2;//Nu_tc[0];
+    Nu[1]                    = ck_over_Hp*Psi/6;//Nu_tc[1];
+    Nu[2]                    = (Psi+Phi)*pow(c*k*exp(x)/H0, 2)/(12*Omega_Nu);//Nu_tc[2];
     for (int l = 3; l <= n_ell_neutrinos; l++)
     {
-      Nu[l]                  = ck_over_Hp*Nu[l-1]/(2*l+1);
+      Nu[l]                  = ck_over_Hp*Nu[l-1]/(2*l+1);//Nu_tc[l];
     }
   }
 
