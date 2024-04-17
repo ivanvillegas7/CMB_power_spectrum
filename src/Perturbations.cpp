@@ -166,21 +166,53 @@ Vector Perturbations::set_ic(const double x, const double k) const{
   //=============================================================================
   // TODO: Set the initial conditions in the tight coupling regime
   //=============================================================================
-  // ...
-  // ...
 
-  // SET: Scalar quantities (Gravitational potential, baryons and CDM)
-  // ...
-  // ...
+  // Set constants
+  double c                    = Constants.c;
+
+  // Cosmological parameters and variables
+  double H0                   = cosmo->get_H0();
+  double Hp                   = cosmo->Hp_of_x(x);
+  double Omega_CDM            = cosmo->get_OmegaCDM(x);
+  double Omega_B              = cosmo->get_OmegaB(x);
+  double Omega_R              = cosmo->get_OmegaR(x);
+  double Omega_Nu             = cosmo->get_OmegaNu(x);
+
+  //Set recombination parameters
+  double R                    = rec->R_of_x(x);
+  double dtaudx               = rec->dtaudx_of_x(x);
+
+  // Save flops
+  double ck_over_Hp          = c*k/Hp;
+  double f_Nu                 = Omega_Nu/(Omega_R+Omega_Nu);
+
+  // SET: Scalar quantities (Gravitational potental, baryons and CDM)
+  double Psi                  = -1/(3/2+2*f_Nu/5);
+  Phi                         = -(1+2*f_Nu/5);
+  delta_CDM                   = -3*Psi/2;
+  delta_B                     = -3*Psi/2;
+  v_CDM                       = -ck_over_Hp*Psi/2;
+  v_B                         = -ck_over_Hp*Psi/2;
 
   // SET: Photon temperature perturbations (Theta_ell)
-  // ...
-  // ...
+  Theta[0]                   = -Psi/2;
+  Theta[1]                   = ck_over_Hp*Psi/6;
+  if (polarization) Theta[2] = -(8/15)*ck_over_Hp*Theta[1]/dtaudx;
+  else Theta[2]              = -(8/15)*ck_over_Hp*Theta[1]/dtaudx;
+  for (int l = 3; l <= n_ell_theta_tc; l++)
+  {
+    Theta[l]                 = -l*ck_over_Hp*Theta[l-1]/((2*l+1)*dtaudx);
+  }
 
   // SET: Neutrino perturbations (N_ell)
   if(neutrinos){
-    // ...
-    // ...
+    Nu[0]                    = -Psi/2;
+    Nu[1]                    = ck_over_Hp*Psi/6;
+    Nu[2]                    = (Psi+Phi)*pow(c*k*exp(x)/H0, 2)/(12*Omega_Nu);
+    for (int l = 3; l <= n_ell_neutrinos_tc; l++)
+    {
+      Nu[l]                  = ck_over_Hp*Nu[l-1]/(2*l+1);
+    }
   }
 
   return y_tc;
@@ -248,12 +280,10 @@ Vector Perturbations::set_ic_after_tight_coupling(
   // Cosmological parameters and variables
   double H0                   = cosmo->get_H0();
   double Hp                   = cosmo->Hp_of_x(x);
-  double dHpdx                = cosmo->dHpdx_of_x(x);
   double Omega_CDM            = cosmo->get_OmegaCDM(x);
   double Omega_B              = cosmo->get_OmegaB(x);
   double Omega_R              = cosmo->get_OmegaR(x);
   double Omega_Nu             = cosmo->get_OmegaNu(x);
-  double eta                  = cosmo->eta_of_x(x);
 
   //Set recombination parameters
   double R                    = rec->R_of_x(x);
@@ -511,7 +541,6 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   // Cosmological parameters and variables
   double H0                 = cosmo->get_H0();
   double Hp                 = cosmo->Hp_of_x(x);
-  double dHpdx              = cosmo->dHpdx_of_x(x);
   double Omega_CDM          = cosmo->get_OmegaCDM(x);
   double Omega_B            = cosmo->get_OmegaB(x);
   double Omega_R            = cosmo->get_OmegaR(x);
