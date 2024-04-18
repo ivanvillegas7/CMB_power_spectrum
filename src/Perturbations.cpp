@@ -216,6 +216,14 @@ Vector Perturbations::set_ic(const double x, const double k) const{
     }
   }
 
+  y_tc[Constants.ind_deltacdm_tc]    = delta_CDM;
+  y_tc[Constants.ind_deltab_tc]      = delta_B;
+  y_tc[Constants.ind_vcdm_tc]        = v_CDM;
+  y_tc[Constants.ind_vb_tc]          = v_B;
+  y_tc[Constants.ind_Phi_tc]         = Phi;
+  y_tc[Constants.ind_start_theta_tc] = Theta[0, n_ell_theta_tc];
+  y_tc[Constants.ind_start_nu_tc]    = Nu[0, n_ell_neutrinos_tc];
+
   return y_tc;
 }
 
@@ -333,6 +341,15 @@ Vector Perturbations::set_ic_after_tight_coupling(
       Nu[l]                  = ck_over_Hp*Nu[l-1]/(2*l+1);//Nu_tc[l];
     }
   }
+
+  y[Constants.ind_deltacdm]       = delta_CDM;
+  y[Constants.ind_deltab]         = delta_B;
+  y[Constants.ind_vcdm]           = v_CDM;
+  y[Constants.ind_vb]             = v_B;
+  y[Constants.ind_Phi]            = Phi;
+  y[Constants.ind_start_theta]    = Theta[0, n_ell_theta];
+  y[Constants.ind_start_thetap] = Theta_p[0, n_ell_thetap];
+  y[Constants.ind_start_nu]     = Nu[0, n_ell_neutrinos];
 
   return y;
 }
@@ -472,27 +489,40 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   //=============================================================================
 
   // SET: Scalar quantities (Φ, δ, v, ...)
-  double Psi   = -Phi-12*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*Nu[2]);
-  double q     = -(((1-R)*dtaudx+(1+R)*ddtauddx)*(3*Theta[1]+v_B)-ck_over_Hp*Psi+(1-dHp_over_Hp)*ck_over_Hp*(-Theta[0]+2+Theta[2])-ck_over_Hp*dThetadx[0])/((1+R)*dtaudx+dHp_over_Hp-1);
+  double Psi                  = -Phi-12*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*Nu[2]);
+
+  double num                  = ((1-R)*dtaudx+(1+R)*ddtauddx)*(3*Theta[1]+v_B)-ck_over_Hp*Psi+(1-dHp_over_Hp)*ck_over_Hp*(-Theta[0]+2+Theta[2])-ck_over_Hp*dThetadx[0];
+  double den                  = (1+R)*dtaudx+dHp_over_Hp-1;
+  double q                    = -num/den;
   
-  ddelta_Bdx   = ck_over_Hp*v_B-3*dPhidx;
-  dv_Bdx       = (-v_B-ck_over_Hp*Psi+R*(q+ck_over_Hp*(-Theta[0]+2*Theta[2])-ck_over_Hp*Psi))/(1+R);
-  ddelta_CDMdx = ck_over_Hp*v_CDM-3*dPhidx;
-  dv_CDMdx     = -v_CDM-ck_over_Hp*Psi;
-  dPhidx       = Psi-pow(ck_over_Hp, 2)/3+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4*Omega_R*exp(-x)*Theta[0]+4*Omega_Nu*exp(-x)*Nu[0]);
+  ddelta_Bdx                  = ck_over_Hp*v_B-3*dPhidx;
+  dv_Bdx                      = (-v_B-ck_over_Hp*Psi+R*(q+ck_over_Hp*(-Theta[0]+2*Theta[2])-ck_over_Hp*Psi))/(1+R);
+  ddelta_CDMdx                = ck_over_Hp*v_CDM-3*dPhidx;
+  dv_CDMdx                    = -v_CDM-ck_over_Hp*Psi;
+  dPhidx                      = Psi-pow(ck_over_Hp, 2)/3+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4*Omega_R*exp(-x)*Theta[0]+4*Omega_Nu*exp(-x)*Nu[0]);
 
   // SET: Photon multipoles (Θ_ell)
-  dThetadx[0] = -ck_over_Hp*Theta[1]-dPhidx;
-  dThetadx[1] = (q-dv_Bdx)/3;
+  dThetadx[0]                 = -ck_over_Hp*Theta[1]-dPhidx;
+  dThetadx[1]                 = (q-dv_Bdx)/3;
 
   // SET: Neutrino mutlipoles (Nu_ell)
   if(neutrinos){
-    dNudx[0]  = -ck_over_Hp*Nu[1]-dPhidx;
-    dNudx[1]  = -ck_over_Hp*Nu[0]/3-(2/3)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3;
-    for (int l = 2; l < n_ell_neutrinos_tc; l++) dNudx[l] = l*ck_over_Hp*Nu[l-1]/(2*l-1)-(l+1)*ck_over_Hp*Nu[l+1]/(2l+1);
+    dNudx[0]                  = -ck_over_Hp*Nu[1]-dPhidx;
+    dNudx[1]                  = -ck_over_Hp*Nu[0]/3-(2/3)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3;
+    for (int l = 2; l < n_ell_neutrinos_tc; l++){
+      dNudx[l]                = l*ck_over_Hp*Nu[l-1]/(2*l-1)-(l+1)*ck_over_Hp*Nu[l+1]/(2l+1);
+    }
     dNudx[n_ell_neutrinos_tc] = ck_over_Hp*Nu[n_ell_neutrinos_tc-1]-c*(n_ell_neutrinos_tc+1)*Nu[n_ell_neutrinos_tc]/(Hp*cosmo->eta_of_x(x));
   }
 
+  dydx[Constants.ind_deltacdm_tc]    = delta_CDM;
+  dydx[Constants.ind_deltab_tc]      = delta_B;
+  dydx[Constants.ind_vcdm_tc]        = v_CDM;
+  dydx[Constants.ind_vb_tc]          = v_B;
+  dydx[Constants.ind_Phi_tc]         = Phi;
+  dydx[Constants.ind_start_theta_tc] = Theta[0, n_ell_theta_tc];
+  dydx[Constants.ind_start_nu_tc]    = Nu[0, n_ell_neutrinos_tc];
+  
   return GSL_SUCCESS;
 }
 
@@ -560,22 +590,22 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   //=============================================================================
 
   // SET: Scalar quantities (Φ, δ, v, ...)
-  double Psi              = -Phi-12*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*Nu[2]);
-  dPhidx                  = Psi-pow(ck_over_Hp, 2)/3+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4*Omega_R*exp(-x)*Theta[0]+4*Omega_Nu*exp(-x)*Nu[0]);
-  dv_Bdx                  = -v_B-ck_over_Hp*Psi+dtaudx*R*(3*Theta[1]+v_B);
-  ddelta_Bdx              = ck_over_Hp*v_B-3*dPhidx;
-  dv_CDMdx                = -v_CDM-ck_over_Hp*Psi;
-  ddelta_CDMdx            = ck_over_Hp*v_CDM-3*dPhidx;
+  double Psi               = -Phi-12*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*Nu[2]);
+  dPhidx                   = Psi-pow(ck_over_Hp, 2)/3+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4*Omega_R*exp(-x)*Theta[0]+4*Omega_Nu*exp(-x)*Nu[0]);
+  dv_Bdx                   = -v_B-ck_over_Hp*Psi+dtaudx*R*(3*Theta[1]+v_B);
+  ddelta_Bdx               = ck_over_Hp*v_B-3*dPhidx;
+  dv_CDMdx                 = -v_CDM-ck_over_Hp*Psi;
+  ddelta_CDMdx             = ck_over_Hp*v_CDM-3*dPhidx;
 
   // SET: Photon multipoles (Θ_ell)
-  dThetadx[0]             = -ck_over_Hp*Theta[1]-dPhidx;
-  dThetadx[1]             = ck_over_Hp+Theta[0]/3-(2/3)*ck_over_Hp*Theta[2]+ck_over_Hp*Psi/3+dtaudx*(Theta[1]+v_B/3);
+  dThetadx[0]              = -ck_over_Hp*Theta[1]-dPhidx;
+  dThetadx[1]              = ck_over_Hp+Theta[0]/3-(2/3)*ck_over_Hp*Theta[2]+ck_over_Hp*Psi/3+dtaudx*(Theta[1]+v_B/3);
   for (int l = 2; l < n_ell_theta; l++)
   {
-    if (l==2) dThetadx[l] = l*ck_over_Hp*Theta[l-1]/(2*l+1)-(l+1)*ck_over_Hp*Theta[l+1]/(2*l+1)+dtaudx*(Theta[l]-pi/10);
-    else dThetadx[l]      = l*ck_over_Hp*Theta[l-1]/(2*l+1)-(l+1)*ck_over_Hp*Theta[l+1]/(2*l+1)+dtaudx*Theta[l];    
+    if (l==2) dThetadx[l]  = l*ck_over_Hp*Theta[l-1]/(2*l+1)-(l+1)*ck_over_Hp*Theta[l+1]/(2*l+1)+dtaudx*(Theta[l]-pi/10);
+    else dThetadx[l]       = l*ck_over_Hp*Theta[l-1]/(2*l+1)-(l+1)*ck_over_Hp*Theta[l+1]/(2*l+1)+dtaudx*Theta[l];    
   }
-  dThetadx[n_ell_theta+1] = ck_over_Hp*Theta[n_ell_theta]+(dtaudx-c*(n_ell_theta+1)/(Hp*eta))*Theta[n_ell_theta];
+  dThetadx[n_ell_theta+1]  = ck_over_Hp*Theta[n_ell_theta]+(dtaudx-c*(n_ell_theta+1)/(Hp*eta))*Theta[n_ell_theta];
 
   // SET: Photon polarization multipoles (Θ_p_ell)
   if(polarization){
@@ -601,6 +631,15 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
     }
     dNudx[n_ell_neutrinos] = ck_over_Hp*Nu[n_ell_neutrinos-1]-c*(n_ell_neutrinos+1)*Nu[n_ell_neutrinos]/(Hp*cosmo->eta_of_x(x));
   }
+
+  dydx[Constants.ind_deltacdm]     = delta_CDM;
+  dydx[Constants.ind_deltab]       = delta_B;
+  dydx[Constants.ind_vcdm]         = v_CDM;
+  dydx[Constants.ind_vb]           = v_B;
+  dydx[Constants.ind_Phi]          = Phi;
+  dydx[Constants.ind_start_theta]  = Theta[0, n_ell_theta];
+  dydx[Constants.ind_start_thetap] = Theta_p[0, n_ell_thetap];
+  dydx[Constants.ind_start_nu]     = Nu[0, n_ell_neutrinos];
 
   return GSL_SUCCESS;
 }
