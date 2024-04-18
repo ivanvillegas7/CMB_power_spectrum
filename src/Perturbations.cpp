@@ -365,8 +365,8 @@ void Perturbations::compute_source_functions(){
   //=============================================================================
   // ...
   // ...
-  Vector k_array;
-  Vector x_array;
+  Vector k_array = Utils::linspace(k_min, k_max, n_k);
+  Vector x_array = Utils::linspace(x_start, x_end, n_x);
 
   // Make storage for the source functions (in 1D array to be able to pass it to the spline)
   Vector ST_array(k_array.size() * x_array.size());
