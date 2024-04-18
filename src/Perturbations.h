@@ -33,10 +33,10 @@ class Perturbations{
     // but you only need to make the splines you will need
 
     // Splines of scalar perturbations quantities
-    Spline2D delta_cdm_spline{"delta_cdm_spline"};
-    Spline2D delta_b_spline{"delta_b_spline"};
-    Spline2D v_cdm_spline{"v_cdm_spline"};
-    Spline2D v_b_spline{"v_b_spline"};
+    Spline2D delta_CDM_spline{"delta_CDM_spline"};
+    Spline2D delta_B_spline{"delta_B_spline"};
+    Spline2D v_CDM_spline{"v_CDM_spline"};
+    Spline2D v_B_spline{"v_B_spline"};
     Spline2D Phi_spline{"Phi_spline"};
     Spline2D Pi_spline{"Pi_spline"};
     Spline2D Psi_spline{"Psi_spline"};
@@ -112,10 +112,10 @@ class Perturbations{
     void output(const double k, const std::string filename) const;
 
     // Get the quantities we have integrated
-    double get_delta_cdm(const double x, const double k) const;
-    double get_delta_b(const double x, const double k) const;
-    double get_v_cdm(const double x, const double k) const;
-    double get_v_b(const double x, const double k) const;
+    double get_delta_CDM(const double x, const double k) const;
+    double get_delta_B(const double x, const double k) const;
+    double get_v_CDM(const double x, const double k) const;
+    double get_v_B(const double x, const double k) const;
     double get_Phi(const double x, const double k) const;
     double get_Psi(const double x, const double k) const;
     double get_Pi(const double x, const double k) const;
