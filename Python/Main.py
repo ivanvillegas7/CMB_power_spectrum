@@ -51,14 +51,14 @@ def main():
     Milestone2.milestone2()
     
     print('Milestone II has been concluded.\n')
-    
-    """
-    Uncoment while completing milestones.
-    """
+
+    #Uncomment when Milestone III is completed
     
     #Milestone3.milestone3()
     
     #print('Milestone III has been concluded.\n')
+
+    #Uncomment when Milestone IV is completed
     
     #Milestone4.milestone4()
     
