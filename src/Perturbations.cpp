@@ -174,13 +174,13 @@ Vector Perturbations::set_ic(const double x, const double k) const{
   // Cosmological parameters and variables
   double H0                   = cosmo->get_H0();
   double Hp                   = cosmo->Hp_of_x(x);
-  double Omega_CDM            = cosmo->get_OmegaCDM(x);
-  double Omega_B              = cosmo->get_OmegaB(x);
-  double Omega_R              = cosmo->get_OmegaR(x);
-  double Omega_Nu             = cosmo->get_OmegaNu(x);
+  double Omega_CDM            = cosmo->get_OmegaCDM(x);//();
+  double Omega_B              = cosmo->get_OmegaB(x);//();
+  double Omega_R              = cosmo->get_OmegaR(x);//();
+  double Omega_Nu             = cosmo->get_OmegaNu(x);//();
 
   //Set recombination parameters
-  double R                    = rec->R_of_x(x);
+  double R                    = rec->R_of_x(x);//();
   double dtaudx               = rec->dtaudx_of_x(x);
 
   // Save flops
@@ -281,13 +281,13 @@ Vector Perturbations::set_ic_after_tight_coupling(
   // Cosmological parameters and variables
   double H0                   = cosmo->get_H0();
   double Hp                   = cosmo->Hp_of_x(x);
-  double Omega_CDM            = cosmo->get_OmegaCDM(x);
-  double Omega_B              = cosmo->get_OmegaB(x);
-  double Omega_R              = cosmo->get_OmegaR(x);
-  double Omega_Nu             = cosmo->get_OmegaNu(x);
+  double Omega_CDM            = cosmo->get_OmegaCDM(x);//();
+  double Omega_B              = cosmo->get_OmegaB(x);//();
+  double Omega_R              = cosmo->get_OmegaR(x);//();
+  double Omega_Nu             = cosmo->get_OmegaNu(x);//();
 
   //Set recombination parameters
-  double R                    = rec->R_of_x(x);
+  double R                    = rec->R_of_x(x);//();
   double dtaudx               = rec->dtaudx_of_x(x);
 
   // Save flops
@@ -430,13 +430,13 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   double H0                     = cosmo->get_H0();
   double Hp                     = cosmo->Hp_of_x(x);
   double dHpdx                  = cosmo->dHpdx_of_x(x);
-  double Omega_CDM              = cosmo->get_OmegaCDM(x);
-  double Omega_B                = cosmo->get_OmegaB(x);
-  double Omega_R                = cosmo->get_OmegaR(x);
-  double Omega_Nu               = cosmo->get_OmegaNu(x);
+  double Omega_CDM              = cosmo->get_OmegaCDM(x);//();
+  double Omega_B                = cosmo->get_OmegaB(x);//();
+  double Omega_R                = cosmo->get_OmegaR(x);//();
+  double Omega_Nu               = cosmo->get_OmegaNu(x);//();
 
   //Set recombination parameters
-  double R                      = rec->R_of_x(x);
+  double R                      = rec->R_of_x(x);//();
   double dtaudx                 = rec->dtaudx_of_x(x);
   double ddtauddx               = rec->ddtauddx_of_x(x);
 
@@ -541,14 +541,14 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   // Cosmological parameters and variables
   double H0                 = cosmo->get_H0();
   double Hp                 = cosmo->Hp_of_x(x);
-  double Omega_CDM          = cosmo->get_OmegaCDM(x);
-  double Omega_B            = cosmo->get_OmegaB(x);
-  double Omega_R            = cosmo->get_OmegaR(x);
-  double Omega_Nu           = cosmo->get_OmegaNu(x);
+  double Omega_CDM          = cosmo->get_OmegaCDM(x);//();
+  double Omega_B            = cosmo->get_OmegaB(x);//();
+  double Omega_R            = cosmo->get_OmegaR(x);//();
+  double Omega_Nu           = cosmo->get_OmegaNu(x);//();
   double eta                = cosmo->eta_of_x(x);
 
   //Set recombination parameters
-  double R                  = rec->R_of_x(x);
+  double R                  = rec->R_of_x(x);//();
   double dtaudx             = rec->dtaudx_of_x(x);
 
   // Save flops
