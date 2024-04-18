@@ -100,8 +100,8 @@ def D_L(z: np.array(float), H0: float, Omega_M: float, Omega_K: float,\
 
     The function calculates the luminosity distance using the given redshift
     values and the cosmological parameters. It computes the E(z) term and then
-    integrates to find the corresponding luminosity distance for each redshift
-    value. The resulting luminosity distances are returned as a list.
+    integrates 1/E(z) to find the corresponding luminosity distance for each
+    redshift value. The resulting luminosity distances are returned as a list.
     """
     
     d_L: List[float] = []
