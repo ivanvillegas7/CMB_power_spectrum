@@ -125,7 +125,7 @@ void Perturbations::integrate_perturbations(){
   Utils::EndTiming("integrateperturbation");
 
   //=============================================================================
-  // TODO: Make all splines needed: Theta0,Theta1,Theta2,Phi,Psi,...
+  // TODO: Make all splines needed: Θ0,Θ1,Θ2,Φ,Ψ,...
   //=============================================================================
   // ...
   // ...
@@ -472,7 +472,7 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   // TODO: fill in the expressions for all the derivatives
   //=============================================================================
 
-  // SET: Scalar quantities (Phi, delta, v, ...)
+  // SET: Scalar quantities (Φ, δ, v, ...)
   double Psi   = -Phi-12*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*Nu[2]);
   double q     = -(((1-R)*dtaudx+(1+R)*ddtauddx)*(3*Theta[1]+v_B)-ck_over_Hp*Psi+(1-dHp_over_Hp)*ck_over_Hp*(-Theta[0]+2+Theta[2])-ck_over_Hp*dThetadx[0])/((1+R)*dtaudx+dHp_over_Hp-1);
   
@@ -482,7 +482,7 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   dv_CDMdx     = -v_CDM-ck_over_Hp*Psi;
   dPhidx       = Psi-pow(ck_over_Hp, 2)/3+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4*Omega_R*exp(-x)*Theta[0]+4*Omega_Nu*exp(-x)*Nu[0]);
 
-  // SET: Photon multipoles (Theta_ell)
+  // SET: Photon multipoles (Θ_ell)
   dThetadx[0] = -ck_over_Hp*Theta[1]-dPhidx;
   dThetadx[1] = (q-dv_Bdx)/3;
 
@@ -560,7 +560,7 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   // TODO: fill in the expressions for all the derivatives
   //=============================================================================
 
-  // SET: Scalar quantities (Phi, delta, v, ...)
+  // SET: Scalar quantities (Φ, δ, v, ...)
   double Psi              = -Phi-12*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*Nu[2]);
   dPhidx                  = Psi-pow(ck_over_Hp, 2)/3+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4*Omega_R*exp(-x)*Theta[0]+4*Omega_Nu*exp(-x)*Nu[0]);
   dv_Bdx                  = -v_B-ck_over_Hp*Psi+dtaudx*R*(3*Theta[1]+v_B);
@@ -568,7 +568,7 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   dv_CDMdx                = -v_CDM-ck_over_Hp*Psi;
   ddelta_CDMdx            = ck_over_Hp*v_CDM-3*dPhidx;
 
-  // SET: Photon multipoles (Theta_ell)
+  // SET: Photon multipoles (Θ_ell)
   dThetadx[0]             = -ck_over_Hp*Theta[1]-dPhidx;
   dThetadx[1]             = ck_over_Hp+Theta[0]/3-(2/3)*ck_over_Hp*Theta[2]+ck_over_Hp*Psi/3+dtaudx*(Theta[1]+v_B/3);
   for (int l = 2; l < n_ell_theta; l++)
@@ -578,7 +578,7 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   }
   dThetadx[n_ell_theta+1] = ck_over_Hp*Theta[n_ell_theta]+(dtaudx-c*(n_ell_theta+1)/(Hp*eta))*Theta[n_ell_theta];
 
-  // SET: Photon polarization multipoles (Theta_p_ell)
+  // SET: Photon polarization multipoles (Θ_p_ell)
   if(polarization){
     dTheta_pdx[0]          = -ck_over_Hp*Theta_p[1]+dtaudx*(Theta_p[0]-pi/2);
     for (int l = 2; l < n_ell_thetap; l++)

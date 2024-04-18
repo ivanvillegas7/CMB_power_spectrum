@@ -33,13 +33,13 @@ class Perturbations{
     // but you only need to make the splines you will need
 
     // Splines of scalar perturbations quantities
-    Spline2D delta_CDM_spline{"delta_CDM_spline"};
-    Spline2D delta_B_spline{"delta_B_spline"};
-    Spline2D v_CDM_spline{"v_CDM_spline"};
-    Spline2D v_B_spline{"v_B_spline"};
-    Spline2D Phi_spline{"Phi_spline"};
-    Spline2D Pi_spline{"Pi_spline"};
-    Spline2D Psi_spline{"Psi_spline"};
+    Spline2D delta_CDM_spline{"δ_CDM spline"};
+    Spline2D delta_B_spline{"δ_B spline"};
+    Spline2D v_CDM_spline{"v_CDM spline"};
+    Spline2D v_B_spline{"v_B spline"};
+    Spline2D Phi_spline{"Φ spline"};
+    Spline2D Pi_spline{"Π spline"};
+    Spline2D Psi_spline{"Ψ spline"};
    
     // Splines of source functions (ST for temperature; SE for polarization)
     Spline2D ST_spline{"ST_spline"};
