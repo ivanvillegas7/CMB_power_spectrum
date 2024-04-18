@@ -188,11 +188,11 @@ Vector Perturbations::set_ic(const double x, const double k) const{
 
   // SET: Scalar quantities (Gravitational potental, baryons and CDM)
   double Psi                  = -1/(3/2+2*f_Nu/5);
-  Phi                         = -(1+2*f_Nu/5);
   delta_CDM                   = -3*Psi/2;
   delta_B                     = -3*Psi/2;
   v_CDM                       = -ck_over_Hp*Psi/2;
   v_B                         = -ck_over_Hp*Psi/2;
+  Phi                         = -(1+2*f_Nu/5);
 
   // SET: Photon temperature perturbations (Theta_ell)
   Theta[0]                   = -Psi/2;
@@ -295,11 +295,11 @@ Vector Perturbations::set_ic_after_tight_coupling(
 
   // SET: Scalar quantities (Gravitational potental, baryons and CDM)
   double Psi                  = -1/(3/2+2*f_Nu/5);
-  Phi                         = -(1+2*f_Nu/5);//Phi_tc;
   delta_CDM                   = -3*Psi/2;//delta_CMB_tc;
   delta_B                     = -3*Psi/2;//delta_B_tc;
   v_CDM                       = -ck_over_Hp*Psi/2;//v_CDM_tc;
   v_B                         = -ck_over_Hp*Psi/2;//v_B_tc;
+  Phi                         = -(1+2*f_Nu/5);//Phi_tc;
 
   // SET: Photon temperature perturbations (Theta_ell)
   Theta[0]                   = -Psi/2;//Theta_tc[0];
@@ -474,12 +474,13 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
 
   // SET: Scalar quantities (Phi, delta, v, ...)
   double Psi   = -Phi-12*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*Nu[2]);
-  dPhidx       = Psi-pow(ck_over_Hp, 2)/3+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4*Omega_R*exp(-x)*Theta[0]+4*Omega_Nu*exp(-x)*Nu[0]);
   double q     = -(((1-R)*dtaudx+(1+R)*ddtauddx)*(3*Theta[1]+v_B)-ck_over_Hp*Psi+(1-dHp_over_Hp)*ck_over_Hp*(-Theta[0]+2+Theta[2])-ck_over_Hp*dThetadx[0])/((1+R)*dtaudx+dHp_over_Hp-1);
-  dv_Bdx       = (-v_B-ck_over_Hp*Psi+R*(q+ck_over_Hp*(-Theta[0]+2*Theta[2])-ck_over_Hp*Psi))/(1+R);
+  
   ddelta_Bdx   = ck_over_Hp*v_B-3*dPhidx;
-  dv_CDMdx     = -v_CDM-ck_over_Hp*Psi;
+  dv_Bdx       = (-v_B-ck_over_Hp*Psi+R*(q+ck_over_Hp*(-Theta[0]+2*Theta[2])-ck_over_Hp*Psi))/(1+R);
   ddelta_CDMdx = ck_over_Hp*v_CDM-3*dPhidx;
+  dv_CDMdx     = -v_CDM-ck_over_Hp*Psi;
+  dPhidx       = Psi-pow(ck_over_Hp, 2)/3+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4*Omega_R*exp(-x)*Theta[0]+4*Omega_Nu*exp(-x)*Nu[0]);
 
   // SET: Photon multipoles (Theta_ell)
   dThetadx[0] = -ck_over_Hp*Theta[1]-dPhidx;
@@ -560,13 +561,12 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   //=============================================================================
 
   // SET: Scalar quantities (Phi, delta, v, ...)
-  double Psi   = -Phi-12*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*Nu[2]);
-  dPhidx       = Psi-pow(ck_over_Hp, 2)/3+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4*Omega_R*exp(-x)*Theta[0]+4*Omega_Nu*exp(-x)*Nu[0]);
-  dv_Bdx       = -v_B-ck_over_Hp*Psi+dtaudx*R*(3*Theta[1]+v_B);
-  ddelta_Bdx   = ck_over_Hp*v_B-3*dPhidx;
-  dv_CDMdx     = -v_CDM-ck_over_Hp*Psi;
-  ddelta_CDMdx = ck_over_Hp*v_CDM-3*dPhidx;
-
+  double Psi              = -Phi-12*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*Nu[2]);
+  dPhidx                  = Psi-pow(ck_over_Hp, 2)/3+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4*Omega_R*exp(-x)*Theta[0]+4*Omega_Nu*exp(-x)*Nu[0]);
+  dv_Bdx                  = -v_B-ck_over_Hp*Psi+dtaudx*R*(3*Theta[1]+v_B);
+  ddelta_Bdx              = ck_over_Hp*v_B-3*dPhidx;
+  dv_CDMdx                = -v_CDM-ck_over_Hp*Psi;
+  ddelta_CDMdx            = ck_over_Hp*v_CDM-3*dPhidx;
 
   // SET: Photon multipoles (Theta_ell)
   dThetadx[0]             = -ck_over_Hp*Theta[1]-dPhidx;
@@ -580,20 +580,26 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
 
   // SET: Photon polarization multipoles (Theta_p_ell)
   if(polarization){
-    dTheta_pdx[0] = -ck_over_Hp*Theta_p[1]+dtaudx*(Theta_p[0]-pi/2);
+    dTheta_pdx[0]          = -ck_over_Hp*Theta_p[1]+dtaudx*(Theta_p[0]-pi/2);
     for (int l = 2; l < n_ell_thetap; l++)
   {
-    if (l==2) dTheta_pdx[l] = l*ck_over_Hp*Theta_p[l-1]/(2*l+1)-(l+1)*ck_over_Hp*Theta_p[l+1]/(2*l+1)+dtaudx*(Theta_p[l]-pi/10);
-    else dTheta_pdx[l]      = l*ck_over_Hp*Theta_p[l-1]/(2*l+1)-(l+1)*ck_over_Hp*Theta_p[l+1]/(2*l+1)+dtaudx*Theta_p[l];    
+    if (l==2){
+      dTheta_pdx[l]        = l*ck_over_Hp*Theta_p[l-1]/(2*l+1)-(l+1)*ck_over_Hp*Theta_p[l+1]/(2*l+1)+dtaudx*(Theta_p[l]-pi/10);
+    }
+    else{
+      dTheta_pdx[l]        = l*ck_over_Hp*Theta_p[l-1]/(2*l+1)-(l+1)*ck_over_Hp*Theta_p[l+1]/(2*l+1)+dtaudx*Theta_p[l];
+    }
   }
   dThetadx[n_ell_thetap+1] = ck_over_Hp*Theta_p[n_ell_thetap]+(dtaudx-c*(n_ell_thetap+1)/(Hp*eta))*Theta_p[n_ell_thetap];
   }
 
   // SET: Neutrino mutlipoles (Nu_ell)
   if(neutrinos){
-    dNudx[0]  = -ck_over_Hp*Nu[1]-dPhidx;
-    dNudx[1]  = -ck_over_Hp*Nu[0]/3-(2/3)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3;
-    for (int l = 2; l < n_ell_neutrinos; l++) dNudx[l] = l*ck_over_Hp*Nu[l-1]/(2*l-1)-(l+1)*ck_over_Hp*Nu[l+1]/(2l+1);
+    dNudx[0]               = -ck_over_Hp*Nu[1]-dPhidx;
+    dNudx[1]               = -ck_over_Hp*Nu[0]/3-(2/3)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3;
+    for (int l = 2; l < n_ell_neutrinos; l++){
+      dNudx[l]             = l*ck_over_Hp*Nu[l-1]/(2*l-1)-(l+1)*ck_over_Hp*Nu[l+1]/(2l+1);
+    }
     dNudx[n_ell_neutrinos] = ck_over_Hp*Nu[n_ell_neutrinos-1]-c*(n_ell_neutrinos+1)*Nu[n_ell_neutrinos]/(Hp*cosmo->eta_of_x(x));
   }
 
@@ -664,8 +670,8 @@ void Perturbations::info() const{
     std::cout << "We do not include neutrinos\n";
 
   std::cout << "Information about the perturbation system:\n";
-  std::cout << "ind_deltacdm:       " << Constants.ind_deltacdm         << "\n";
-  std::cout << "ind_deltab:         " << Constants.ind_deltab           << "\n";
+  std::cout << "ind_delta_CDM:      " << Constants.ind_deltacdm         << "\n";
+  std::cout << "ind_delta_B:        " << Constants.ind_deltab           << "\n";
   std::cout << "ind_v_CDM:          " << Constants.ind_vcdm             << "\n";
   std::cout << "ind_v_B:            " << Constants.ind_vb               << "\n";
   std::cout << "ind_Phi:            " << Constants.ind_Phi              << "\n";
