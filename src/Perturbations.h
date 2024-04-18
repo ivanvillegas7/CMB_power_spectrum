@@ -42,8 +42,8 @@ class Perturbations{
     Spline2D Psi_spline{"Ψ spline"};
    
     // Splines of source functions (ST for temperature; SE for polarization)
-    Spline2D ST_spline{"ST_spline"};
-    Spline2D SE_spline{"SE_spline"};
+    Spline2D ST_spline{"ST spline"};
+    Spline2D SE_spline{"SE spline"};
     
     // Splines of mulipole quantities
     // NB: If you use there you have to allocate the container first

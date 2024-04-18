@@ -30,7 +30,7 @@ void Perturbations::solve(){
 //====================================================
 
 void Perturbations::integrate_perturbations(){
-  Utils::StartTiming("integrateperturbation");
+  Utils::StartTiming("Integrate perturbation");
 
   //===================================================================
   // TODO: Set up the k-array for the k's we are going to integrate over
@@ -100,11 +100,12 @@ void Perturbations::integrate_perturbations(){
 
     //===================================================================
     // TODO: remember to store the data found from integrating so we can
-    // spline it below
+    // spline it below.
     //
     // To compute a 2D spline of a function f(x,k) the data must be given 
     // to the spline routine as a 1D array f_array with the points f(ix, ik) 
     // stored as f_array[ix + n_x * ik]
+    //
     // Example:
     // Vector x_array(n_x);
     // Vector k_array(n_k);
@@ -122,10 +123,10 @@ void Perturbations::integrate_perturbations(){
     //...
 
   }
-  Utils::EndTiming("integrateperturbation");
+  Utils::EndTiming("Integrate perturbation");
 
   //=============================================================================
-  // TODO: Make all splines needed: Θ0,Θ1,Θ2,Φ,Ψ,...
+  // TODO: Make all splines needed: Θ_0,Θ_1,Θ_2,Φ,Ψ,...
   //=============================================================================
   // ...
   // ...
@@ -358,13 +359,11 @@ double Perturbations::get_tight_coupling_time(const double k) const{
 // source function(s)
 //====================================================
 void Perturbations::compute_source_functions(){
-  Utils::StartTiming("source");
+  Utils::StartTiming("Source");
 
   //=============================================================================
   // TODO: Make the x and k arrays to evaluate over and use to make the splines
   //=============================================================================
-  // ...
-  // ...
   Vector k_array = Utils::linspace(k_min, k_max, n_k);
   Vector x_array = Utils::linspace(x_start, x_end, n_x);
 
@@ -391,7 +390,7 @@ void Perturbations::compute_source_functions(){
       // ...
       // ...
 
-      // Temperatur source
+      // Temperature source
       ST_array[index] = 0.0;
 
       // Polarization source
@@ -407,7 +406,7 @@ void Perturbations::compute_source_functions(){
     SE_spline.create (x_array, k_array, SE_array, "Source_Pol_x_k");
   }
 
-  Utils::EndTiming("source");
+  Utils::EndTiming("Source");
 }
 
 //====================================================
@@ -661,13 +660,13 @@ void Perturbations::info() const{
   std::cout << "k_max (1/Mpc): " << k_max * Constants.Mpc  << "\n";
   std::cout << "n_k:     " << n_k              << "\n";
   if(Constants.polarization)
-    std::cout << "We include polarization\n";
+    std::cout << "We include polarization.\n";
   else
-    std::cout << "We do not include polarization\n";
+    std::cout << "We do not include polarization.\n";
   if(Constants.neutrinos)
-    std::cout << "We include neutrinos\n";
+    std::cout << "We include neutrinos.\n";
   else
-    std::cout << "We do not include neutrinos\n";
+    std::cout << "We do not include neutrinos.\n";
 
   std::cout << "Information about the perturbation system:\n";
   std::cout << "ind_delta_CDM:      " << Constants.ind_deltacdm         << "\n";
