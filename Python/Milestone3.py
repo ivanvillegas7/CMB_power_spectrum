@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 
 def plot():
     
+    #Check if photon polarization has been included.
+    
     polarization_txt: str
     
     polarization_txt = input('Did you include photon polarization? [Yes, no]: ')
@@ -26,6 +28,8 @@ def plot():
     else:
         
         polarization = True
+        
+    #Check if neutrinos have been included.
         
     neutrinos_txt: str
     
@@ -49,10 +53,24 @@ def plot():
     
     x: np.array(float) = data_1[:, 0]
     
+    #Theta_0_X: oreder 0 photon multipole.
+    
     Theta_0_1: np.array(float) = data_1[:, 1]
+    
+    #Theta_1_X: oreder 1 photon multipole.
+    
     Theta_1_1: np.array(float) = data_1[:, 2]
+    
+    #Theta_2_X: oreder 2 photon multipole.
+    
     Theta_2_1: np.array(float) = data_1[:, 3]
+    
+    #Phi_X: gravitational potential.
+    
     Phi_1: np.array(float) = data_1[:, 4]
+    
+    #Psi_X: other potential.
+    
     Psi_1: np.array(float) = data_1[:, 5]
     Pi_1: np.array(float) = data_1[:, 6]
     Source_T_0_1: np.array(float) = data_1[:, 7]
@@ -63,6 +81,8 @@ def plot():
     #Read the data from 'perturbations_k01.txt' in folder 'Results'.
     
     data_01 = np.loadtxt('../Results/perturbations_k01.txt')
+    
+    #Theta_0_X: oreder 0 photon multipole.
     
     Theta_0_01: np.array(float) = data_01[:, 1]
     Theta_1_01: np.array(float) = data_01[:, 2]
@@ -79,6 +99,8 @@ def plot():
     
     data_001 = np.loadtxt('../Results/perturbations_k001.txt')
     
+    #Theta_0_X: oreder 0 photon multipole.
+    
     Theta_0_001: np.array(float) = data_001[:, 1]
     Theta_1_001: np.array(float) = data_001[:, 2]
     Theta_2_001: np.array(float) = data_001[:, 3]
@@ -93,6 +115,8 @@ def plot():
     #Read the data from 'perturbations_k0001.txt' in folder 'Results'.
     
     data_0001 = np.loadtxt('../Results/perturbations_k0001.txt')
+    
+    #Theta_0_X: oreder 0 photon multipole.
     
     Theta_0_0001: np.array(float) = data_0001[:, 1]
     Theta_1_0001: np.array(float) = data_0001[:, 2]
