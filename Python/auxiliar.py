@@ -111,7 +111,7 @@ def D_L(z: np.array(float), H0: float, Omega_M: float, Omega_K: float,\
         x: np.array = np.array(np.linspace(0, z[i]))
     
         d_L.append(((sc.constants.c/H0)*(1+z[i])\
-                    *sc.integrate.simpson(E(x, H0, Omega_M, Omega_K, Omega_R,\
+                    *sc.integrate.simpson(1/E(x, H0, Omega_M, Omega_K, Omega_R,\
                                             Omega_Lambda), x)))
         
     return np.array(d_L)
