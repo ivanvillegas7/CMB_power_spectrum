@@ -38,6 +38,7 @@ void Perturbations::integrate_perturbations(){
   // quadratic or a logarithmic spacing
   //===================================================================
   Vector k_array = Utils::linspace(k_min, k_max, n_k);
+  Vector x_array = Utils::linspace(x_start, x_end, n_x);
 
   // Loop over all wavenumbers
   for(int ik = 0; ik < n_k; ik++){
@@ -70,13 +71,17 @@ void Perturbations::integrate_perturbations(){
     };
 
     // Integrate from x_start -> x_end_tight
-    // ...
-    // ...
-    // ...
-    // ...
-    // ...
+    double x_end_tight = get_tight_coupling_time(k);
+    int index_end_tc = (x_end_tight-x_start)/((x_end-x_start)/n_x);
+    Vector x_array_tc = Utils::linspace(x_start, x_end_tight, index_end_tc);
 
-    //====i===============================================================
+    // Solve the ODE in the tight coupling regime
+    ODESolver ode;
+    ode.solve(dydx_tight_coupling, x_array_tc, y_tight_coupling_ini);
+    auto y_tc     = ode.get_data();
+    auto y_tc_end = ode.get_final_data();
+
+    //====================================================================
     // TODO: Full equation integration
     // Remember to implement the routines:
     // set_ic_after_tight_coupling : The IC after tight coupling ends
@@ -92,11 +97,11 @@ void Perturbations::integrate_perturbations(){
     };
 
     // Integrate from x_end_tight -> x_end
-    // ...
-    // ...
-    // ...
-    // ...
-    // ...
+    Vector x_array_full = Utils::linspace(x_end_tight, x_end, n_x-index_end_tc);
+
+    // Solve the ODE in the tight coupling regime
+    ode.solve(dydx_full, x_array_full, y_tc_end);
+    auto y_full = ode.get_data();
 
     //===================================================================
     // TODO: remember to store the data found from integrating so we can
@@ -117,7 +122,6 @@ void Perturbations::integrate_perturbations(){
     // NB: If you use Theta_spline then you have to allocate it first,
     // before using it e.g.
     // Theta_spline = std::vector<Spline2D>(n_ell_theta);
-    //
     //===================================================================
     //...
     //...
@@ -365,8 +369,18 @@ double Perturbations::get_tight_coupling_time(const double k) const{
   // TODO: compute and return x for when tight coupling ends
   // Remember all the three conditions in Callin
   //=============================================================================
-  // ...
-  // ...
+  double dtaudx;
+  Vector x_array = Utils::linspace(x_start, x_end, n_x);
+
+  for (int i = 0; i < n_x; i++)
+  {
+    dtaudx = -rec->dtaudx_of_x(x_array[i]);
+
+    if (dtaudx<10.0 || dtaudx<10.0*k*Constants.c/cosmo->Hp_of_x(x_array[i]) || rec->Xe_of_x(x_array[i])<0.99)
+    {
+      return x_array[i-1];
+    }
+  }
 
   return x_tight_coupling_end;
 }
