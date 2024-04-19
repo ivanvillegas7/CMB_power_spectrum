@@ -45,7 +45,8 @@ def plot():
         
         neutrinos = True
     
-    #Read the data from 'perturbations_k1.txt' in folder 'Results'.
+    #Read the data from 'perturbations_kX.txt' in folder 'Results',
+    #where X=0.X.
     
     data_1 = np.loadtxt('../Results/perturbations_k1.txt')
     
@@ -78,12 +79,7 @@ def plot():
     Source_T_2_1: np.array(float) = data_1[:, 9]
     Source_T_3_1: np.array(float) = data_1[:, 10]
     
-    #Read the data from 'perturbations_k01.txt' in folder 'Results'.
-    
     data_01 = np.loadtxt('../Results/perturbations_k01.txt')
-    
-    #Theta_0_X: oreder 0 photon multipole.
-    
     Theta_0_01: np.array(float) = data_01[:, 1]
     Theta_1_01: np.array(float) = data_01[:, 2]
     Theta_2_01: np.array(float) = data_01[:, 3]
@@ -95,12 +91,7 @@ def plot():
     Source_T_2_01: np.array(float) = data_01[:, 9]
     Source_T_3_01: np.array(float) = data_01[:, 10]
     
-    #Read the data from 'perturbations_k001.txt' in folder 'Results'.
-    
-    data_001 = np.loadtxt('../Results/perturbations_k001.txt')
-    
-    #Theta_0_X: oreder 0 photon multipole.
-    
+    data_001 = np.loadtxt('../Results/perturbations_k001.txt')    
     Theta_0_001: np.array(float) = data_001[:, 1]
     Theta_1_001: np.array(float) = data_001[:, 2]
     Theta_2_001: np.array(float) = data_001[:, 3]
@@ -112,12 +103,7 @@ def plot():
     Source_T_2_001: np.array(float) = data_001[:, 9]
     Source_T_3_001: np.array(float) = data_001[:, 10]
     
-    #Read the data from 'perturbations_k0001.txt' in folder 'Results'.
-    
-    data_0001 = np.loadtxt('../Results/perturbations_k0001.txt')
-    
-    #Theta_0_X: oreder 0 photon multipole.
-    
+    data_0001 = np.loadtxt('../Results/perturbations_k0001.txt')    
     Theta_0_0001: np.array(float) = data_0001[:, 1]
     Theta_1_0001: np.array(float) = data_0001[:, 2]
     Theta_2_0001: np.array(float) = data_0001[:, 3]
@@ -128,6 +114,8 @@ def plot():
     Source_T_1_0001: np.array(float) = data_0001[:, 8]
     Source_T_2_0001: np.array(float) = data_0001[:, 9]
     Source_T_3_0001: np.array(float) = data_0001[:, 10]
+
+    #Make the different plots
     
     plt.figure()
     plt.plot(x, 4*Theta_0_1, label=r'$\delta_\gamma(k=0.1/\text{Mpc})$')
