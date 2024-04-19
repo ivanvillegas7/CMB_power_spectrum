@@ -71,7 +71,6 @@ void Perturbations::integrate_perturbations(){
     };
 
     // Integrate from x_start -> x_end_tight
-    double x_end_tight = get_tight_coupling_time(k);
     int index_end_tc = (x_end_tight-x_start)/((x_end-x_start)/n_x);
     Vector x_array_tc = Utils::linspace(x_start, x_end_tight, index_end_tc);
 
