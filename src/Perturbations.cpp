@@ -51,6 +51,7 @@ void Perturbations::integrate_perturbations(){
   std::vector<Vector> Theta_array(Constants.n_ell_theta, Vector(n_x*n_k));
   std::vector<Vector> Theta_p_array(Constants.n_ell_thetap, Vector(n_x*n_k));
   std::vector<Vector> Nu_array(Constants.n_ell_neutrinos, Vector(n_x*n_k));
+  Vector Pi_array(n_x*n_k);
 
   // Loop over all wavenumbers
   for(int ik = 0; ik < n_k; ik++){
@@ -236,6 +237,7 @@ void Perturbations::integrate_perturbations(){
       for(int l=0; l < Constants.n_ell_theta; l++){
         Theta_array[l][index] = Theta[l];
       }
+      Pi_array[index]         = Theta_array[2][index]+Theta_p_array[0][index]+Theta_p_array[2][index];
     }
   }
 
@@ -244,12 +246,13 @@ void Perturbations::integrate_perturbations(){
   //=============================================================================
   // TODO: Make all splines needed: Θ_0,Θ_1,Θ_2,Φ,Ψ,...
   //=============================================================================
-  Phi_spline.create(x_array, k_array, Phi_array);
-  Psi_spline.create(x_array, k_array, Psi_array);
-  delta_CDM_spline.create(x_array, k_array, delta_CDM_array);
-  delta_B_spline.create(x_array, k_array, delta_B_array);
-  v_CDM_spline.create(x_array, k_array, v_CDM_array);
-  v_B_spline.create(x_array, k_array, v_B_array);
+  Phi_spline.create(x_array, k_array, Phi_array, "Φ spline");
+  Psi_spline.create(x_array, k_array, Psi_array, "Ψ spline");
+  delta_CDM_spline.create(x_array, k_array, delta_CDM_array, "δ_CDM spline");
+  delta_B_spline.create(x_array, k_array, delta_B_array, "δ_B spline");
+  v_CDM_spline.create(x_array, k_array, v_CDM_array, "v_CDM spline");
+  v_B_spline.create(x_array, k_array, v_B_array, "v_B spline");
+  Pi_spline.create(x_array, k_array, Pi_array, "Π spline");
   Theta_spline = std::vector<Spline2D>(Constants.n_ell_theta);
   for(int l=0; l < Constants.n_ell_theta; l++){
     Theta_spline[l].create(x_array, k_array, Theta_array[l]);
@@ -560,11 +563,6 @@ void Perturbations::compute_source_functions(){
       //=============================================================================
       // TODO: Compute the source functions
       //=============================================================================
-      // Fetch all the things we need...
-      // const double Hp       = cosmo->Hp_of_x(x);
-      // const double tau      = rec->tau_of_x(x);
-      // ...
-      // ...
 
       // Fetch functions from BackgroundCosmology
       double Hp      = cosmo->Hp_of_x(x);
