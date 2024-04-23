@@ -56,51 +56,59 @@ def cosmology()->(np.array(float), np.array(float)):
     
     #x=ln(a): main time variable.
     
-    x: np.array(float) = data[:, 0]
+    y: np.array(float) = data[:, 0]
+    
+    for i in range(len(y)):
+        
+        if y[i]>=-15.0:
+            
+            break
+        
+    x: np.array(float) = y[i:]
     
     #eta: conformal time.
     
-    eta: np.array(float) = data[:, 1]
+    eta: np.array(float) = data[i:, 1]
     
     #Hp: conformal Hubble factor.
     
-    Hp: np.array(float) = data[:, 2]
+    Hp: np.array(float) = data[i:, 2]
     
     #dHp: first derivative of Hp with respect to x.
     
-    dHp: np.array(float) = data[:, 3]
+    dHp: np.array(float) = data[i:, 3]
     
     #OmegaB relative density of baryonic (ordinary) matter.
     
-    OmegaB: np.array(float) = data[:, 4]
+    OmegaB: np.array(float) = data[i:, 4]
     
     #OmegaCDM: relative density of cold dark matter.
     
-    OmegaCDM: np.array(float) = data[:, 5]
+    OmegaCDM: np.array(float) = data[i:, 5]
     
     #OmegaLambda: relative density of dark energy.
     
-    OmegaLambda: np.array(float) = data[:, 6]
+    OmegaLambda: np.array(float) = data[i:, 6]
     
     #OmegaR: relative density of radiation (photons).
     
-    OmegaR: np.array(float) = data[:, 7]
+    OmegaR: np.array(float) = data[i:, 7]
     
     #OmegaNu: relative density of neutrinos.
 
-    OmegaNu: np.array(float) = data[:, 8]
+    OmegaNu: np.array(float) = data[i:, 8]
     
     #d_L: distante luminosity.
     
-    d_L: np.array(float) = data[:, 9]/(1e9*sc.constants.parsec)
+    d_L: np.array(float) = data[i:, 9]/(1e9*sc.constants.parsec)
     
     #ddHp: second derivative of Hp with respect to x.
     
-    ddHp: np.array(float) = data[:, 10]
+    ddHp: np.array(float) = data[i:, 10]
     
     #t: cosmological time.
     
-    t: np.array(float) = data[:, 11]/(1e9*365*24*60*60)
+    t: np.array(float) = data[i:, 11]/(1e9*365*24*60*60)
     
     #Define and compute redshift (z) from the given data.
     
