@@ -5,6 +5,15 @@ Created on Wed Feb 21 12:06:38 2024
 @author: Iván Villegas Pérez
 """
 
+"""
+This script contains all the relevant functions for analysing and plotting the
+results of running the C++ codes related to solving the structure of the
+Universe.
+
+Here you can find the functions 'plot()' and
+'milestone1()'. All of them are explained below.
+"""
+
 #Import all relevant packages
 
 import numpy as np
@@ -12,6 +21,38 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def plot():
+    
+    """
+    This function generates and saves different plots based on the data
+    obtained from 'perturbations_kX.txt' files, where X denotes the 'k=0.X'.
+    The user is prompted to specify whether photon polarization and neutrinos 
+    are included in the data for appropriate plotting. 
+    The generated plots include density perturbations, velocity perturbations.
+    and quadrupoles over time and, if polarization is included, polarizatoin
+    multipoles.
+
+    The function performs the following specific actions:
+    1. Prompts the user to specify if photon polarization and neutrinos are
+       included.
+    2. Reads data from 'perturbations_kX.txt' files.
+    3. Extracts relevant data such as time variable 'x', photon multipole
+       values 'Theta_0_X', 'Theta_1_X', 'Theta_2_X', gravitational potential
+       'Phi_X', and more.
+    4. Generates plots for density perturbations, velocity perturbations, and 
+       quadrupoles and, if polarization is included, polarizatoin
+       multipoles using the extracted data.
+    5. Saves the generated plots as PDF files in the '../Plots/Milestone III/'
+       directory.
+
+    Note: This function can be used to visualize the evolution of various
+          cosmological perturbations over time and compare different components
+          of the universe.
+
+    Parameters:
+        None.
+    Returns:
+        None.
+    """
     
     #Check if photon polarization has been included.
     
@@ -46,7 +87,7 @@ def plot():
         neutrinos = True
     
     #Read the data from 'perturbations_kX.txt' in folder 'Results',
-    #where X=0.X.
+    #where X denotes k=0.X.
     
     data_1 = np.loadtxt('../Results/perturbations_k1.txt')
     
@@ -70,14 +111,41 @@ def plot():
     
     Phi_1: np.array(float) = data_1[:, 4]
     
-    #Psi_X: other potential.
+    #Psi_X: curvature potential.
     
     Psi_1: np.array(float) = data_1[:, 5]
-    Pi_1: np.array(float) = data_1[:, 6]
-    Source_T_0_1: np.array(float) = data_1[:, 7]
-    Source_T_1_1: np.array(float) = data_1[:, 8]
-    Source_T_2_1: np.array(float) = data_1[:, 9]
-    Source_T_3_1: np.array(float) = data_1[:, 10]
+    
+    #ThetaP_l_X: photon polarizaion multipoles.
+    
+    if polarization:
+        ThetaP_0_1: np.array(float) = data_1[:, 6]
+        ThetaP_1_1: np.array(float) = data_1[:, 7]
+        ThetaP_2_1: np.array(float) = data_1[:, 8]
+        
+    #Nu_l_X: neutrino multipoles.
+    
+    if neutrinos:
+        Nu_0_1: np.array(float) = data_1[:, 9]
+        Nu_1_1: np.array(float) = data_1[:, 10]
+        Nu_2_1: np.array(float) = data_1[:, 11]
+        
+    #delta_B_X: baryonic matter density perturbation
+        
+    delta_B_1: np.array(float) = data_1[:, 12]
+    
+    #delta_CDM_X: CDM density perturbation
+        
+    delta_CDM_1: np.array(float) = data_1[:, 13]
+    
+    #v_B_X: baryonic matter perturbation velocity
+        
+    v_B_1: np.array(float) = data_1[:, 14]
+    
+    #v_CDM_X: CDM perturbation velocity
+        
+    v_CDM_1: np.array(float) = data_1[:, 15]
+    
+    #New k
     
     data_01 = np.loadtxt('../Results/perturbations_k01.txt')
     Theta_0_01: np.array(float) = data_01[:, 1]
@@ -85,11 +153,20 @@ def plot():
     Theta_2_01: np.array(float) = data_01[:, 3]
     Phi_01: np.array(float) = data_01[:, 4]
     Psi_01: np.array(float) = data_01[:, 5]
-    Pi_01: np.array(float) = data_01[:, 6]
-    Source_T_0_01: np.array(float) = data_01[:, 7]
-    Source_T_1_01: np.array(float) = data_01[:, 8]
-    Source_T_2_01: np.array(float) = data_01[:, 9]
-    Source_T_3_01: np.array(float) = data_01[:, 10]
+    if polarization:
+        ThetaP_0_01: np.array(float) = data_01[:, 6]
+        ThetaP_1_01: np.array(float) = data_01[:, 7]
+        ThetaP_2_01: np.array(float) = data_01[:, 8]
+    if neutrinos:
+        Nu_0_01: np.array(float) = data_01[:, 9]
+        Nu_1_01: np.array(float) = data_01[:, 10]
+        Nu_2_01: np.array(float) = data_01[:, 11]
+    delta_B_01: np.array(float) = data_01[:, 12]
+    delta_CDM_01: np.array(float) = data_01[:, 13]
+    v_B_01: np.array(float) = data_01[:, 14]
+    v_CDM_01: np.array(float) = data_01[:, 15]
+    
+    #New k    
     
     data_001 = np.loadtxt('../Results/perturbations_k001.txt')    
     Theta_0_001: np.array(float) = data_001[:, 1]
@@ -97,24 +174,41 @@ def plot():
     Theta_2_001: np.array(float) = data_001[:, 3]
     Phi_001: np.array(float) = data_001[:, 4]
     Psi_001: np.array(float) = data_001[:, 5]
-    Pi_001: np.array(float) = data_001[:, 6]
-    Source_T_0_001: np.array(float) = data_001[:, 7]
-    Source_T_1_001: np.array(float) = data_001[:, 8]
-    Source_T_2_001: np.array(float) = data_001[:, 9]
-    Source_T_3_001: np.array(float) = data_001[:, 10]
+    if polarization:
+        ThetaP_0_001: np.array(float) = data_001[:, 6]
+        ThetaP_1_001: np.array(float) = data_001[:, 7]
+        ThetaP_2_001: np.array(float) = data_001[:, 8]
+    if neutrinos:
+        Nu_0_001: np.array(float) = data_001[:, 9]
+        Nu_1_001: np.array(float) = data_001[:, 10]
+        Nu_2_001: np.array(float) = data_001[:, 11]        
+    delta_B_001: np.array(float) = data_001[:, 12]
+    delta_CDM_001: np.array(float) = data_001[:, 13]
+    v_B_001: np.array(float) = data_001[:, 14]
+    v_CDM_001: np.array(float) = data_001[:, 15]
     
+    #New k    
+        
     data_0001 = np.loadtxt('../Results/perturbations_k0001.txt')    
     Theta_0_0001: np.array(float) = data_0001[:, 1]
     Theta_1_0001: np.array(float) = data_0001[:, 2]
     Theta_2_0001: np.array(float) = data_0001[:, 3]
     Phi_0001: np.array(float) = data_0001[:, 4]
     Psi_0001: np.array(float) = data_0001[:, 5]
-    Pi_0001: np.array(float) = data_0001[:, 6]
-    Source_T_0_0001: np.array(float) = data_0001[:, 7]
-    Source_T_1_0001: np.array(float) = data_0001[:, 8]
-    Source_T_2_0001: np.array(float) = data_0001[:, 9]
-    Source_T_3_0001: np.array(float) = data_0001[:, 10]
-
+    if polarization:
+        ThetaP_0_0001: np.array(float) = data_0001[:, 6]
+        ThetaP_1_0001: np.array(float) = data_0001[:, 7]
+        ThetaP_2_0001: np.array(float) = data_0001[:, 8]
+    if neutrinos:
+        Nu_0_0001: np.array(float) = data_0001[:, 9]
+        Nu_1_0001: np.array(float) = data_0001[:, 10]
+        Nu_2_0001: np.array(float) = data_0001[:, 11]
+    delta_B_0001: np.array(float) = data_0001[:, 12]
+    delta_CDM_0001: np.array(float) = data_0001[:, 13]
+    v_B_0001: np.array(float) = data_0001[:, 14]
+    v_CDM_0001: np.array(float) = data_0001[:, 15]
+    
+    
     #Make the different plots
     
     plt.figure()
@@ -230,7 +324,27 @@ def plot():
 
 def milestone3():
     
+    """
+    This function serves as the entry point for running the tasks and functions
+    related to Milestone III of the cosmology research project.
+    In this milestone, the 'plot' function is called to generate and save plots
+    based on the data obtained from 'perturbations_kX.txt' file.
+
+    The function performs the following specific actions:
+    1. Calls the 'plot' function to generate and save plots for density
+    perturbations, velocity perturbations quadrupoles and, if polarization is 
+    included, polarization multipoles over time.
     
+    Note: The purpose of this function is to execute the necessary tasks and
+    functions for Milestone III of the cosmology research project. It can be
+    customized to include additional steps or functions relevant to this 
+    milestone.
+
+    Parameters:
+        None.
+    Returns:
+        None.
+    """
     
     #Run the functions.
     
