@@ -872,6 +872,9 @@ double Perturbations::get_dv_Bdx(const double x, const double k) const{
   return v_B_spline(x,k);
 }
 double Perturbations::get_Phi(const double x, const double k) const{
+  return Phi_spline(x,k);
+}
+double Perturbations::get_dPhidx(const double x, const double k) const{
   return Phi_spline.deriv_x(x,k);
 }
 double Perturbations::get_Psi(const double x, const double k) const{
