@@ -445,8 +445,7 @@ void RecombinationHistory::output(const std::string filename) const{
     fp << dgdx_tilde_of_x(x)             << " ";
     fp << ddgddx_tilde_of_x(x)           << " ";
     fp << Xe_of_x_Saha_approx(x)         << " ";
-    if (x>=-15.0) fp << cosmo->t_of_x(x) << " ";
-    else fp << 0.0                       << " ";
+    fp << cosmo->t_of_x(x)               << " ";
     fp << "\n";
   };
   std::for_each(x_array.begin(), x_array.end(), print_data);
