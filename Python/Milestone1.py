@@ -56,59 +56,51 @@ def cosmology()->(np.array(float), np.array(float)):
     
     #x=ln(a): main time variable.
     
-    y: np.array(float) = data[:, 0]
-    
-    for i in range(len(y)):
-        
-        if y[i]>=-15.0:
-            
-            break
-        
-    x: np.array(float) = y[i:]
+    x: np.array(float) = data[:, 0]
     
     #eta: conformal time.
     
-    eta: np.array(float) = data[i:, 1]
+    eta: np.array(float) = data[:, 1]
     
     #Hp: conformal Hubble factor.
     
-    Hp: np.array(float) = data[i:, 2]
+    Hp: np.array(float) = data[:, 2]
     
     #dHp: first derivative of Hp with respect to x.
     
-    dHp: np.array(float) = data[i:, 3]
+    dHp: np.array(float) = data[:, 3]
     
     #OmegaB relative density of baryonic (ordinary) matter.
     
-    OmegaB: np.array(float) = data[i:, 4]
+    OmegaB: np.array(float) = data[:, 4]
     
     #OmegaCDM: relative density of cold dark matter.
     
-    OmegaCDM: np.array(float) = data[i:, 5]
+    OmegaCDM: np.array(float) = data[:, 5]
     
     #OmegaLambda: relative density of dark energy.
     
-    OmegaLambda: np.array(float) = data[i:, 6]
+    OmegaLambda: np.array(float) = data[:, 6]
     
     #OmegaR: relative density of radiation (photons).
     
-    OmegaR: np.array(float) = data[i:, 7]
+    OmegaR: np.array(float) = data[:, 7]
     
     #OmegaNu: relative density of neutrinos.
 
-    OmegaNu: np.array(float) = data[i:, 8]
+    OmegaNu: np.array(float) = data[:, 8]
     
     #d_L: distante luminosity.
     
-    d_L: np.array(float) = data[i:, 9]/(1e9*sc.constants.parsec)
+    d_L: np.array(float) = data[:, 9]/(1e9*sc.constants.parsec)
     
     #ddHp: second derivative of Hp with respect to x.
     
-    ddHp: np.array(float) = data[i:, 10]
+    ddHp: np.array(float) = data[:, 10]
     
     #t: cosmological time.
     
-    t: np.array(float) = data[i:, 11]/(1e9*365*24*60*60)
+    t: np.array(float) = data[:, 11]/(1e9*365*24*60*60)
     
     #Define and compute redshift (z) from the given data.
     
@@ -137,8 +129,10 @@ def cosmology()->(np.array(float), np.array(float)):
     
     index_M_R: int = np.argmin(np.abs(OmegaRel-OmegaM))
     
-    index_M_Lambda: int = np.argmin(np.abs(OmegaLambda-OmegaM))
-    
+    index_M_Lambda: int = index_M_R+\
+                          np.argmin(np.abs(OmegaLambda[index_M_R:]\
+                                           -OmegaM[index_M_R:]))
+        
     #Get the index when the Universe starts its accelerated expansion.
     
     index: int = np.argmin(np.abs(a_dotdot))
@@ -147,7 +141,7 @@ def cosmology()->(np.array(float), np.array(float)):
     
     plt.figure()
     plt.plot(x, ddHp/Hp)
-    aux.plot(x, ddHp/Hp, index_M_R, index_M_Lambda, index)
+    aux.plot(x, ddHp/Hp, index_M_R, index_M_Lambda)
     plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -156,7 +150,7 @@ def cosmology()->(np.array(float), np.array(float)):
     
     plt.figure()
     plt.plot(x, dHp/Hp)
-    aux.plot(x, dHp/Hp, index_M_R, index_M_Lambda, index)
+    aux.plot(x, dHp/Hp, index_M_R, index_M_Lambda)
     plt.title(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -165,7 +159,7 @@ def cosmology()->(np.array(float), np.array(float)):
     
     plt.figure()
     plt.plot(x, eta*Hp/c)
-    aux.plot(x, eta*Hp/c, index_M_R, index_M_Lambda, index)
+    aux.plot(x, eta*Hp/c, index_M_R, index_M_Lambda)
     plt.title(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -174,8 +168,8 @@ def cosmology()->(np.array(float), np.array(float)):
     
     plt.figure()
     plt.plot(x, Hp/(100*1e3/(1e6*sc.constants.parsec)))
-    aux.plot(x, Hp/(100*1e3/(1e6*sc.constants.parsec)), index_M_R, index_M_Lambda,\
-         index)
+    aux.plot(x, Hp/(100*1e3/(1e6*sc.constants.parsec)), index_M_R,\
+             index_M_Lambda)
     plt.title(r'$\mathcal{H}(x)$ vs $x$')
     plt.grid(True)
     plt.xlabel(r'$x$')
@@ -185,7 +179,7 @@ def cosmology()->(np.array(float), np.array(float)):
 
     plt.figure()
     plt.plot(x, t)
-    aux.plot(x, t, index_M_R, index_M_Lambda, index)
+    aux.plot(x, t, index_M_R, index_M_Lambda)
     plt.title(r'$t(x)$ vs $x$')
     plt.grid(True)
     plt.yscale('log')
@@ -195,7 +189,7 @@ def cosmology()->(np.array(float), np.array(float)):
 
     plt.figure()
     plt.plot(x, eta/(1e9*365*24*60*60*c))
-    aux.plot(x, eta/(1e9*365*24*60*60*c), index_M_R, index_M_Lambda, index)
+    aux.plot(x, eta/(1e9*365*24*60*60*c), index_M_R, index_M_Lambda)
     plt.title(r'$\frac{\eta(x)}{c}$ vs $x$')
     plt.grid(True)
     plt.yscale('log')

@@ -24,7 +24,7 @@ from typing import List
 
 #Define function 'plot()'.
 
-def plot(x: np.array(float), y: np.array(float), i1: int, i2:int, i3: int):
+def plot(x: np.array(float), y: np.array(float), i1: int, i2:int):
     
     """
     Plot function for illustrating different epochs of cosmological evolution.
