@@ -278,6 +278,7 @@ def plot():
     plt.title(r'Evolution of quadrupoles over time ($x$)')
     plt.legend()
     plt.grid(True)
+    plt.xlim(x[0], x[-1])
     plt.savefig('../Plots/Milestone III/quadrupoles.pdf')
     
     plt.figure()
