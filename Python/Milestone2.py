@@ -202,13 +202,13 @@ def tables():
     
     recombination: int = np.argmin(np.abs(X_e-0.1))
     
-    print(f'\nTIMES\n\
+    print(f'TIMES\n\
                             x       z        t [Myr]\n\
     Decoupling:           {x[decoupling]:.3f}  {z[decoupling]:.2f}     {t[decoupling]*1e3:.3f}\n\
     Last scattering:      {x[last_scattering]:.3f}  {z[last_scattering]:.2f}     {t[last_scattering]*1e3:.3f}\n\
     Half-way rec:         {x[half_way]:.3f}  {z[half_way]:.2f}     {t[half_way]*1e3:.3f}\n\
     Half-way rec (Saha):  {x[half_way_Saha]:.3f}  {z[half_way_Saha]:.2f}     {t[half_way_Saha]*1e3:.3f}\n\
-    Recombination:        {x[recombination]:.3f}  {z[recombination]:.2f}     {t[recombination]*1e3:.3f}\n')
+    Recombination:        {x[recombination]:.3f}  {z[recombination]:.2f}     {t[recombination]*1e3:.3f}')
           
     return(last_scattering, recombination)
     

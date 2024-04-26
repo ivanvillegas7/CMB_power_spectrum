@@ -74,7 +74,7 @@ def plot():
         
     neutrinos_txt: str
     
-    neutrinos_txt = input('Did you include neutrinos? [Yes, no]: ')
+    neutrinos_txt = input('\nDid you include neutrinos? [Yes, no]: ')
     
     neutrinos: bool
     

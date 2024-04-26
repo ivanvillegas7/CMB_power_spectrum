@@ -421,7 +421,7 @@ def MCMC_supernova_fit():
 
     print(f'PARAMETERS\n\
       χ²     Ω_M     Ω_k     Ω_Λ      H_0\n\
-    {chi2_min:.2f}    {OmegaM[index]:.2f}    {OmegaK[index]:.2f}    {OmegaLambda[index]:.2f}    {H[index]:.2f}\n')
+    {chi2_min:.2f}    {OmegaM[index]:.2f}    {OmegaK[index]:.2f}    {OmegaLambda[index]:.2f}    {H[index]:.2f}')
         
     return(H[index], OmegaM[index], OmegaK[index], 0, OmegaLambda[index])
     

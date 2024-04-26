@@ -42,21 +42,19 @@ def main():
     #Run the code related to solving the background cosmology of the Universe
     #and show the results related to the supernove fitting.
     
-    Milestone1.milestone1()
+    #Milestone1.milestone1()
     
     #Print a message saying that the execution of the code is over.
     
-    print('Milestone I has been concluded.\n')
+    print('\nMilestone I has been concluded.')
     
-    Milestone2.milestone2()
+    #Milestone2.milestone2()
     
-    print('Milestone II has been concluded.\n')
-
-    #Uncomment when Milestone III is completed
+    print('\nMilestone II has been concluded.\n')
     
-    #Milestone3.milestone3()
+    Milestone3.milestone3()
     
-    #print('Milestone III has been concluded.\n')
+    print('\nMilestone III has been concluded.\n')
 
     #Uncomment when Milestone IV is completed
     
