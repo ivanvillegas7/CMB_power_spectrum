@@ -234,6 +234,7 @@ def plot():
     plt.title(r'Evolution of density perturbations over time ($x$)')
     plt.legend()
     plt.grid(True)
+    plt.xlim(x[0], x[-1])
     plt.savefig('../Plots/Milestone III/density perturbations.pdf')
     
     plt.figure()
@@ -259,6 +260,7 @@ def plot():
     plt.title(r'Evolution of velocity perturbations over time ($x$)')
     plt.legend()
     plt.grid(True)
+    plt.xlim(x[0], x[-1])
     plt.savefig('../Plots/Milestone III/velocity perturbations.pdf')
     
     plt.figure()
@@ -298,6 +300,7 @@ def plot():
     plt.title(r'Evolution of potentials over time ($x$)')
     plt.legend()
     plt.grid(True)
+    plt.xlim(x[0], x[-1])
     plt.savefig('../Plots/Milestone III/potentials.pdf')
         
     if polarization:
@@ -320,6 +323,7 @@ def plot():
         plt.title(r'Evolution of polarization multipoles over time ($x$)')
         plt.legend()
         plt.grid(True)
+        plt.xlim(x[0], x[-1])
         plt.savefig('../Plots/Milestone III/polarization.pdf')
 
 def milestone3():
