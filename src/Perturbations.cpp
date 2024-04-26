@@ -18,10 +18,8 @@ Perturbations::Perturbations(
 void Perturbations::solve(){
 
   // Integrate all the perturbation equation and spline the result
-  //std::cout << "Integrate" << std::endl;
   integrate_perturbations();
 
-  //std::cout << "Source" << std::endl;
   // Compute source functions and spline the result
   compute_source_functions();
 }
@@ -58,7 +56,6 @@ void Perturbations::integrate_perturbations(){
 
   // Loop over all wavenumbers
   for(int ik = 0; ik < n_k; ik++){
-    //std::cout << "ik = " << ik << std::endl;
 
     // Progress bar...
     if( (10*ik) / n_k != (10*ik+10) / n_k ) {
@@ -70,7 +67,6 @@ void Perturbations::integrate_perturbations(){
     double k = k_array[ik];
 
     // Find value to integrate to
-    //std::cout << "Get tc time" << std::endl;
     double x_end_tight = get_tight_coupling_time(k);
 
     //===================================================================
@@ -81,7 +77,6 @@ void Perturbations::integrate_perturbations(){
     //===================================================================
 
     // Set up initial conditions in the tight coupling regime
-    //std::cout << "Set ic tc" << std::endl;
     auto y_tight_coupling_ini = set_ic(x_start, k);
 
     // The tight coupling ODE system
@@ -94,7 +89,6 @@ void Perturbations::integrate_perturbations(){
     Vector x_array_tc = Utils::linspace(x_start, x_end_tight, index_end_tc);
 
     // Solve the ODE in the tight coupling regime
-    //std::cout << "Solve tc" << std::endl;
     ODESolver ode;
     ode.solve(dydx_tight_coupling, x_array_tc, y_tight_coupling_ini);
     auto solution_tc     = ode.get_data();
@@ -108,7 +102,6 @@ void Perturbations::integrate_perturbations(){
     //===================================================================
 
     // Set up initial conditions (y_tight_coupling is the solution at the end of tight coupling)
-    //std::cout << "Set ic full" << std::endl;
     auto y_full_ini = set_ic_after_tight_coupling(y_tc_end, x_end_tight, k);
 
     // The full ODE system
@@ -120,7 +113,6 @@ void Perturbations::integrate_perturbations(){
     Vector x_array_full = Utils::linspace(x_end_tight, x_end, n_x-index_end_tc);
 
     // Solve the ODE in the tight coupling regime
-    //std::cout << "Solve full" << std::endl;
     ode.solve(dydx_full, x_array_full, y_full_ini);
     auto solution_full = ode.get_data();
 
@@ -145,7 +137,6 @@ void Perturbations::integrate_perturbations(){
     // Theta_spline = std::vector<Spline2D>(n_ell_theta);
     //===================================================================
 
-    //std::cout << "Store data tc" << std::endl;
     // Start filling arrays from the tight coupling regime 
     for (int ix=0; ix < index_end_tc; ix++){
       int index = ix+n_x*ik;
@@ -203,7 +194,6 @@ void Perturbations::integrate_perturbations(){
       }
       Psi_array[index]       = -Phi-12.*pow(H0/(Constants.c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*N2);
     }
-    //std::cout<<"Store data full"<<std::endl;
     // Now fill rest of arrays from the full regime 
     for (int ix = index_end_tc; ix < n_x; ix++){
       int index   = ix+n_x*ik;
@@ -252,8 +242,7 @@ void Perturbations::integrate_perturbations(){
         {
           Theta_p_array[l][index] = Theta_p[l];
         }
-
-      Pi_array[index]            += Theta_p_array[0][index]+Theta_p_array[2][index];
+        Pi_array[index]            += Theta_p_array[0][index]+Theta_p_array[2][index];
       }
       // Fill in all solved Nu-values
       if (Constants.neutrinos){
@@ -263,17 +252,9 @@ void Perturbations::integrate_perturbations(){
           Nu_array[l][index]      = Nu[l];
         }
       }
-      else{
-        for (int i = 0; i < Constants.n_ell_neutrinos; i++)
-        {
-          Nu_array[i][index]      = 0.0;
-        }        
-      }
     }
   }
   Utils::EndTiming("Integrate perturbation");
-
-  //std::cout<<"Make splines"<<std::endl;
 
   //=============================================================================
   // TODO: Make all splines needed: Θ_0,Θ_1,Θ_2,Φ,Ψ,...
@@ -376,7 +357,7 @@ Vector Perturbations::set_ic(const double x, const double k) const{
     double *Nu               = &y_tc[Constants.ind_start_nu_tc];
     Nu[0]                    = -Psi/2.;
     Nu[1]                    = ck_over_Hp*Psi/6.;
-    Nu[2]                    = (Psi+Phi)*pow(c*k*exp(x)/H0, 2)/(12.*Omega_Nu);
+    Nu[2]                    = -(Psi+Phi)*pow(c*k*exp(x)/H0, 2)/(12.*Omega_Nu);
     for (int l = 3; l < n_ell_neutrinos_tc; l++)
     {
       Nu[l]                  = ck_over_Hp*Nu[l-1]/(2.*l+1.);
@@ -480,7 +461,7 @@ Vector Perturbations::set_ic_after_tight_coupling(
   if(polarization){
     double *Theta_p          = &y[Constants.ind_start_thetap_tc];
     Theta_p[0]               = 5.*Theta[2]/4.;
-    Theta_p[1]               = ck_over_Hp*Theta[2]/(4.*dtaudx);
+    Theta_p[1]               = -ck_over_Hp*Theta[2]/(4.*dtaudx);
     Theta_p[2]               = Theta[2]/4.;
     for (int l = 3; l < n_ell_thetap; l++)
     {
@@ -737,7 +718,7 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
     double *dNudx             = &dydx[Constants.ind_start_nu_tc];
     dNudx[0]                  = -ck_over_Hp*Nu[1]-dPhidx;
     dNudx[1]                  = -ck_over_Hp*Nu[0]/3.-(2./3.)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3.;
-    for (int l = 2; l < n_ell_neutrinos_tc; l++){
+    for (int l = 2; l < n_ell_neutrinos_tc-1; l++){
       dNudx[l]                = l*ck_over_Hp*Nu[l-1]/(2.*l-1.)-(l+1.)*ck_over_Hp*Nu[l+1]/(2.*l+1.);
     }
     dNudx[n_ell_neutrinos_tc-1] = ck_over_Hp*Nu[n_ell_neutrinos_tc-2]-c*(n_ell_neutrinos_tc)*Nu[n_ell_neutrinos_tc-1]/(Hp*cosmo->eta_of_x(x));
@@ -849,7 +830,7 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
     for (int l = 2; l < n_ell_thetap-1; l++)
   {
     if (l==2){
-      dTheta_pdx[l]        = l*ck_over_Hp*Theta_p[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Theta_p[l+1]/(2.*l+1.)+dtaudx*(Theta_p[l]-Pi/1.);
+      dTheta_pdx[l]        = l*ck_over_Hp*Theta_p[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Theta_p[l+1]/(2.*l+1.)+dtaudx*(Theta_p[l]-Pi/10.);
     }
     else{
       dTheta_pdx[l]        = l*ck_over_Hp*Theta_p[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Theta_p[l+1]/(2.*l+1.)+dtaudx*Theta_p[l];
@@ -863,11 +844,11 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
     const double *Nu       = &y[Constants.ind_start_nu];
     double *dNudx          = &dydx[Constants.ind_start_nu];
     dNudx[0]               = -ck_over_Hp*Nu[1]-dPhidx;
-    dNudx[1]               = -ck_over_Hp*Nu[0]/3.-(2./3.)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3.;
+    dNudx[1]               = ck_over_Hp*Nu[0]/3.-(2./3.)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3.;
     for (int l = 2; l < n_ell_neutrinos-1; l++){
       dNudx[l]             = l*ck_over_Hp*Nu[l-1]/(2.*l-1.)-(l+1.)*ck_over_Hp*Nu[l+1]/(2.*l+1.);
     }
-    dNudx[n_ell_neutrinos-1] = ck_over_Hp*Nu[n_ell_neutrinos-2]-c*(n_ell_neutrinos)*Nu[n_ell_neutrinos-1]/(Hp*eta);
+    dNudx[n_ell_neutrinos-1] = ck_over_Hp*Nu[n_ell_neutrinos-2]-c*n_ell_neutrinos*Nu[n_ell_neutrinos-1]/(Hp*eta);
   }
   
   return GSL_SUCCESS;
