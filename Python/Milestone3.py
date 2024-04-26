@@ -11,7 +11,7 @@ results of running the C++ codes related to solving the structure of the
 Universe.
 
 Here you can find the functions 'plot()' and
-'milestone3()'. All of them are explained below.
+'milestone1()'. All of them are explained below.
 """
 
 #Import all relevant packages

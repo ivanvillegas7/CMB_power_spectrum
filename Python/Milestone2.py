@@ -38,7 +38,7 @@ def plots():
     table of relevant data.
     """
     
-    #Read the data from 'cosmology.txt' in folder 'Results'.
+    #Read the data from 'recombination.txt' in folder 'Results'.
     
     data = np.loadtxt('../Results/recombination.txt')
     
