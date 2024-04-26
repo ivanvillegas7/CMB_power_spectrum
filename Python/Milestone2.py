@@ -202,7 +202,7 @@ def tables():
     
     recombination: int = np.argmin(np.abs(X_e-0.1))
     
-    print(f'TIMES\n\
+    print(f'\nTIMES\n\
                             x       z        t [Myr]\n\
     Decoupling:           {x[decoupling]:.3f}  {z[decoupling]:.2f}     {t[decoupling]*1e3:.3f}\n\
     Last scattering:      {x[last_scattering]:.3f}  {z[last_scattering]:.2f}     {t[last_scattering]*1e3:.3f}\n\
