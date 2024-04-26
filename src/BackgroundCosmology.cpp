@@ -53,7 +53,7 @@ void BackgroundCosmology::solve(){
     return GSL_SUCCESS;
   };
 
-  Vector eta_ini{0.0};
+  Vector eta_ini{Constants.c/Hp_of_x(x_start)};
 
   ODESolver ode;
   ode.solve(detadx, x_array, eta_ini);

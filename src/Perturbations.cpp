@@ -18,10 +18,10 @@ Perturbations::Perturbations(
 void Perturbations::solve(){
 
   // Integrate all the perturbation equation and spline the result
-  std::cout << "Integrate" << std::endl;
+  //std::cout << "Integrate" << std::endl;
   integrate_perturbations();
 
-  std::cout << "Source" << std::endl;
+  //std::cout << "Source" << std::endl;
   // Compute source functions and spline the result
   compute_source_functions();
 }
@@ -58,7 +58,7 @@ void Perturbations::integrate_perturbations(){
 
   // Loop over all wavenumbers
   for(int ik = 0; ik < n_k; ik++){
-    std::cout << "ik = " << ik << std::endl;
+    //std::cout << "ik = " << ik << std::endl;
 
     // Progress bar...
     if( (10*ik) / n_k != (10*ik+10) / n_k ) {
@@ -70,7 +70,7 @@ void Perturbations::integrate_perturbations(){
     double k = k_array[ik];
 
     // Find value to integrate to
-    std::cout << "Get tc time" << std::endl;
+    //std::cout << "Get tc time" << std::endl;
     double x_end_tight = get_tight_coupling_time(k);
 
     //===================================================================
@@ -81,7 +81,7 @@ void Perturbations::integrate_perturbations(){
     //===================================================================
 
     // Set up initial conditions in the tight coupling regime
-    std::cout << "Set ic tc" << std::endl;
+    //std::cout << "Set ic tc" << std::endl;
     auto y_tight_coupling_ini = set_ic(x_start, k);
 
     // The tight coupling ODE system
@@ -94,7 +94,7 @@ void Perturbations::integrate_perturbations(){
     Vector x_array_tc = Utils::linspace(x_start, x_end_tight, index_end_tc);
 
     // Solve the ODE in the tight coupling regime
-    std::cout << "Solve tc" << std::endl;
+    //std::cout << "Solve tc" << std::endl;
     ODESolver ode;
     ode.solve(dydx_tight_coupling, x_array_tc, y_tight_coupling_ini);
     auto solution_tc     = ode.get_data();
@@ -108,7 +108,7 @@ void Perturbations::integrate_perturbations(){
     //===================================================================
 
     // Set up initial conditions (y_tight_coupling is the solution at the end of tight coupling)
-    std::cout << "Set ic full" << std::endl;
+    //std::cout << "Set ic full" << std::endl;
     auto y_full_ini = set_ic_after_tight_coupling(y_tc_end, x_end_tight, k);
 
     // The full ODE system
@@ -120,7 +120,7 @@ void Perturbations::integrate_perturbations(){
     Vector x_array_full = Utils::linspace(x_end_tight, x_end, n_x-index_end_tc);
 
     // Solve the ODE in the tight coupling regime
-    std::cout << "Solve full" << std::endl;
+    //std::cout << "Solve full" << std::endl;
     ode.solve(dydx_full, x_array_full, y_full_ini);
     auto solution_full = ode.get_data();
 
@@ -145,7 +145,7 @@ void Perturbations::integrate_perturbations(){
     // Theta_spline = std::vector<Spline2D>(n_ell_theta);
     //===================================================================
 
-    std::cout << "Store data tc" << std::endl;
+    //std::cout << "Store data tc" << std::endl;
     // Start filling arrays from the tight coupling regime 
     for (int ix=0; ix < index_end_tc; ix++){
       int index = ix+n_x*ik;
@@ -203,7 +203,7 @@ void Perturbations::integrate_perturbations(){
       }
       Psi_array[index]       = -Phi-12.*pow(H0/(Constants.c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*N2);
     }
-    std::cout<<"Store data full"<<std::endl;
+    //std::cout<<"Store data full"<<std::endl;
     // Now fill rest of arrays from the full regime 
     for (int ix = index_end_tc; ix < n_x; ix++){
       int index   = ix+n_x*ik;
@@ -273,7 +273,7 @@ void Perturbations::integrate_perturbations(){
   }
   Utils::EndTiming("Integrate perturbation");
 
-  std::cout<<"Make splines"<<std::endl;
+  //std::cout<<"Make splines"<<std::endl;
 
   //=============================================================================
   // TODO: Make all splines needed: Θ_0,Θ_1,Θ_2,Φ,Ψ,...
@@ -697,30 +697,38 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
 
   double Nu0                    = 0.0;
   double Nu2                    = 0.0;
-  if(neutrinos){
+  if (neutrinos){
     const double *Nu            = &y[Constants.ind_start_nu_tc];
     Nu0                         = Nu[0];
     Nu2                         = Nu[2];
   }
+  double Theta2                 = -ck_over_Hp*Theta[1]/dtaudx;
+  if (Constants.polarization)
+  {
+    Theta2                     *= 8./15.;
+  }
+  else Theta2                  *= 20./45.;
+  
   //=============================================================================
   // TODO: fill in the expressions for all the derivatives
   //=============================================================================
 
   // SET: Scalar quantities (Φ, δ, v, ...)
-  double Psi                  = -Phi-12.*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*Nu2);
-
-  double num                  = ((1.-R)*dtaudx+(1+R)*ddtauddx)*(3.*Theta[1]+v_B)-ck_over_Hp*Psi+(1.-dHp_over_Hp)*ck_over_Hp*(-Theta[0]+2.+Theta[2])-ck_over_Hp*dThetadx[0];
-  double den                  = (1.+R)*dtaudx+dHp_over_Hp-1.;
-  double q                    = -num/den;
+  double Psi                  = -Phi-12.*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta2+Omega_Nu*Nu2);
   
   dPhidx                      = Psi-pow(ck_over_Hp, 2)*Phi/3.+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4.*Omega_R*exp(-x)*Theta[0]+4.*Omega_Nu*exp(-x)*Nu0)/2;
   ddelta_Bdx                  = ck_over_Hp*v_B-3.*dPhidx;
-  dv_Bdx                      = (-v_B-ck_over_Hp*Psi+R*(q+ck_over_Hp*(-Theta[0]+2.*Theta[2])-ck_over_Hp*Psi))/(1.+R);
   ddelta_CDMdx                = ck_over_Hp*v_CDM-3.*dPhidx;
   dv_CDMdx                    = -v_CDM-ck_over_Hp*Psi;
 
   // SET: Photon multipoles (Θ_ell)
   dThetadx[0]                 = -ck_over_Hp*Theta[1]-dPhidx;
+
+  double num                  = ((1.-R)*dtaudx+(1+R)*ddtauddx)*(3.*Theta[1]+v_B)-ck_over_Hp*Psi+(1.-dHp_over_Hp)*ck_over_Hp*(-Theta[0]+2.+Theta2)-ck_over_Hp*dThetadx[0];
+  double den                  = (1.+R)*dtaudx+dHp_over_Hp-1.;
+  double q                    = -num/den;
+
+  dv_Bdx                      = (-v_B-ck_over_Hp*Psi+R*(q+ck_over_Hp*(-Theta[0]+2.*Theta2)-ck_over_Hp*Psi))/(1.+R);
   dThetadx[1]                 = (q-dv_Bdx)/3.;
 
   // SET: Neutrino mutlipoles (Nu_ell)
@@ -732,7 +740,7 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
     for (int l = 2; l < n_ell_neutrinos_tc; l++){
       dNudx[l]                = l*ck_over_Hp*Nu[l-1]/(2.*l-1.)-(l+1.)*ck_over_Hp*Nu[l+1]/(2.*l+1.);
     }
-    dNudx[n_ell_neutrinos_tc] = ck_over_Hp*Nu[n_ell_neutrinos_tc-1]-c*(n_ell_neutrinos_tc+1)*Nu[n_ell_neutrinos_tc]/(Hp*cosmo->eta_of_x(x));
+    dNudx[n_ell_neutrinos_tc-1] = ck_over_Hp*Nu[n_ell_neutrinos_tc-2]-c*(n_ell_neutrinos_tc)*Nu[n_ell_neutrinos_tc-1]/(Hp*cosmo->eta_of_x(x));
   }
   
   return GSL_SUCCESS;
@@ -933,18 +941,18 @@ void Perturbations::info() const{
   std::cout << "Info about perturbations class:\n";
   std::cout << "x_start:       " << x_start                << "\n";
   std::cout << "x_end:         " << x_end                  << "\n";
-  std::cout << "n_x:     " << n_x              << "\n";
+  std::cout << "n_x:           " << n_x                    << "\n";
   std::cout << "k_min (1/Mpc): " << k_min * Constants.Mpc  << "\n";
   std::cout << "k_max (1/Mpc): " << k_max * Constants.Mpc  << "\n";
-  std::cout << "n_k:     " << n_k              << "\n";
+  std::cout << "n_k:           " << n_k                    << "\n";
   if(Constants.polarization)
-    std::cout << "We include polarization.\n";
+    std::cout << "Polarization has been included.\n";
   else
-    std::cout << "We do not include polarization.\n";
+    std::cout << "Polarization has not been included.\n";
   if(Constants.neutrinos)
-    std::cout << "We include neutrinos.\n";
+    std::cout << "Neutrinos have been included.\n";
   else
-    std::cout << "We do not include neutrinos.\n";
+    std::cout << "Neutrinos have not been included.\n";
 
   std::cout << "Information about the perturbation system:\n";
   std::cout << "ind_delta_CDM:      " << Constants.ind_deltacdm         << "\n";
@@ -1044,4 +1052,3 @@ void Perturbations::output(const double k, const std::string filename) const{
   };
   std::for_each(x_array.begin(), x_array.end(), print_data);
 }
-
