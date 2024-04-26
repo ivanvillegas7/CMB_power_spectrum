@@ -124,10 +124,7 @@ def plots(neutrinos: bool):
     plt.yscale("log")
     plt.grid(True)
     plt.legend()
-    if neutrinos:
-        plt.savefig('../Plots/Milestone II/tau and derivatives_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone II/tau and derivatives.pdf')
+    plt.savefig('../Plots/Milestone II/tau and derivatives.pdf')
     
     plt.figure()
     plt.plot(x, g_tilde/max(abs(g_tilde)), label=r'$\tilde{g}$'+\
@@ -146,10 +143,7 @@ def plots(neutrinos: bool):
     plt.legend()
     plt.ylim(-1.1, 1.1)
     plt.xlim(-7.4, -6.4)
-    if neutrinos:
-        plt.savefig('../Plots/Milestone II/g_tilde and derivatives_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone II/g_tilde and derivatives.pdf')
+    plt.savefig('../Plots/Milestone II/g_tilde and derivatives.pdf')
     
 def tables(neutrinos: bool):
     

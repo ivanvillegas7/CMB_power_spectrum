@@ -149,10 +149,7 @@ def cosmology(neutrinos: bool):
     plt.grid(True)
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$')
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/ddHp_over_Hp_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/ddHp_over_Hp.pdf')
+    plt.savefig('../Plots/Milestone I/ddHp_over_Hp.pdf')
     
     plt.figure()
     plt.plot(x, dHp/Hp)
@@ -173,10 +170,7 @@ def cosmology(neutrinos: bool):
     plt.grid(True)
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$')
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/eta_times_Hp_over_c_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/eta_times_Hp_over_c.pdf')
+    plt.savefig('../Plots/Milestone I/eta_times_Hp_over_c.pdf')
     
     plt.figure()
     plt.plot(x, Hp/(100*1e3/(1e6*sc.constants.parsec)))
@@ -187,10 +181,7 @@ def cosmology(neutrinos: bool):
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\mathcal{H}(x)$ [$\frac{100 \text{km}}{\text{Mpc s}}$]')
     plt.yscale('log')
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/Hp_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/Hp.pdf')
+    plt.savefig('../Plots/Milestone I/Hp.pdf')
 
     plt.figure()
     plt.plot(x, t)
@@ -200,10 +191,7 @@ def cosmology(neutrinos: bool):
     plt.yscale('log')
     plt.xlabel(r'$x$')
     plt.ylabel(r'$t(x)$ [Gyr]')
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/t_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/t.pdf')
+    plt.savefig('../Plots/Milestone I/t.pdf')
 
     plt.figure()
     plt.plot(x, eta/(1e9*365*24*60*60*c))
@@ -213,10 +201,7 @@ def cosmology(neutrinos: bool):
     plt.yscale('log')
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\frac{\eta(x)}{c}$ [Gyr]')
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/eta_over_c_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/eta_over_c.pdf')
+    plt.savefig('../Plots/Milestone I/eta_over_c.pdf')
     
     plt.figure()    
     plt.plot(x, OmegaLambda, label=r'$\Omega_\Lambda$', color='green')
@@ -343,10 +328,7 @@ def MCMC_supernova_fit(neutrinos: bool):
     plt.ylabel(r'$\Omega_\Lambda$')
     plt.xlim(0, 1)
     plt.ylim(0, 1.4)
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/supernova_sigmas_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/supernova_sigmas.pdf')
+    plt.savefig('../Plots/Milestone I/supernova_sigmas.pdf')
     
     #Set the number of bins for the histograms.
     
@@ -375,10 +357,7 @@ def MCMC_supernova_fit(neutrinos: bool):
                linestyles='dashed', label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/OmegaLambda_hist_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/OmegaLambda_hist.pdf')
+    plt.savefig('../Plots/Milestone I/OmegaLambda_hist.pdf')
     
     #Define the parameters for the gaussian fit for OmegaM, compute them
     #and get the gaussian distribution.
@@ -402,10 +381,7 @@ def MCMC_supernova_fit(neutrinos: bool):
                label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/OmegaM_hist_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/OmegaM_hist.pdf')
+    plt.savefig('../Plots/Milestone I/OmegaM_hist.pdf')
     
     #Define the parameters for the gaussian fit for OmegaK, compute them
     #and get the gaussian distribution.
@@ -429,10 +405,7 @@ def MCMC_supernova_fit(neutrinos: bool):
                label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/OmegaK_hist_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/OmegaK_hist.pdf')
+    plt.savefig('../Plots/Milestone I/OmegaK_hist.pdf')
     
     #Define the parameters for the gaussian fit for OmegaK, compute them
     #and get the gaussian distribution.
@@ -456,10 +429,7 @@ def MCMC_supernova_fit(neutrinos: bool):
                label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/H0_hist_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/H0_hist.pdf')
+    plt.savefig('../Plots/Milestone I/H0_hist.pdf')
     
     #Print thge best fitting parameters
 
