@@ -232,14 +232,14 @@ int RecombinationHistory::rhs_peebles_ode(double x, const double *Xe, double *dX
 
   // Expression needed in dXedx
   const double phi_2        = 0.448*log(eps_over_T);
-  const double alpha_2      = 64.*M_PI*(3*sigma_T/(8.*M_PI))*phi_2*sqrt(eps_over_T/(27.*M_PI))*c;
+  const double alpha_2      = 64.*M_PI*(3.*sigma_T/(8.*M_PI))*phi_2*sqrt(eps_over_T/(27.*M_PI))*c;
   const double beta_        = alpha_2*pow(m_e*pow(c, 2)*E_TB/(2*M_PI), 3./2.)/pow(c*hbar, 3.);
   const double beta_2       = beta_*exp(-1.*eps_over_T/4.);
   const double n_1s         = (1.0-X_e)*nH;
-  const double lambda_alpha = H*pow(3.*epsilon_0/(hbar*c), 3.)/(pow(8.*M_PI, 2.)*n_1s);
+  const double lambda_alpha = H*pow(3.*epsilon_0/(hbar*c), 3)/(pow(8.*M_PI, 2)*n_1s);
   const double C_r          = (lambda_2s1s+lambda_alpha)/(lambda_2s1s+lambda_alpha+beta_2);
   
-  dXedx[0] = C_r*(beta_*exp(-eps_over_T)*(1.-X_e)-nH*alpha_2*pow(X_e, 2.))/H;
+  dXedx[0] = C_r*(beta_*exp(-eps_over_T)*(1.-X_e)-nH*alpha_2*pow(X_e, 2))/H;
 
   return GSL_SUCCESS;
 }
@@ -341,7 +341,7 @@ void RecombinationHistory::solve_for_sound_horizon(){
 
 double RecombinationHistory::get_number_density_B(double x) const{
   
-  return 3.*pow(cosmo->get_H0(), 2.)*cosmo->get_OmegaB(0.0)/(8.*M_PI*Constants.G*Constants.m_H*exp(3.*x));
+  return 3.*pow(cosmo->get_H0(), 2)*cosmo->get_OmegaB(0.0)/(8.*M_PI*Constants.G*Constants.m_H*exp(3.*x));
 }
 
 double RecombinationHistory::get_number_density_H(double x) const{
@@ -421,9 +421,9 @@ void RecombinationHistory::info() const{
 }
 void RecombinationHistory::sound_horizon() const{
   std::cout<<"Sound horizon at decoupling:\n";
-  std::cout<<"r_s≡s(x_decoupling)="<<sound_horizon_of_x(x_Saha_to_Peebles)/Constants.Mpc<<" Mpc"<<"\n";
-  std::cout<<"x_decoupling="<<x_Saha_to_Peebles<<"\n";
-  std::cout<<"Index at decoupling: "<<idx_Peebles_transition<<"\n";
+  std::cout<<"r_s≡s(x_decoupling) = "<<sound_horizon_of_x(x_Saha_to_Peebles)/Constants.Mpc<<" Mpc"<<"\n";
+  std::cout<<"x_decoupling = "<<x_Saha_to_Peebles<<"\n";
+  std::cout<<"Index at decoupling:  "<<idx_Peebles_transition<<"\n";
   std::cout<<std::endl;
 } 
 

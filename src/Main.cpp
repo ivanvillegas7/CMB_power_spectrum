@@ -111,6 +111,5 @@ int main(int argc, char **argv){
   std::cout<<"\n";
   Utils::EndTiming("CMB power spectrum");
   
-  // Remove when module is completed
   return 0;
 }
