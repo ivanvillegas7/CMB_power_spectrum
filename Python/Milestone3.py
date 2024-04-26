@@ -10,8 +10,8 @@ This script contains all the relevant functions for analysing and plotting the
 results of running the C++ codes related to solving the structure of the
 Universe.
 
-Here you can find the functions 'plot()' and
-'milestone1()'. All of them are explained below.
+Here you can find the functions 'plot()' and 'milestone1()'.
+All of them are explained below.
 """
 
 #Import all relevant packages
@@ -20,11 +20,12 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-def plot():
+def plot(neutrinos: bool):
     
     """
     This function generates and saves different plots based on the data
-    obtained from 'perturbations_kX.txt' files, where X denotes the 'k=0.X'.
+    obtained from 'perturbations_kX.txt' or 'perturbations_kX_neutrinos.txt'
+    (if neutrinos are included) files, where X denotes the 'k=0.X'.
     The user is prompted to specify whether photon polarization and neutrinos 
     are included in the data for appropriate plotting. 
     The generated plots include density perturbations, velocity perturbations.
@@ -34,7 +35,7 @@ def plot():
     The function performs the following specific actions:
     1. Prompts the user to specify if photon polarization and neutrinos are
        included.
-    2. Reads data from 'perturbations_kX.txt' files.
+    2. Reads data from 'perturbations_kX.txt' or 'perturbations_kX.txt' files.
     3. Extracts relevant data such as time variable 'x', photon multipole
        values 'Theta_0_X', 'Theta_1_X', 'Theta_2_X', gravitational potential
        'Phi_X', and more.
@@ -58,7 +59,7 @@ def plot():
     
     polarization_txt: str
     
-    polarization_txt = input('Did you include photon polarization? [Yes, no]: ')
+    polarization_txt = input('\nDid you include photon polarization? [Yes, no]: ')
     
     polarization: bool
     
@@ -69,27 +70,17 @@ def plot():
     else:
         
         polarization = True
-        
-    #Check if neutrinos have been included.
-        
-    neutrinos_txt: str
-    
-    neutrinos_txt = input('\nDid you include neutrinos? [Yes, no]: ')
-    
-    neutrinos: bool
-    
-    if neutrinos_txt.lower()=='no':
-        
-        neutrinos = False
-        
-    else:
-        
-        neutrinos = True
     
     #Read the data from 'perturbations_kX.txt' in folder 'Results',
     #where X denotes k=0.X.
     
-    data_1 = np.loadtxt('../Results/perturbations_k1.txt')
+    if neutrinos:
+    
+        data_1 = np.loadtxt('../Results/perturbations_k1_neutrinos.txt')
+    
+    else:
+        
+        data_1 = np.loadtxt('../Results/perturbations_k1.txt')
     
     #x=ln(a): main time variable.
     
@@ -147,7 +138,10 @@ def plot():
     
     #New k
     
-    data_01 = np.loadtxt('../Results/perturbations_k01.txt')
+    if neutrinos:
+        data_01 = np.loadtxt('../Results/perturbations_k01_neutrinos.txt')
+    else:
+        data_01 = np.loadtxt('../Results/perturbations_k01.txt') 
     Theta_0_01: np.array(float) = data_01[:, 1]
     Theta_1_01: np.array(float) = data_01[:, 2]
     Theta_2_01: np.array(float) = data_01[:, 3]
@@ -168,7 +162,10 @@ def plot():
     
     #New k    
     
-    data_001 = np.loadtxt('../Results/perturbations_k001.txt')    
+    if neutrinos:
+        data_001 = np.loadtxt('../Results/perturbations_k001_neutrinos.txt')
+    else:
+        data_001 = np.loadtxt('../Results/perturbations_k001.txt')  
     Theta_0_001: np.array(float) = data_001[:, 1]
     Theta_1_001: np.array(float) = data_001[:, 2]
     Theta_2_001: np.array(float) = data_001[:, 3]
@@ -189,7 +186,10 @@ def plot():
     
     #New k    
         
-    data_0001 = np.loadtxt('../Results/perturbations_k0001.txt')    
+    if neutrinos:
+        data_0001 = np.loadtxt('../Results/perturbations_k0001_neutrinos.txt')
+    else:
+        data_0001 = np.loadtxt('../Results/perturbations_k0001.txt')
     Theta_0_0001: np.array(float) = data_0001[:, 1]
     Theta_1_0001: np.array(float) = data_0001[:, 2]
     Theta_2_0001: np.array(float) = data_0001[:, 3]
@@ -236,7 +236,10 @@ def plot():
     plt.legend()
     plt.grid(True)
     plt.xlim(x[0], x[-1])
-    plt.savefig('../Plots/Milestone III/density perturbations.pdf')
+    if neutrinos:
+        plt.savefig('../Plots/Milestone III/density perturbations_neutrinos.pdf')
+    else:
+        plt.savefig('../Plots/Milestone III/density perturbations.pdf')
     
     plt.figure()
     plt.plot(x, -3*Theta_1_1, label=r'$v_\gamma(k=0.1/\text{Mpc})$')
@@ -263,7 +266,10 @@ def plot():
     plt.legend()
     plt.grid(True)
     plt.xlim(x[0], x[-1])
-    plt.savefig('../Plots/Milestone III/velocity perturbations.pdf')
+    if neutrinos:
+        plt.savefig('../Plots/Milestone III/velocity perturbations_neutrinos.pdf')
+    else:
+        plt.savefig('../Plots/Milestone III/velocity perturbations.pdf')
     
     plt.figure()
     plt.plot(x, Theta_2_1, label=r'$\Theta_2(k=0.1/\text{Mpc})$')
@@ -281,7 +287,10 @@ def plot():
     plt.legend()
     plt.grid(True)
     plt.xlim(x[0], x[-1])
-    plt.savefig('../Plots/Milestone III/quadrupoles.pdf')
+    if neutrinos:
+        plt.savefig('../Plots/Milestone III/quadrupoles_neutrinos.pdf')
+    else:
+        plt.savefig('../Plots/Milestone III/quadrupoles.pdf')
     
     plt.figure()
     plt.plot(x, Phi_1, label=r'$\Phi(k=0.1/\text{Mpc})$')
@@ -304,7 +313,10 @@ def plot():
     plt.legend()
     plt.grid(True)
     plt.xlim(x[0], x[-1])
-    plt.savefig('../Plots/Milestone III/potentials.pdf')
+    if neutrinos:
+        plt.savefig('../Plots/Milestone III/potentials_neutrinos.pdf')
+    else:
+        plt.savefig('../Plots/Milestone III/potentials.pdf')
         
     if polarization:
         
@@ -321,6 +333,7 @@ def plot():
         plt.plot(x, ThetaP_2_01, label=r'$\Theta_2^P(k=0.01/\text{Mpc})$')
         plt.plot(x, ThetaP_2_001, label=r'$\Theta_2^P(k=0.001/\text{Mpc})$')
         plt.plot(x, ThetaP_2_0001, label=r'$\Theta_2^P(k=0.0001/\text{Mpc})$')
+        plt.yscale('log')
         plt.xlabel(r'$x$')
         plt.ylabel(r'Polarization multipoles')
         plt.title(r'Evolution of polarization multipoles over time ($x$)')
@@ -329,7 +342,7 @@ def plot():
         plt.xlim(x[0], x[-1])
         plt.savefig('../Plots/Milestone III/polarization.pdf')
 
-def milestone3():
+def milestone3(neutrinos: bool):
     
     """
     This function serves as the entry point for running the tasks and functions
@@ -355,4 +368,4 @@ def milestone3():
     
     #Run the functions.
     
-    plot()
+    plot(neutrinos)

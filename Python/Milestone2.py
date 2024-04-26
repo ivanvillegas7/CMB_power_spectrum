@@ -20,7 +20,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-def plots():
+def plots(neutrinos: bool):
     
     """
     Generates plots from the data in 'recombination.txt' and saves them as PDF
@@ -32,15 +32,19 @@ def plots():
     Returns:
         None.
 
-    Reads the data from 'recombination.txt' in the 'Results' folder, assigns
-    the data to corresponding variables, and creates various plots from the
-    data, saving them as PDF files.  It calls the 'table()' function to print a
-    table of relevant data.
+    Reads the data from 'recombination.txt' or 'recombination.txt' (if
+    neutrinos are included) in the 'Results' folder, assigns the data to
+    corresponding variables, and creates various plots from the data, saving
+    them as PDF files.  It calls the 'table()' function to print a table of
+    relevant data.
     """
     
     #Read the data from 'recombination.txt' in folder 'Results'.
     
-    data = np.loadtxt('../Results/recombination.txt')
+    if neutrinos:
+        data = np.loadtxt('../Results/recombination_neutrinos.txt')
+    else:
+        data = np.loadtxt('../Results/recombination.txt')
     
     #Assign the different variables to its corresponding data.
     
@@ -51,10 +55,6 @@ def plots():
     #X_e: fractional electron density.
     
     X_e: np.array(float) = data[:, 1]
-    
-    #n_e: electron density number
-    
-    n_e: np.array(float) = data[:, 2]
     
     #tau: optical depth
     
@@ -90,7 +90,7 @@ def plots():
     
     recombination: int
     
-    last_scattering, recombination = tables()
+    last_scattering, recombination = tables(neutrinos)
     
     #Make the different plots and save them.
     
@@ -110,7 +110,10 @@ def plots():
     plt.xlim(x[0], x[-1])
     plt.ylim(1e-4, 2)
     plt.legend()
-    plt.savefig('../Plots/Milestone II/X_e.pdf')
+    if neutrinos:
+        plt.savefig('../Plots/Milestone II/X_e_neutrinos.pdf')
+    else:
+        plt.savefig('../Plots/Milestone II/X_e.pdf')
     
     plt.figure()
     plt.plot(x, tau, label=r'$\tau$')
@@ -121,7 +124,10 @@ def plots():
     plt.yscale("log")
     plt.grid(True)
     plt.legend()
-    plt.savefig('../Plots/Milestone II/tau and derivatives.pdf')
+    if neutrinos:
+        plt.savefig('../Plots/Milestone II/tau and derivatives_neutrinos.pdf')
+    else:
+        plt.savefig('../Plots/Milestone II/tau and derivatives.pdf')
     
     plt.figure()
     plt.plot(x, g_tilde/max(abs(g_tilde)), label=r'$\tilde{g}$'+\
@@ -140,12 +146,16 @@ def plots():
     plt.legend()
     plt.ylim(-1.1, 1.1)
     plt.xlim(-7.4, -6.4)
-    plt.savefig('../Plots/Milestone II/g_tilde and derivatives.pdf')
+    if neutrinos:
+        plt.savefig('../Plots/Milestone II/g_tilde and derivatives_neutrinos.pdf')
+    else:
+        plt.savefig('../Plots/Milestone II/g_tilde and derivatives.pdf')
     
-def tables():
+def tables(neutrinos: bool):
     
     """
-    Generates a table from the data in 'recombination.txt' and prints it.
+    Generates a table from the data in 'recombination.txt' or
+    'recombination.txt' (if neutrinos are included) and prints it.
 
     Parameters:
         None.
@@ -153,14 +163,18 @@ def tables():
     Returns:
         None.
 
-    Reads the data from 'recombination.txt' in the 'Results' folder, assigns
-    the data to corresponding variables, looks for specific value in the data
-    and creates/prints a table summarizing these data.
+    Reads the data from 'recombination.txt' or 'recombination.txt' (if
+    neutrinos are included) in the 'Results' folder, assigns the data to
+    corresponding variables, looks for specific value in the data and
+    creates/prints a table summarizing these data.
     """
     
     #Read the data from 'cosmology.txt' in folder 'Results'.
     
-    data = np.loadtxt('../Results/recombination.txt')
+    if neutrinos:
+        data = np.loadtxt('../Results/recombination_neutrinos.txt')
+    else:
+        data = np.loadtxt('../Results/recombination.txt')
     
     #Assign the different variables to its corresponding data.
     
@@ -212,7 +226,7 @@ def tables():
           
     return(last_scattering, recombination)
     
-def milestone2():
+def milestone2(neutrinos: bool):
     
     """
     Execute main functionality for recombination history solving.
@@ -229,5 +243,5 @@ def milestone2():
     
     #Run the functions.
     
-    plots()
+    plots(neutrinos)
     

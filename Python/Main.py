@@ -38,21 +38,41 @@ def main():
     Returns:
         None.
     """
+        
+    #Check if neutrinos have been included.
+        
+    neutrinos_txt: str
+    
+    neutrinos_txt = input('\nDid you include neutrinos? [Yes, no]: ')
+    
+    neutrinos: bool
+    
+    if neutrinos_txt.lower()=='no':
+        
+        neutrinos = False
+        
+    else:
+        
+        neutrinos = True
     
     #Run the code related to solving the background cosmology of the Universe
     #and show the results related to the supernove fitting.
     
-    #Milestone1.milestone1()
+    Milestone1.milestone1(neutrinos)
     
     #Print a message saying that the execution of the code is over.
     
     print('\nMilestone I has been concluded.')
     
-    #Milestone2.milestone2()
+    #Run the code related to solving the recombination history of the Universe.
+    
+    Milestone2.milestone2(neutrinos)
     
     print('\nMilestone II has been concluded.\n')
     
-    Milestone3.milestone3()
+    #Run the code related to solving the perturbations of the Universe.
+    
+    Milestone3.milestone3(neutrinos)
     
     print('\nMilestone III has been concluded.\n')
 
