@@ -716,7 +716,7 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   // SET: Scalar quantities (Φ, δ, v, ...)
   double Psi                  = -Phi-12.*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta2+Omega_Nu*Nu2);
   
-  dPhidx                      = Psi-pow(ck_over_Hp, 2)*Phi/3.+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B*4.*Omega_R*exp(-x)*Theta[0]+4.*Omega_Nu*exp(-x)*Nu0)/2;
+  dPhidx                      = Psi-pow(ck_over_Hp, 2)*Phi/3.+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B+4.*Omega_R*exp(-x)*Theta[0]+4.*Omega_Nu*exp(-x)*Nu0)/2;
   ddelta_Bdx                  = ck_over_Hp*v_B-3.*dPhidx;
   ddelta_CDMdx                = ck_over_Hp*v_CDM-3.*dPhidx;
   dv_CDMdx                    = -v_CDM-ck_over_Hp*Psi;
