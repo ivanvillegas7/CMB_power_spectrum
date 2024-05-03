@@ -18,11 +18,7 @@ int main(int argc, char **argv){
   double OmegaB      = 0.05;
   double OmegaCDM    = 0.267;
   double OmegaK      = 0.0;
-  double Neff        = 0.0;
-  if (Constants.neutrinos)
-  {
-    Neff             = 3.046;
-  }
+  double Neff        = 3.046;
   double TCMB        = 2.7255;
 
   // Recombination parameters
@@ -41,8 +37,7 @@ int main(int argc, char **argv){
 
   // Do the supernova fits.
   // Make sure you read the comments on the top of src/SupernovaFitting.h
-  if (Constants.neutrinos) mcmc_fit_to_supernova_data("data/supernovadata.txt", "Results/results_supernovafitting_neutrinos.txt");
-  else mcmc_fit_to_supernova_data("data/supernovadata.txt", "Results/results_supernovafitting.txt");
+  mcmc_fit_to_supernova_data("data/supernovadata.txt", "Results/results_supernovafitting.txt");
 
   // Set up and solve the background
   BackgroundCosmology cosmo(h, OmegaB, OmegaCDM, OmegaK, Neff, TCMB);
@@ -50,8 +45,7 @@ int main(int argc, char **argv){
   cosmo.info();
   
   // Output background evolution quantities
-  if (Constants.neutrinos) cosmo.output("Results/cosmology_neutrinos.txt");
-  else cosmo.output("Results/cosmology.txt");
+  cosmo.output("Results/cosmology.txt");
   
   Utils::EndTiming("Milestone I");
   std::cout<<"\n";
@@ -68,8 +62,7 @@ int main(int argc, char **argv){
   rec.info();
 
   // Output recombination quantities and times
-  if (Constants.neutrinos) rec.output("Results/recombination_neutrinos.txt");
-  else rec.output("Results/recombination.txt");
+  rec.output("Results/recombination.txt");
   
   //Print sound horizon at decoupling
   rec.sound_horizon();
@@ -95,16 +88,34 @@ int main(int argc, char **argv){
   double kvalue0001 = 0.0001 / Constants.Mpc;
   if (Constants.neutrinos)
   {
-    pert.output(kvalue1, "Results/perturbations_k1_neutrinos.txt");
-    pert.output(kvalue01, "Results/perturbations_k01_neutrinos.txt");
-    pert.output(kvalue001, "Results/perturbations_k001_neutrinos.txt");
-    pert.output(kvalue0001, "Results/perturbations_k0001_neutrinos.txt");
+    if (Constants.polarization)
+    {
+      pert.output(kvalue1, "Results/perturbations_k1_both.txt");
+      pert.output(kvalue01, "Results/perturbations_k01_both.txt");
+      pert.output(kvalue001, "Results/perturbations_k001_both.txt");
+      pert.output(kvalue0001, "Results/perturbations_k0001_both.txt");
+    }
+    else{
+      pert.output(kvalue1, "Results/perturbations_k1_neutrinos.txt");
+      pert.output(kvalue01, "Results/perturbations_k01_neutrinos.txt");
+      pert.output(kvalue001, "Results/perturbations_k001_neutrinos.txt");
+      pert.output(kvalue0001, "Results/perturbations_k0001_neutrinos.txt");
+    }
   }
   else{
-    pert.output(kvalue1, "Results/perturbations_k1.txt");
-    pert.output(kvalue01, "Results/perturbations_k01.txt");
-    pert.output(kvalue001, "Results/perturbations_k001.txt");
-    pert.output(kvalue0001, "Results/perturbations_k0001.txt");
+    if (Constants.polarization)
+    {
+      pert.output(kvalue1, "Results/perturbations_k1_polarization.txt");
+      pert.output(kvalue01, "Results/perturbations_k01_polarization.txt");
+      pert.output(kvalue001, "Results/perturbations_k001_polarization.txt");
+      pert.output(kvalue0001, "Results/perturbations_k0001_polarization.txt");
+    }
+    else{
+      pert.output(kvalue1, "Results/perturbations_k1.txt");
+      pert.output(kvalue01, "Results/perturbations_k01.txt");
+      pert.output(kvalue001, "Results/perturbations_k001.txt");
+      pert.output(kvalue0001, "Results/perturbations_k0001.txt");
+    }
   }
 
   Utils::EndTiming("Milestone III");
@@ -121,8 +132,7 @@ int main(int argc, char **argv){
 
   PowerSpectrum power(&cosmo, &rec, &pert, A_s, n_s, kpivot_mpc);
   power.solve();
-  if (Constants.neutrinos) power.output("Results/cells_neutrinos.txt");
-  else power.output("Results/cells.txt");
+  power.output("Results/cells.txt");
 
   Utils::EndTiming("Milestone IV");
   std::cout<<"\n";
