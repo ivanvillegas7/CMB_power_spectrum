@@ -86,37 +86,10 @@ int main(int argc, char **argv){
   double kvalue01 = 0.01 / Constants.Mpc;
   double kvalue001 = 0.001 / Constants.Mpc;
   double kvalue0001 = 0.0001 / Constants.Mpc;
-  if (Constants.neutrinos)
-  {
-    if (Constants.polarization)
-    {
-      pert.output(kvalue1, "Results/perturbations_k1_both.txt");
-      pert.output(kvalue01, "Results/perturbations_k01_both.txt");
-      pert.output(kvalue001, "Results/perturbations_k001_both.txt");
-      pert.output(kvalue0001, "Results/perturbations_k0001_both.txt");
-    }
-    else{
-      pert.output(kvalue1, "Results/perturbations_k1_neutrinos.txt");
-      pert.output(kvalue01, "Results/perturbations_k01_neutrinos.txt");
-      pert.output(kvalue001, "Results/perturbations_k001_neutrinos.txt");
-      pert.output(kvalue0001, "Results/perturbations_k0001_neutrinos.txt");
-    }
-  }
-  else{
-    if (Constants.polarization)
-    {
-      pert.output(kvalue1, "Results/perturbations_k1_polarization.txt");
-      pert.output(kvalue01, "Results/perturbations_k01_polarization.txt");
-      pert.output(kvalue001, "Results/perturbations_k001_polarization.txt");
-      pert.output(kvalue0001, "Results/perturbations_k0001_polarization.txt");
-    }
-    else{
-      pert.output(kvalue1, "Results/perturbations_k1.txt");
-      pert.output(kvalue01, "Results/perturbations_k01.txt");
-      pert.output(kvalue001, "Results/perturbations_k001.txt");
-      pert.output(kvalue0001, "Results/perturbations_k0001.txt");
-    }
-  }
+  pert.output(kvalue1, "Results/perturbations_k1.txt");
+  pert.output(kvalue01, "Results/perturbations_k01.txt");
+  pert.output(kvalue001, "Results/perturbations_k001.txt");
+  pert.output(kvalue0001, "Results/perturbations_k0001.txt");
 
   Utils::EndTiming("Milestone III");
   std::cout<<"\n";
