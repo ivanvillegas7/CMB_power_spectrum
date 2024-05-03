@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 
 import auxiliar as aux
            
-def cosmology(neutrinos: bool):
+def cosmology():
     
     """
     Perform cosmological analysis and generate plots.
@@ -50,10 +50,7 @@ def cosmology(neutrinos: bool):
     
     #Read the data from 'cosmology.txt' in folder 'Results'.
     
-    if neutrinos:
-        data = np.loadtxt('../Results/cosmology_neutrinos.txt')
-    else:
-        data = np.loadtxt('../Results/cosmology.txt')
+    data = np.loadtxt('../Results/cosmology.txt')
     
     #Assign the different variables to its corresponding data.
     
@@ -158,10 +155,7 @@ def cosmology(neutrinos: bool):
     plt.grid(True)
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$')
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/dHp_over_Hp_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/dHp_over_Hp.pdf')
+    plt.savefig('../Plots/Milestone I/dHp_over_Hp.pdf')
     
     plt.figure()
     plt.plot(x, eta*Hp/c)
@@ -230,10 +224,7 @@ def cosmology(neutrinos: bool):
     plt.ylim(0, 1)
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\Omega_i(x)$')
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/omegas_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/omegas.pdf')
+    plt.savefig('../Plots/Milestone I/omegas.pdf')
     
     #Print the times (x, redshift and cosmological time) when there is a change
     #of domination. Print the age of the Universe and the conformal time today.
@@ -252,7 +243,7 @@ def cosmology(neutrinos: bool):
     
     return(z, d_L)
 
-def MCMC_supernova_fit(neutrinos: bool):
+def MCMC_supernova_fit():
     
     """
     Perform analysis and generate plots for supernova fitting results obtained
@@ -272,12 +263,7 @@ def MCMC_supernova_fit(neutrinos: bool):
     #Read the data from 'results_supernovafitting.txt' in folder 'Results'.
     # Ignore first 200 rows.
     
-    if neutrinos:
-        data = np.loadtxt('../Results/results_supernovafitting_neutrinos.txt',\
-                          skiprows=200)
-    else:
-        data = np.loadtxt('../Results/results_supernovafitting.txt',\
-                          skiprows=200)
+    data = np.loadtxt('../Results/results_supernovafitting.txt', skiprows=200)
     
     #Assign the different variables to its corresponding data.
     
@@ -439,7 +425,7 @@ def MCMC_supernova_fit(neutrinos: bool):
         
     return(H[index], OmegaM[index], OmegaK[index], 0, OmegaLambda[index])
     
-def supernova(neutrinos: bool):
+def supernova():
     
     """
     Perform analysis and generate plots for supernova data fitting.
@@ -481,9 +467,9 @@ def supernova(neutrinos: bool):
     
     d_L_cos: np.array(float)
     
-    z_cos, d_L_cos = cosmology(neutrinos)
+    z_cos, d_L_cos = cosmology()
     
-    params: np.array(float) = MCMC_supernova_fit(neutrinos)
+    params: np.array(float) = MCMC_supernova_fit()
     
     d_L_MCMC: np.array(float) = aux.D_L(z_cos, params[0], params[1], params[2],\
                                         params[3], params[4])/(1e6)
@@ -503,10 +489,7 @@ def supernova(neutrinos: bool):
     plt.ylabel(r'$d_L(z)$ [Gpc]')
     plt.xlim(0, 1.4)
     plt.ylim(0, 10)
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/supernova_fit_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/supernova_fit.pdf')
+    plt.savefig('../Plots/Milestone I/supernova_fit.pdf')
     
     plt.figure()
     plt.errorbar(z, d_L/z, d_L_error/z, marker='.', ls='none',\
@@ -522,12 +505,9 @@ def supernova(neutrinos: bool):
     plt.ylabel(r'$d_L(z)/z$ [Gpc]')
     plt.xlim(0, 1.4)
     plt.ylim(3.5, 8)
-    if neutrinos:
-        plt.savefig('../Plots/Milestone I/supernova_fit_over_z_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone I/supernova_fit_over_z.pdf')
+    plt.savefig('../Plots/Milestone I/supernova_fit_over_z.pdf')
     
-def milestone1(neutrinos: bool):
+def milestone1():
     
     """
     Execute main functionality for supernova analysis and background cosmology
@@ -546,4 +526,4 @@ def milestone1(neutrinos: bool):
     
     #Run the functions.
     
-    supernova(neutrinos)
+    supernova()

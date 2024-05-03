@@ -20,7 +20,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-def plots(neutrinos: bool):
+def plots():
     
     """
     Generates plots from the data in 'recombination.txt' and saves them as PDF
@@ -41,10 +41,7 @@ def plots(neutrinos: bool):
     
     #Read the data from 'recombination.txt' in folder 'Results'.
     
-    if neutrinos:
-        data = np.loadtxt('../Results/recombination_neutrinos.txt')
-    else:
-        data = np.loadtxt('../Results/recombination.txt')
+    data = np.loadtxt('../Results/recombination.txt')
     
     #Assign the different variables to its corresponding data.
     
@@ -90,7 +87,7 @@ def plots(neutrinos: bool):
     
     recombination: int
     
-    last_scattering, recombination = tables(neutrinos)
+    last_scattering, recombination = tables()
     
     #Make the different plots and save them.
     
@@ -110,10 +107,7 @@ def plots(neutrinos: bool):
     plt.xlim(x[0], x[-1])
     plt.ylim(1e-4, 2)
     plt.legend()
-    if neutrinos:
-        plt.savefig('../Plots/Milestone II/X_e_neutrinos.pdf')
-    else:
-        plt.savefig('../Plots/Milestone II/X_e.pdf')
+    plt.savefig('../Plots/Milestone II/X_e.pdf')
     
     plt.figure()
     plt.plot(x, tau, label=r'$\tau$')
@@ -145,7 +139,7 @@ def plots(neutrinos: bool):
     plt.xlim(-7.4, -6.4)
     plt.savefig('../Plots/Milestone II/g_tilde and derivatives.pdf')
     
-def tables(neutrinos: bool):
+def tables():
     
     """
     Generates a table from the data in 'recombination.txt' or
@@ -165,10 +159,7 @@ def tables(neutrinos: bool):
     
     #Read the data from 'cosmology.txt' in folder 'Results'.
     
-    if neutrinos:
-        data = np.loadtxt('../Results/recombination_neutrinos.txt')
-    else:
-        data = np.loadtxt('../Results/recombination.txt')
+    data = np.loadtxt('../Results/recombination.txt')
     
     #Assign the different variables to its corresponding data.
     
@@ -220,7 +211,7 @@ def tables(neutrinos: bool):
           
     return(last_scattering, recombination)
     
-def milestone2(neutrinos: bool):
+def milestone2():
     
     """
     Execute main functionality for recombination history solving.
@@ -237,5 +228,5 @@ def milestone2(neutrinos: bool):
     
     #Run the functions.
     
-    plots(neutrinos)
+    plots()
     
