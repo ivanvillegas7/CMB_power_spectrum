@@ -178,7 +178,7 @@ void Perturbations::integrate_perturbations(){
         Theta_p_array[2][index]   = Theta[2]/4.;
         for (int l = 3; l < Constants.n_ell_thetap; l++)
         {
-          Theta_p_array[l][index] = l*ck_over_Hp*Theta_p_array[l-1][index]/((2.*l+1.)*dtaudx);
+          Theta_p_array[l][index] = -l*ck_over_Hp*Theta_p_array[l-1][index]/((2.*l+1.)*dtaudx);
         }
       }
       double N2 = 0.0;
@@ -645,6 +645,7 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   double Omega_B                = cosmo->get_OmegaB();
   double Omega_R                = cosmo->get_OmegaR();
   double Omega_Nu               = cosmo->get_OmegaNu();
+  double eta                    = cosmo->eta_of_x(x);
 
   //Set recombination parameters
   double R                      = rec->R_of_x(x);
@@ -714,14 +715,14 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
 
   // SET: Neutrino mutlipoles (Nu_ell)
   if(neutrinos){
-    const double *Nu          = &y[Constants.ind_start_nu_tc];
-    double *dNudx             = &dydx[Constants.ind_start_nu_tc];
-    dNudx[0]                  = -ck_over_Hp*Nu[1]-dPhidx;
-    dNudx[1]                  = -ck_over_Hp*Nu[0]/3.-(2./3.)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3.;
+    const double *Nu            = &y[Constants.ind_start_nu_tc];
+    double *dNudx               = &dydx[Constants.ind_start_nu_tc];
+    dNudx[0]                    = -ck_over_Hp*Nu[1]-dPhidx;
+    dNudx[1]                    = -ck_over_Hp*Nu[0]/3.-(2./3.)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3.;
     for (int l = 2; l < n_ell_neutrinos_tc-1; l++){
-      dNudx[l]                = l*ck_over_Hp*Nu[l-1]/(2.*l-1.)-(l+1.)*ck_over_Hp*Nu[l+1]/(2.*l+1.);
+      dNudx[l]                  = l*ck_over_Hp*Nu[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Nu[l+1]/(2.*l+1.);
     }
-    dNudx[n_ell_neutrinos_tc-1] = ck_over_Hp*Nu[n_ell_neutrinos_tc-2]-c*(n_ell_neutrinos_tc)*Nu[n_ell_neutrinos_tc-1]/(Hp*cosmo->eta_of_x(x));
+    dNudx[n_ell_neutrinos_tc-1] = ck_over_Hp*Nu[n_ell_neutrinos_tc-2]-c*(n_ell_neutrinos_tc)*Nu[n_ell_neutrinos_tc-1]/(Hp*eta);
   }
   
   return GSL_SUCCESS;
@@ -830,23 +831,23 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
     for (int l = 2; l < n_ell_thetap-1; l++)
   {
     if (l==2){
-      dTheta_pdx[l]        = l*ck_over_Hp*Theta_p[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Theta_p[l+1]/(2.*l+1.)+dtaudx*(Theta_p[l]-Pi/10.);
+      dTheta_pdx[l]          = l*ck_over_Hp*Theta_p[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Theta_p[l+1]/(2.*l+1.)+dtaudx*(Theta_p[l]-Pi/10.);
     }
     else{
-      dTheta_pdx[l]        = l*ck_over_Hp*Theta_p[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Theta_p[l+1]/(2.*l+1.)+dtaudx*Theta_p[l];
+      dTheta_pdx[l]          = l*ck_over_Hp*Theta_p[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Theta_p[l+1]/(2.*l+1.)+dtaudx*Theta_p[l];
     }
   }
-  dTheta_pdx[n_ell_thetap-1]   = ck_over_Hp*Theta_p[n_ell_thetap-2]+(dtaudx-c*(n_ell_thetap)/(Hp*eta))*Theta_p[n_ell_thetap-1];
+  dTheta_pdx[n_ell_thetap-1] = ck_over_Hp*Theta_p[n_ell_thetap-2]+(dtaudx-c*n_ell_thetap/(Hp*eta))*Theta_p[n_ell_thetap-1];
   }
 
   // SET: Neutrino mutlipoles (Nu_ell)
   if(neutrinos){
-    const double *Nu       = &y[Constants.ind_start_nu];
-    double *dNudx          = &dydx[Constants.ind_start_nu];
-    dNudx[0]               = -ck_over_Hp*Nu[1]-dPhidx;
-    dNudx[1]               = ck_over_Hp*Nu[0]/3.-(2./3.)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3.;
+    const double *Nu         = &y[Constants.ind_start_nu];
+    double *dNudx            = &dydx[Constants.ind_start_nu];
+    dNudx[0]                 = -ck_over_Hp*Nu[1]-dPhidx;
+    dNudx[1]                 = ck_over_Hp*Nu[0]/3.-(2./3.)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3.;
     for (int l = 2; l < n_ell_neutrinos-1; l++){
-      dNudx[l]             = l*ck_over_Hp*Nu[l-1]/(2.*l-1.)-(l+1.)*ck_over_Hp*Nu[l+1]/(2.*l+1.);
+      dNudx[l]               = l*ck_over_Hp*Nu[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Nu[l+1]/(2.*l+1.);
     }
     dNudx[n_ell_neutrinos-1] = ck_over_Hp*Nu[n_ell_neutrinos-2]-c*n_ell_neutrinos*Nu[n_ell_neutrinos-1]/(Hp*eta);
   }
