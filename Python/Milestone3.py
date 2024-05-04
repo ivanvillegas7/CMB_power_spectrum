@@ -237,6 +237,7 @@ def plot():
     plt.legend()
     plt.grid(True)
     plt.xlim(x[0], x[-1])
+    plt.ylim(0.1, plt.ylim()[1])
     plt.savefig('../Plots/Milestone III/density perturbations.pdf')
     
     plt.figure()
@@ -264,6 +265,7 @@ def plot():
     plt.legend()
     plt.grid(True)
     plt.xlim(x[0], x[-1])
+    #plt.ylim(0.1, plt.ylim()[1])
     plt.savefig('../Plots/Milestone III/velocity perturbations.pdf')
     
     plt.figure()
@@ -281,7 +283,7 @@ def plot():
     plt.title(r'Evolution of quadrupoles over time ($x$)')
     plt.legend()
     plt.grid(True)
-    plt.xlim(x[0], x[-1])
+    plt.xlim(-10, x[-1])
     plt.savefig('../Plots/Milestone III/quadrupoles.pdf')
     
     plt.figure()
