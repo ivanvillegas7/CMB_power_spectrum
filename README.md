@@ -5,4 +5,4 @@ Edit the Makefile adding the right paths and compile the code running [ make ]. 
 
 After running the code, you will need to run the Python codes, simply running Main.py. This will generate relevant plots and will print some relevant information.
 
-The folder named 'Reports' will store the reports of each milestone. At the moment, only the report for Milestone I (I: Solving the cosmological background.pdf) and Milestone II (II: Recombination history of the Universe.pdf) are available. Also a report summarizing both articles is available (Computing the CMB power spectrum.pdf).
+The folder named 'Reports' will store the reports of each milestone. At the moment, only the reports for Milestone I (I: Solving the cosmological background.pdf), Milestone II (II: Recombination history of the Universe.pdf) and Milestone III (III: Evolution of structure in the Universe.pdf) are available. Also a report summarizing the three articles is available (Computing the CMB power spectrum.pdf).
