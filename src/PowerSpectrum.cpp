@@ -36,13 +36,13 @@ void PowerSpectrum::solve(){
   // Implement generate_bessel_function_splines.
   //=========================================================================
   generate_bessel_function_splines();
-
+  
   //=========================================================================
   // TODO: Line of sight integration to get Theta_ell(k).
   // Implement line_of_sight_integration.
   //=========================================================================
   line_of_sight_integration(k_array);
-
+  std::cout<<"The problem is below."<<std::endl;
   //=========================================================================
   // TODO: Integration to get Cell by solving dCell^f/dlogk = Delta(k)*f_ell(k)^2
   // Implement solve_for_cell.
@@ -157,8 +157,8 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
 // Do the line of sight integration.
 //====================================================
 void PowerSpectrum::line_of_sight_integration(Vector & k_array){
-  const int n_k        = k_array.size();
-  const int n          = 100;
+  //const int n_k        = k_array.size();
+  //const int n          = 100;
   const int nells      = ells.size();
   
   // Make storage for the splines we are to create.
@@ -195,7 +195,7 @@ void PowerSpectrum::line_of_sight_integration(Vector & k_array){
     };
 
     // Do the line of sight integration.
-    Vector2D thetaE_ell_of_k = line_of_sight_integration_single(k_array, source_function_T);
+    Vector2D thetaE_ell_of_k = line_of_sight_integration_single(k_array, source_function_E);
 
     // Spline the result and store it in thetaT_ell_of_k_spline.
     for(int i_l=0; i_l < nells; i_l++){
