@@ -263,14 +263,13 @@ double PowerSpectrum::primordial_power_spectrum(const double k) const{
 //====================================================
 
 double PowerSpectrum::get_matter_power_spectrum(const double x, const double k_mpc) const{
-  double pofk = 0.0;
 
   //=============================================================================
   // TODO: Compute the matter power spectrum.
   //=============================================================================
 
   // Variables:
-  double OmegaM  = cosmo->get_OmegaM(x);
+  double OmegaM  = cosmo->get_OmegaB(x)+cosmo->get_OmegaCDM(x);
   double Hp      = cosmo->Hp_of_x(x);
   double Phi     = pert->get_Phi(x, k_mpc);
   double P_prim  = 2.*pow(M_PI, 2.)*primordial_power_spectrum(k_mpc)/pow(k_mpc, 3.);
