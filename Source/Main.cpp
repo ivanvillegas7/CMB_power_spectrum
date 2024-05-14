@@ -93,6 +93,9 @@ int main(int argc, char **argv){
 
   Utils::EndTiming("Milestone III");
   std::cout<<"\n";
+
+  //Remove when Milestone IV is completed
+  return 0;
   
   //=========================================================================
   // Module IV
