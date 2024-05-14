@@ -40,26 +40,19 @@ def CMB_PowerSpectrum():
     
     ell: np.array(float) = data[:, 0]
     
-    #C_ell: power-spectrum.
+    #C_ell_TT: power-spectrum with only the temperature source function.
     
-    C_ell: np.array(float) = data[:, 1]
-    
-    #Get the value of the CMB temperature today.
-    
-    TCMB0: float = np.loadtxt('../Results/cosmology.txt')[-1, 12]
-    
-    factor: float = (1e6*TCMB0)**2
-    
-    transform: float = ell*(ell+1)/(2*np.pi)
+    C_ell_TT: np.array(float) = data[:, 1]
     
     #Make the plot.
        
     plt.figure()
-    plt.plot(ell, transform*C_ell*factor, label='Theory prediction')
+    plt.plot(ell, C_ell_TT, label='Theory prediction')
     plt.xlabel(r'Multipole $\ell$')
-    plt.ylabel(r'$C_\ell$')
+    plt.ylabel(r'$\frac{\ell(\ell+1)}{2\pi}C_\ell$ [$\mu$K$^2$]')
     plt.title('CMB power-spectrum')
     plt.xscale('log')
+    plt.yscale('log')
     plt.legend()
     plt.grid()
     plt.savefig('../Plots/Milestone IV/CMB_PS.pdf')
@@ -249,6 +242,5 @@ def milestone4(polarization: bool):
     #Plot the matter power-spectrum.
     
     Matter_PowerSpectrum(polarization)
-    
+  
 milestone4(False)
-    
