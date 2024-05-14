@@ -332,6 +332,8 @@ def plot():
         plt.grid(True)
         plt.xlim(x[0], x[-1])
         plt.savefig('../Plots/Milestone III/polarization.pdf')
+        
+    return polarization
 
 def milestone3():
     
@@ -357,6 +359,8 @@ def milestone3():
         None.
     """
     
-    #Run the functions.
+    #Run the function and say if polarization is included.
     
-    plot()
+    polarization: bool = plot()
+    
+    return polarization
