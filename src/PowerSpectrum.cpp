@@ -42,7 +42,7 @@ void PowerSpectrum::solve(){
   // Implement line_of_sight_integration.
   //=========================================================================
   line_of_sight_integration(k_array);
-  std::cout<<"The problem is below."<<std::endl;
+  
   //=========================================================================
   // TODO: Integration to get Cell by solving dCell^f/dlogk = Delta(k)*f_ell(k)^2
   // Implement solve_for_cell.
@@ -114,14 +114,15 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
     Vector & k_array, 
     std::function<double(double,double)> &source_function){
   Utils::StartTiming("Line of sight");
-
+  
   // Make storage for the results
   Vector2D result = Vector2D(ells.size(), Vector(k_array.size()));
 
   // Create arrays
   double dx = 2.*M_PI/n_x_los;
   Vector x_array = Utils::linspace(x_start_los, x_end_los, (x_end_los-x_start_los)/dx);
-
+  
+  std::cout << std::endl;
   for(size_t i_k = 0; i_k < k_array.size(); i_k++){
 
     //=============================================================================
@@ -131,24 +132,25 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
     //=============================================================================
     
     // Progress bar...
-    if(i_k*10/k_array.size() != ((i_k+1)*10) / k_array.size()){
-      std::cout << (i_k+1)*100/k_array.size() << "% " << std::flush;
+    if(i_k*10/k_array.size() != ((i_k+1)*10)/k_array.size()){
+      std::cout << "Progres: " << (i_k+1)*100/k_array.size() << "%\n" << std::flush;
       if(i_k == k_array.size()-1) std::cout << std::endl;
     }
     double k_value = k_array[i_k]; // k-value for each iteration
     for(int i_l=0; i_l < ells.size(); i_l++){
-      double ell = ells[i_l]; // ell-value for each iteration
-
+      //double ell = ells[i_l]; // ell-value for each iteration
+      //std::cout<<"Problem is below this line when i_l="<<i_l<<std::endl;
       Vector integrand(x_array.size());
       for(int i=0; i < x_array.size(); i++){
-        integrand[i] = source_function(x_array[i], k_value) * j_ell_splines[i_l](k_value*(eta0-cosmo->eta_of_x(x_array[i])));
+        integrand[i] = source_function(x_array[i], k_value)*j_ell_splines[i_l](k_value*(eta0-cosmo->eta_of_x(x_array[i])));
+        //std::cout<<"Problem is below this line when i="<<i<<std::endl;
       }
 
       // Store the result for Source_ell(k) in results[ell][ik].
-      result[ell][i_k] = integrate(dx, integrand);
+      result[i_l][i_k] = integrate(dx, integrand);
     }
   }
-
+  
   Utils::EndTiming("Line of sight");
   return result;
 }
@@ -157,8 +159,8 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
 // Do the line of sight integration.
 //====================================================
 void PowerSpectrum::line_of_sight_integration(Vector & k_array){
-  //const int n_k        = k_array.size();
-  //const int n          = 100;
+  const int n_k        = k_array.size();
+  const int n          = 100;
   const int nells      = ells.size();
   
   // Make storage for the splines we are to create.
@@ -172,15 +174,15 @@ void PowerSpectrum::line_of_sight_integration(Vector & k_array){
   std::function<double(double,double)> source_function_T = [&](double x, double k){
     return pert->get_Source_T(x,k);
   };
-
+  
   // Do the line of sight integration.
   Vector2D thetaT_ell_of_k = line_of_sight_integration_single(k_array, source_function_T);
-
+  
   // Spline the result and store it in thetaT_ell_of_k_spline.
   for(int i_l=0; i_l < nells; i_l++){
     thetaT_ell_of_k_spline[i_l].create(k_array, thetaT_ell_of_k[i_l]);
   }
-
+  
   //============================================================================
   // TODO: Solve for ThetaE_ell(k) and spline.
   //============================================================================
@@ -319,4 +321,3 @@ void PowerSpectrum::output(std::string filename) const{
   };
   std::for_each(ellvalues.begin(), ellvalues.end(), print_data);
 }
-
