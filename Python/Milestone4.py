@@ -46,9 +46,7 @@ def CMB_PowerSpectrum():
     
     #Get the value of the CMB temperature today.
     
-    #TCMB0: float = np.loadtxt('../Results/cells.txt')[-1, 12]
-    
-    TCMB0: float = 2.7255
+    TCMB0: float = np.loadtxt('../Results/cosmology.txt')[-1, 12]
     
     factor: float = (1e6*TCMB0)**2
     
