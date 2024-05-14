@@ -56,9 +56,27 @@ def main():
     
     #Run the code related to solving the perturbations of the Universe.
     
-    polarization: bool = Milestone3.milestone3()
+    #Check if photon polarization has been included.
+    
+    polarization_txt: str
+    
+    polarization_txt = input('\nDid you include photon polarization? [Yes, no]: ')
+    
+    polarization: bool
+    
+    if polarization_txt.lower()=='no':
+        
+        polarization = False
+        
+    else:
+        
+        polarization = True
+    
+    Milestone3.milestone3(polarization)
     
     print('\nMilestone III has been concluded.\n')
+    
+    #Run the code related to computing the CMB and matter power-spectra.
     
     Milestone4.milestone4(polarization)
     

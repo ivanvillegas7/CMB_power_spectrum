@@ -13,7 +13,9 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-def CMB_PowerSpectrum(polarization: bool):
+import auxiliar as aux
+
+def CMB_PowerSpectrum():
     
     data = np.loadtxt('../Results/cells.txt')
     
@@ -120,11 +122,29 @@ def Matter_PowerSpectrum(polarization: bool):
     plt.grid()
     #plt.savefig('../Plots/Milestone IV/Matter PS.pdf')
     
+    #Read the data from 'cosmology.txt' in folder 'Results'.
+    
+    data = np.loadtxt('../Results/cosmology.txt')
+    
+    #Hp: conformal Hubble factor.
+    
+    Hp: np.array(float) = data[:, 2]
+    
+    #Get index of radiation and matter equality.
+    
+    index: int = aux.index_equality()[0]
+    
+    Hp_eq: float = (Hp[index]/(100*1e3/(1e6*sc.constants.parsec)))
+    
+    k_eq: float = Hp_eq*1e5/(sc.constants.c*sc.constants.h)
+        
     plt.figure()
     plt.errorbar(k_gal, P_gal, ErrorP_gal, label='SDSS Galaxies (DR7 LRG)',\
                  ls='none', marker='.', capsize=2)
     plt.errorbar(k_ACT, P_ACT, P_upper, label='CMB (WMAP+ACT)', ls='none',\
                  marker='.', capsize=2)
+    plt.vlines(k_eq, plt.ylim()[0], plt.ylim()[1], label=r'$k_\text{eq}$',\
+               ls='--')
     plt.xlabel(r'Wavenumber $k$ [$h$/Mpc]')
     plt.ylabel(r'$P(k)$ [(Mpc/$h$)$^2$]')
     plt.title('The total matter power-spectrum')
@@ -137,7 +157,7 @@ def Matter_PowerSpectrum(polarization: bool):
     
 def milestone4(polarization: bool):
     
-    CMB_PowerSpectrum(polarization)
+    CMB_PowerSpectrum()
     Matter_PowerSpectrum(polarization)
     
 milestone4(False)

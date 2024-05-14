@@ -20,7 +20,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-def plot():
+def plot(polarization: bool):
     
     """
     This function generates and saves different plots based on the data
@@ -50,26 +50,11 @@ def plot():
           of the universe.
 
     Parameters:
-        None.
+        polarization (bool): says if the photonpolarization has been taken
+                             into account.
     Returns:
         None.
     """
-    
-    #Check if photon polarization has been included.
-    
-    polarization_txt: str
-    
-    polarization_txt = input('\nDid you include photon polarization? [Yes, no]: ')
-    
-    polarization: bool
-    
-    if polarization_txt.lower()=='no':
-        
-        polarization = False
-        
-    else:
-        
-        polarization = True
         
     #Check if neutrinos have been included.
         
@@ -333,9 +318,7 @@ def plot():
         plt.xlim(x[0], x[-1])
         plt.savefig('../Plots/Milestone III/polarization.pdf')
         
-    return polarization
-
-def milestone3():
+def milestone3(polarization: bool):
     
     """
     This function serves as the entry point for running the tasks and functions
@@ -354,13 +337,12 @@ def milestone3():
     milestone.
 
     Parameters:
-        None.
+        polarization (bool): says if the photonpolarization has been taken
+                             into account.
     Returns:
         None.
     """
     
     #Run the function and say if polarization is included.
     
-    polarization: bool = plot()
-    
-    return polarization
+    plot(polarization)

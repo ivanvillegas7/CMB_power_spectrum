@@ -115,3 +115,61 @@ def D_L(z: np.array(float), H0: float, Omega_M: float, Omega_K: float,\
                                             Omega_Lambda), x)))
         
     return np.array(d_L)
+
+def index_equality():
+    
+    """
+    Find indices where the densities of cold matter and relativistic particles
+    are approximately equal.
+
+    This function reads data from a file containing cosmological information
+    and calculates the indices where the density of cold matter becomes similar
+    to the density of relativistic particles.
+    
+    Parameters:
+        None.
+
+    Returns:
+        Tuple of integers (index_M_R, index_M_Lambda).
+    """
+    
+    #Read the data from 'cosmology.txt' in folder 'Results'.
+    
+    data = np.loadtxt('../Results/cosmology.txt')
+    
+    #OmegaB relative density of baryonic (ordinary) matter.
+    
+    OmegaB: np.array(float) = data[:, 4]
+    
+    #OmegaCDM: relative density of cold dark matter.
+    
+    OmegaCDM: np.array(float) = data[:, 5]
+    
+    #OmegaLambda: relative density of dark energy.
+    
+    OmegaLambda: np.array(float) = data[:, 6]
+    
+    #OmegaR: relative density of radiation (photons).
+    
+    OmegaR: np.array(float) = data[:, 7]
+    
+    #OmegaNu: relative density of neutrinos.
+
+    OmegaNu: np.array(float) = data[:, 8]
+    
+    #Define the omegas corresponding to cold and relativistic matter/particles.
+        
+    OmegaM:np.array(float) = OmegaB+OmegaCDM
+
+    OmegaRel:np.array(float) = OmegaR+OmegaNu
+    
+    #Get the indeces when the cuantity of cold matter is the same (or most 
+    #similar) to the cuantity of relativistic particles.
+    
+    index_M_R: int = np.argmin(np.abs(OmegaRel-OmegaM))
+    
+    index_M_Lambda: int = index_M_R+\
+                          np.argmin(np.abs(OmegaLambda[index_M_R:]\
+                                           -OmegaM[index_M_R:]))
+                              
+    return(index_M_R, index_M_Lambda)

@@ -127,11 +127,11 @@ def cosmology():
     #Get the indeces when the cuantity of cold matter is the same (or most 
     #similar) to the cuantity of relativistic particles.
     
-    index_M_R: int = np.argmin(np.abs(OmegaRel-OmegaM))
+    index_M_R: int
     
-    index_M_Lambda: int = index_M_R+\
-                          np.argmin(np.abs(OmegaLambda[index_M_R:]\
-                                           -OmegaM[index_M_R:]))
+    index_M_Lambda: int
+                              
+    index_M_R, index_M_Lambda = aux.index_equality()
         
     #Get the index when the Universe starts its accelerated expansion.
     
@@ -444,7 +444,7 @@ def supernova():
     
     #Read the data from 'supernovadata.txt' in folder 'data'. Ignore first row.
     
-    data_sup = np.loadtxt('../Data/supernovadata.txt', skiprows=1)
+    data_sup = np.loadtxt('../data/supernovadata.txt', skiprows=1)
     
     #Assign the different variables to its corresponding data.
     
