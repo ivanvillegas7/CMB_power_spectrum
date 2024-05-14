@@ -33,7 +33,7 @@ C = -O3 -g $(OPTIONS)
 
 #=======================================================
 
-VPATH=src/
+VPATH=Source/
 TARGETS := cmb
 all: $(TARGETS)
 
