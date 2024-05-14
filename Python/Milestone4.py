@@ -13,6 +13,8 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
+import healpy as hp
+
 import auxiliar as aux
 
 def CMB_PowerSpectrum():
@@ -216,6 +218,25 @@ def Matter_PowerSpectrum(polarization: bool):
     plt.grid()
     plt.savefig('../Plots/Milestone IV/Total matter PS.pdf')
     
+def CMB_map():
+    
+    NSIDE = 32
+    print("Approximate resolution at NSIDE {} is {:.2} deg".format(NSIDE, hp.nside2resol(NSIDE, arcmin=True)/60))
+    NPIX = hp.nside2npix(NSIDE)
+    print(NPIX)
+    m = np.arange(NPIX)
+    hp.mollview(m, title="Mollview image RING")
+    hp.graticule()
+    vec = hp.ang2vec(np.pi / 2, np.pi * 3 / 4)
+    print(vec)
+    ipix_disc = hp.query_disc(nside=32, vec=vec, radius=np.radians(10))
+    m = np.arange(NPIX)
+    m[ipix_disc] = m.max()
+    hp.mollview(m, title="Mollview image RING")
+    theta, phi = np.degrees(hp.pix2ang(nside=32, ipix=[0, 1, 2, 3, 4]))
+    m = np.arange(NPIX)
+    hp.mollview(m, nest=True, title="Mollview image NESTED")
+    
     
 def milestone4(polarization: bool):
     
@@ -243,4 +264,4 @@ def milestone4(polarization: bool):
     
     Matter_PowerSpectrum(polarization)
   
-milestone4(False)
+#milestone4(False)
