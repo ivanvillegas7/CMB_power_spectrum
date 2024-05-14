@@ -44,10 +44,20 @@ def CMB_PowerSpectrum():
     
     C_ell: np.array(float) = data[:, 1]
     
+    #Get the value of the CMB temperature today.
+    
+    #TCMB0: float = np.loadtxt('../Results/cells.txt')[-1, 12]
+    
+    TCMB0: float = 2.7255
+    
+    factor: float = (1e6*TCMB0)**2
+    
+    transform: float = ell*(ell+1)/(2*np.pi)
+    
     #Make the plot.
        
     plt.figure()
-    plt.plot(ell, C_ell, label='Theory prediction')
+    plt.plot(ell, transform*C_ell*factor, label='Theory prediction')
     plt.xlabel(r'Multipole $\ell$')
     plt.ylabel(r'$C_\ell$')
     plt.title('CMB power-spectrum')
