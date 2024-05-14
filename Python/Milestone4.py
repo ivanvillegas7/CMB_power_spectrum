@@ -126,15 +126,13 @@ def Matter_PowerSpectrum(polarization: bool):
     
     data = np.loadtxt('../Results/cosmology.txt')
     
-    #Hp: conformal Hubble factor.
-    
-    Hp: np.array(float) = data[:, 2]
-    
     #Get index of radiation and matter equality.
     
     index: int = aux.index_equality()[0]
     
-    Hp_eq: float = (Hp[index]/(100*1e3/(1e6*sc.constants.parsec)))
+    #Hp: conformal Hubble factor.
+    
+    Hp_eq: np.array(float) = data[index, 2]*10*sc.constants.parsec
     
     k_eq: float = Hp_eq*1e5/(sc.constants.c*sc.constants.h)
         

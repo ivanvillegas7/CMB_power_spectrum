@@ -167,8 +167,8 @@ def cosmology():
     plt.savefig('../Plots/Milestone I/eta_times_Hp_over_c.pdf')
     
     plt.figure()
-    plt.plot(x, Hp/(100*1e3/(1e6*sc.constants.parsec)))
-    aux.plot(x, Hp/(100*1e3/(1e6*sc.constants.parsec)), index_M_R,\
+    plt.plot(x, Hp*10*sc.constants.parsec)
+    aux.plot(x, Hp*10*sc.constants.parsec, index_M_R,\
              index_M_Lambda)
     plt.title(r'$\mathcal{H}(x)$ vs $x$')
     plt.grid(True)

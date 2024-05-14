@@ -137,31 +137,15 @@ def index_equality():
     
     data = np.loadtxt('../Results/cosmology.txt')
     
-    #OmegaB relative density of baryonic (ordinary) matter.
-    
-    OmegaB: np.array(float) = data[:, 4]
-    
-    #OmegaCDM: relative density of cold dark matter.
-    
-    OmegaCDM: np.array(float) = data[:, 5]
-    
     #OmegaLambda: relative density of dark energy.
     
     OmegaLambda: np.array(float) = data[:, 6]
     
-    #OmegaR: relative density of radiation (photons).
-    
-    OmegaR: np.array(float) = data[:, 7]
-    
-    #OmegaNu: relative density of neutrinos.
-
-    OmegaNu: np.array(float) = data[:, 8]
-    
     #Define the omegas corresponding to cold and relativistic matter/particles.
         
-    OmegaM:np.array(float) = OmegaB+OmegaCDM
+    OmegaM:np.array(float) = data[:, 4]+data[:, 5]
 
-    OmegaRel:np.array(float) = OmegaR+OmegaNu
+    OmegaRel:np.array(float) = data[:, 7]+data[:, 8]
     
     #Get the indeces when the cuantity of cold matter is the same (or most 
     #similar) to the cuantity of relativistic particles.
