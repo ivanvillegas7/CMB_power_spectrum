@@ -133,7 +133,7 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
     
     // Progress bar...
     if(i_k*10/k_array.size() != ((i_k+1)*10)/k_array.size()){
-      std::cout << "Progres: " << (i_k+1)*100/k_array.size() << "%\n" << std::flush;
+      std::cout << "Progress: " << (i_k+1)*100/k_array.size() << "%\n" << std::flush;
       if(i_k == k_array.size()-1) std::cout << std::endl;
     }
     double k_value = k_array[i_k]; // k-value for each iteration
