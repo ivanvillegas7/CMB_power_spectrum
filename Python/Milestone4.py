@@ -5,6 +5,15 @@ Created on Wed Feb 21 12:06:38 2024
 @author: Iván Villegas Pérez
 """
 
+"""
+This script contains all the relevant functions for plotting the results of
+running the C++ codes related to computing the CMB power-spectrum.
+
+Here you can find the functions 'CMB_PowerSpectrum()', 'Matter_PowerSpectrum()'
+'other_plots()', 'CMB_map()' and 'milestone4()'.
+All of them are explained below.
+"""
+
 #Import all relevant packages
 
 import scipy as sc
@@ -216,6 +225,18 @@ def Matter_PowerSpectrum():
     plt.savefig('../Plots/Milestone IV/Total matter PS.pdf')
     
 def other_plots():
+    """
+    Generate additional plots related to cosmological analysis.
+
+    This function reads data from a file containing information for plotting
+    various cosmological quantities. It then generates plots to visualize the
+    temperature multipoles and their squares divided by wavenumber.
+
+    Parameters:
+        None.
+    Returns:
+        None.
+    """
     
     data = np.loadtxt('../Results/Matter_PS.txt')
     
@@ -262,23 +283,50 @@ def other_plots():
     plt.savefig('../Plots/Milestone IV/Theta_l_over_k.pdf')
     
 def CMB_map():
-        
+    """
+    Generate a map of the Cosmic Microwave Background (CMB).
+
+    This function reads data from a file containing the CMB power spectrum
+    information. It then generates a random realization of the CMB based on the
+    power spectrum data, onverts spherical harmonic coefficients to a map, and
+    plots the resulting CMB map.
+
+    Returns:
+        Parameters.
+    Returns:
+        None.
+    """
+    
     nside = 2**10
+    
     #Read the CMB power spectrum 'cells.txt' in folder 'Results'.
+    
     data = np.loadtxt('../Results/cells.txt')
+    
     #Extract the first column as l values
+    
     ell = data[:, 0].astype(int)
+    
     #Extract the second column as Cl values
+    
     C_ell = data[:, 1]*(2*np.pi)/(ell*(ell+1))/(2.7255*1e6)**2
+    
     #Set the random seed to a specific value so the map is always the same
+    
     np.random.seed(0)
+    
     #Generate random spherical harmonic coefficients
+    
     alm = hp.synalm(C_ell, lmax=np.max(ell), new=True)
+    
     #Convert the spherical harmonic coefficients to a map
+    
     cmb_map = hp.alm2map(alm, nside)
+    
     hp.mollview(cmb_map, title='The Cosmic Microwave Background',\
                 remove_dip=True, cmap=plt.colormaps['coolwarm'])
-    plt.show()
+    
+    plt.savefig('../Plots/Milestone IV/CMB map.pdf')
     
 def milestone4(polarization: bool):
     
@@ -286,10 +334,8 @@ def milestone4(polarization: bool):
     Execute Milestone IV functionality.
 
     This function executes Milestone IV functionality, which involves plotting
-    the Cosmic Microwave Background (CMB) power-spectrum and the matter
-    power-spectrum. It calls the 'CMB_PowerSpectrum' function to plot the CMB
-    power-spectrum and the 'Matter_PowerSpectrum' function to plot the matter
-    power-spectrum.
+    various cosmological quantities, including temperature multipoles, CMB
+    power-spectrum, matter power-spectrum, and generating a map of the CMB.
 
     Parameters:
         polarization (bool): indicates if polarization has been included.
@@ -314,4 +360,4 @@ def milestone4(polarization: bool):
     
     CMB_map()
   
-milestone4(False)
+#milestone4(False)
