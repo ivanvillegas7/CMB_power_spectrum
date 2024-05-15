@@ -37,7 +37,7 @@ int main(int argc, char **argv){
 
   // Do the supernova fits.
   // Make sure you read the comments on the top of src/SupernovaFitting.h
-  mcmc_fit_to_supernova_data("Data/supernovadata.txt", "Results/results_supernovafitting.txt");
+  //mcmc_fit_to_supernova_data("Data/supernovadata.txt", "Results/results_supernovafitting.txt");
 
   // Set up and solve the background
   BackgroundCosmology cosmo(h, OmegaB, OmegaCDM, OmegaK, Neff, TCMB);
@@ -93,9 +93,6 @@ int main(int argc, char **argv){
 
   Utils::EndTiming("Milestone III");
   std::cout<<"\n";
-
-  //Remove when Milestone IV is completed
-  return 0;
   
   //=========================================================================
   // Module IV
@@ -106,6 +103,7 @@ int main(int argc, char **argv){
   PowerSpectrum power(&cosmo, &rec, &pert, A_s, n_s, kpivot_mpc);
   power.solve();
   power.output("Results/cells.txt");
+  power.output_MPS("Results/Matter_PS.txt");
 
   Utils::EndTiming("Milestone IV");
   std::cout<<"\n";

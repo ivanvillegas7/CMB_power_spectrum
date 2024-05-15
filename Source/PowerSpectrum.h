@@ -42,7 +42,7 @@ class PowerSpectrum {
     const double x_end       = Constants.x_end;
     const double x_end_los   = 0.0;
 
-    const double eta0 = cosmo->eta_of_x(0.0);
+    const double eta0 = cosmo -> eta_of_x(0.0);
     
     // The ells's we will compute Theta_ell and Cell for
     Vector ells{ 
@@ -129,9 +129,13 @@ class PowerSpectrum {
     double get_cell_TT(const double ell) const;
     double get_cell_TE(const double ell) const;
     double get_cell_EE(const double ell) const;
+    double get_ThetaT(const double ell, const double k) const;
+    double get_ThetaE(const double ell, const double k) const;
 
     // Output Cells in units of l(l+1)/2pi (muK)^2
     void output(std::string filename) const;
+    // Output matter power-spectrum in units of (Mpc/h)^3
+    void output_MPS(std::string filename) const;
 
 };
 

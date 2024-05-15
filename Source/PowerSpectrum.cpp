@@ -257,7 +257,7 @@ Vector PowerSpectrum::solve_for_cell(
 //====================================================
 
 double PowerSpectrum::primordial_power_spectrum(const double k) const{
-  return A_s*pow(Constants.Mpc*k/kpivot_mpc, n_s-1.);
+  return A_s*pow(Constants.Mpc*k/kpivot_mpc, n_s-1.)*2.*pow(M_PI, 2)/pow(Constants.Mpc*k, 3);
 }
 
 //====================================================
@@ -271,16 +271,15 @@ double PowerSpectrum::get_matter_power_spectrum(const double x, const double k_m
   //=============================================================================
 
   // Variables:
-  double OmegaM  = cosmo->get_OmegaB(x)+cosmo->get_OmegaCDM(x);
-  double Hp      = cosmo->Hp_of_x(x);
+  double OmegaM  = cosmo->get_OmegaB()+cosmo->get_OmegaCDM();
+  double H0      = cosmo->get_H0();
   double Phi     = pert->get_Phi(x, k_mpc);
-  double P_prim  = 2.*pow(M_PI, 2.)*primordial_power_spectrum(k_mpc)/pow(k_mpc, 3.);
 
   // Calculate Delta_M:
-  double Delta_M = 2.*pow(Constants.c*k_mpc, 2.)*Phi/(3.*OmegaM*pow(Hp, 2.));
+  double Delta_M = 2.*pow(Constants.c*k_mpc, 2.)*Phi*exp(x)/(3.*OmegaM*pow(H0, 2.));
 
   // Calculate P(k,x).
-  double pofk   = pow(Delta_M, 2.)*P_prim ;
+  double pofk   = pow(Delta_M, 2)*primordial_power_spectrum(k_mpc);
 
   return pofk;
 }
@@ -297,6 +296,12 @@ double PowerSpectrum::get_cell_TE(const double ell) const{
 double PowerSpectrum::get_cell_EE(const double ell) const{
   return cell_EE_spline(ell);
 }
+double PowerSpectrum::get_ThetaT(const double ell, const double k) const {
+  return thetaT_ell_of_k_spline[ell](k);
+}
+double PowerSpectrum::get_ThetaE(const double ell, const double k) const {
+  return thetaE_ell_of_k_spline[ell](k);
+}
 
 //====================================================
 // Output the cells to file.
@@ -308,16 +313,34 @@ void PowerSpectrum::output(std::string filename) const{
   const int ellmax = int(ells[ells.size()-1]);
   auto ellvalues   = Utils::linspace(2, ellmax, ellmax-1);
   auto print_data  = [&] (const double ell) {
-    double normfactor  = (ell*(ell+1))/(2.0*M_PI)*pow(1e-6*cosmo->get_TCMB(), 2);
-    double normfactorN = (ell*(ell+1))/(2.0*M_PI)*pow(1e-6*cosmo->get_TCMB()*pow(4./11., 1./3.), 2);
+    double normfactor  = (ell*(ell+1))/(2.0*M_PI)*pow(1e6*cosmo->get_TCMB(), 2);
+    double normfactorN = (ell*(ell+1))/(2.0*M_PI)*pow(1e6*cosmo->get_TCMB()*pow(4./11., 1./3.), 2);
     double normfactorL = (ell*(ell+1))*(ell*(ell+1))/(2.*M_PI);
-    fp << ell                              << " ";
-    fp << cell_TT_spline(ell)*normfactor   << " ";
+    fp << ell                               << " ";
+    fp << cell_TT_spline(ell)*normfactor    << " ";
     if(Constants.polarization){
-      fp << cell_EE_spline(ell)*normfactor << " ";
-      fp << cell_TE_spline(ell)*normfactor << " ";
+      fp << cell_EE_spline(ell)*normfactor  << " ";
+      fp << cell_TE_spline(ell)*normfactor  << " ";
     }
     fp << "\n";
   };
   std::for_each(ellvalues.begin(), ellvalues.end(), print_data);
+}
+
+void PowerSpectrum::output_MPS(const std::string filename) const{
+  
+  Vector k_array = Utils::linspace(k_min, k_max, n_k);
+
+  std::ofstream fp(filename.c_str());
+  auto print_data = [&] (const double k) {
+    fp << k*Constants.Mpc/(Constants.hbar*2*M_PI)                         << " ";
+    fp << get_matter_power_spectrum(0.0, k)*pow(Constants.hbar*2*M_PI, 3) << " ";
+    fp << k*eta0                                                          << " ";
+    fp << get_ThetaT(0, k)                                                << " ";
+    fp << get_ThetaT(10, k)                                               << " ";
+    fp << get_ThetaT(24, k)                                               << " ";
+    fp << get_ThetaT(62, k)                                               << " ";
+    fp <<"\n";
+  };
+  std::for_each(k_array.begin(), k_array.end(), print_data);
 }
