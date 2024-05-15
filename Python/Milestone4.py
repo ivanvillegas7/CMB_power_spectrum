@@ -13,7 +13,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-import healpy as hp
+#import healpy as hp
 
 import auxiliar as aux
 
@@ -87,7 +87,7 @@ def Matter_PowerSpectrum(polarization: bool):
     
     #C_ell: power-spectrum.
     
-    C_ell: np.array(float) = data[:, 1]
+    C_ell_TT: np.array(float) = data[:, 1]
     
     #Read and assign the data from 'galaxy_survey_data.txt' in folder 'Data'.
     
@@ -121,19 +121,19 @@ def Matter_PowerSpectrum(polarization: bool):
     
     DeltaD_up_lowTT: np.array(float) = data_lowTT[:, 3]
     
+    #Read and assign the data from 'high_TT.txt' in folder 'Data'.
+    
+    data_highTT = np.loadtxt('../Data/high_TT.txt', skiprows=1)
+    
+    l_highTT: np.array(float) = data_highTT[:, 0]
+    
+    D_l_highTT: np.array(float) = data_highTT[:, 1]
+    
+    DeltaD_down_highTT: np.array(float) = data_highTT[:, 2]
+    
+    DeltaD_up_highTT: np.array(float) = data_highTT[:, 3]
+    
     if polarization:
-        
-        #Read and assign the data from 'high_TT.txt' in folder 'Data'.
-        
-        data_highTT = np.loadtxt('../Data/high_TT.txt', skiprows=1)
-        
-        l_highTT: np.array(float) = data_highTT[:, 0]
-        
-        D_l_highTT: np.array(float) = data_highTT[:, 1]
-        
-        DeltaD_down_highTT: np.array(float) = data_highTT[:, 2]
-        
-        DeltaD_up_highTT: np.array(float) = data_highTT[:, 3]
         
         #Read and assign the data from 'high_EE.txt' in folder 'Data'.
     
@@ -159,16 +159,26 @@ def Matter_PowerSpectrum(polarization: bool):
         
         DeltaD_up_highTE: np.array(float) = data_highTE[:, 3]
         
+    #Read and assign the data from 'Ly_alpha.txt' in folder 'Data'.
+    
+    data_Ly = np.loadtxt('../Data/Ly_alpha.txt', skiprows=1)
+    
+    k_Ly: np.array(float) = data_Ly[:, 0]
+    
+    P_Ly: np.array(float) = data_Ly[:, 1]
+    
+    DeltaP_Ly: np.array(float) = data_Ly[:, 2]
+        
     #Make the first plot.
         
     plt.figure()
-    plt.plot(ell, ell*(ell+1)*C_ell/(2*np.pi), label='Theory prediction')
+    plt.plot(ell, C_ell_TT, label='Theory prediction')
     plt.errorbar(l_lowTT, D_l_lowTT, yerr=[DeltaD_down_lowTT, DeltaD_up_lowTT],\
                  ls='none', label=r'Low $\ell$ TT data', marker='.', capsize=2)
+    plt.errorbar(l_highTT, D_l_highTT,\
+                 yerr=[DeltaD_down_highTT, DeltaD_up_highTT], ls='none',\
+                 label=r'High $\ell$ TT data', marker='.', capsize=2)
     if polarization:
-        plt.errorbar(l_highTT, D_l_highTT,\
-                     yerr=[DeltaD_down_highTT, DeltaD_up_highTT], ls='none',\
-                     label=r'High $\ell$ TT data', marker='.', capsize=2)
         plt.errorbar(l_highEE, D_l_highEE,\
                      yerr=[DeltaD_down_highEE, DeltaD_up_highEE], ls='none',\
                      label=r'High $\ell$ EE data', marker='.', capsize=2)
@@ -194,11 +204,11 @@ def Matter_PowerSpectrum(polarization: bool):
     
     #Hp_eq: conformal Hubble factor when there is radiation and matter equality.
     
-    Hp_eq: np.array(float) = data[index, 2]*10*sc.constants.parsec
+    Hp_eq: np.array(float) = data[index, 2]*10*sc.constants.parsec #100km/(Mpc*s)
     
     #k_eq: wavenumber when there is radiation and matter equality.
     
-    k_eq: float = Hp_eq*1e5/(sc.constants.c*sc.constants.h)
+    k_eq: float = Hp_eq*1e5/(sc.constants.c*sc.constants.h) #h/Mpc
     
     #Make the second plot.
         
@@ -207,10 +217,12 @@ def Matter_PowerSpectrum(polarization: bool):
                  ls='none', marker='.', capsize=2)
     plt.errorbar(k_ACT, P_ACT, P_upper, label='CMB (WMAP+ACT)', ls='none',\
                  marker='.', capsize=2)
-    plt.vlines(k_eq, plt.ylim()[0], plt.ylim()[1], label=r'$k_\text{eq}$',\
+    plt.errorbar(k_Ly, P_Ly, DeltaP_Ly, label=r'Lyman $\alpha$ foresyt',\
+                 ls='none', marker='.', capsize=2)
+    plt.vlines(k_eq, plt.ylim()[0], plt.ylim()[1], label=r'$k_{eq}$',\
                ls='--')
     plt.xlabel(r'Wavenumber $k$ [$h$/Mpc]')
-    plt.ylabel(r'$P(k)$ [(Mpc/$h$)$^2$]')
+    plt.ylabel(r'$P(k)$ [(Mpc/$h$)$^3$]')
     plt.title('The total matter power-spectrum')
     plt.xscale('log')
     plt.yscale('log')
@@ -220,6 +232,9 @@ def Matter_PowerSpectrum(polarization: bool):
     
 def CMB_map():
     
+    import healpy as hp
+    
+    print('This is an example')
     NSIDE = 32
     print("Approximate resolution at NSIDE {} is {:.2} deg".format(NSIDE, hp.nside2resol(NSIDE, arcmin=True)/60))
     NPIX = hp.nside2npix(NSIDE)
@@ -237,6 +252,17 @@ def CMB_map():
     m = np.arange(NPIX)
     hp.mollview(m, nest=True, title="Mollview image NESTED")
     
+    print('Lets try to generate the CMB map.')
+    
+    nside = 128
+    # Read the CMB power spectrum from a FITS file
+    cl = hp.read_cl('../Results/cells.txt')[:, 1]
+    # Generate random spherical harmonic coefficients
+    alm = hp.synalm(cl, lmax=3*nside-1, new=True)
+    # Convert the spherical harmonic coefficients to a map
+    cmb_map = hp.alm2map(alm, nside)
+    hp.mollview(cmb_map)
+    plt.show()
     
 def milestone4(polarization: bool):
     
@@ -264,4 +290,4 @@ def milestone4(polarization: bool):
     
     Matter_PowerSpectrum(polarization)
   
-#milestone4(False)
+milestone4(False)
