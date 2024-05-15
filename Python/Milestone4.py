@@ -17,7 +17,7 @@ import healpy as hp
 
 import auxiliar as aux
 
-def CMB_PowerSpectrum():
+def CMB_PowerSpectrum(polarization: bool):
     
     """
     Plot the Cosmic Microwave Background (CMB) power-spectrum.
@@ -25,51 +25,8 @@ def CMB_PowerSpectrum():
     This function reads data from a file containing CMB power-spectrum
     information, including multipole moments (ell) and their corresponding
     power values (C_ell). It then generates a plot to visualize the theoretical
-    prediction of the CMB power-spectrum.
+    prediction of the CMB power-spectrum, along with observational data.
     
-    Parameters:
-        None.
-
-    Returns:
-        None.
-    """
-    
-    #Read the data from 'cells.txt' in folder 'Results'.
-    
-    data = np.loadtxt('../Results/cells.txt')
-    
-    #ell: multipole moment.
-    
-    ell: np.array(float) = data[:, 0]
-    
-    #C_ell_TT: power-spectrum with only the temperature source function.
-    
-    C_ell_TT: np.array(float) = data[:, 1]
-    
-    #Make the plot.
-       
-    plt.figure()
-    plt.plot(ell, C_ell_TT, label='Theory prediction')
-    plt.xlabel(r'Multipole $\ell$')
-    plt.ylabel(r'$\frac{\ell(\ell+1)}{2\pi}C_\ell$ [$\mu$K$^2$]')
-    plt.title('CMB power-spectrum')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.legend()
-    plt.grid()
-    plt.savefig('../Plots/Milestone IV/CMB_PS.pdf')
-    
-def Matter_PowerSpectrum(polarization: bool):
-    
-    """
-    Plot the matter power spectrum.
-
-    This function reads data from files containing matter power-spectrum
-    information, including multipole moments (ell) and their corresponding
-    power values (C_ell), as well as data from various surveys and experiments.
-    It then generates a plot to visualize the theoretical prediction of the
-    matter power-spectrum along with observational data.
-
     Parameters:
         polarization (bool): indicates if polarization has been included.
 
@@ -88,36 +45,6 @@ def Matter_PowerSpectrum(polarization: bool):
     #C_ell: power-spectrum.
     
     C_ell_TT: np.array(float) = data_Cells[:, 1]
-    
-    data_MPS = np.loadtxt('../Results/Matter_PS.txt')
-    
-    #k: wavenumber.
-    
-    k: np.array(float) = data_MPS[:, 0]
-    
-    #Matter_PS: matter power-spectrum.
-    
-    Matter_PS: np.array(float) = data_MPS[:, 1]
-    
-    #Read and assign the data from 'galaxy_survey_data.txt' in folder 'Data'.
-    
-    data_gal = np.loadtxt('../Data/galaxy_survey_data.txt', skiprows=1)
-    
-    k_gal: np.array(float) = data_gal[:, 0]
-    
-    P_gal: np.array(float) = data_gal[:, 1]
-    
-    ErrorP_gal: np.array(float) = data_gal[:, 2]
-    
-    #Read and assign the data from 'WMAP_ACT_data.txt' in folder 'Data'.
-    
-    data_ACT = np.loadtxt('../Data/WMAP_ACT_data.txt', skiprows=1)
-    
-    k_ACT: np.array(float) = data_ACT[:, 0]
-    
-    P_ACT: np.array(float) = data_ACT[:, 1]
-    
-    P_upper: np.array(float) = data_ACT[:, 2]
     
     #Read and assign the data from 'low_TT.txt' in folder 'Data'.
     
@@ -168,18 +95,8 @@ def Matter_PowerSpectrum(polarization: bool):
         DeltaD_down_highTE: np.array(float) = data_highTE[:, 2]
         
         DeltaD_up_highTE: np.array(float) = data_highTE[:, 3]
-        
-    #Read and assign the data from 'Ly_alpha.txt' in folder 'Data'.
-    
-    data_Ly = np.loadtxt('../Data/Ly_alpha.txt', skiprows=1)
-    
-    k_Ly: np.array(float) = data_Ly[:, 0]
-    
-    P_Ly: np.array(float) = data_Ly[:, 1]
-    
-    DeltaP_Ly: np.array(float) = data_Ly[:, 2]
-        
-    #Make the first plot.
+             
+    #Make the plot.
         
     plt.figure()
     plt.plot(ell, C_ell_TT, label='Theory prediction')
@@ -204,6 +121,63 @@ def Matter_PowerSpectrum(polarization: bool):
     plt.grid()
     plt.savefig('../Plots/Milestone IV/Matter PS.pdf')
     
+def Matter_PowerSpectrum():
+    
+    """
+    Plot the matter power spectrum.
+
+    This function reads data from files containing matter power-spectrum
+    information,as well as data from various surveys and experiments.
+    It then generates a plot to visualize the theoretical prediction of the
+    matter power-spectrum along with observational data.
+
+    Parameters:
+        None.
+
+    Returns:
+        None.
+    """
+    
+    data_MPS = np.loadtxt('../Results/Matter_PS.txt')
+    
+    #k: wavenumber.
+    
+    k: np.array(float) = data_MPS[:, 0]
+    
+    #Matter_PS: matter power-spectrum.
+    
+    Matter_PS: np.array(float) = data_MPS[:, 1]
+    
+    #Read and assign the data from 'galaxy_survey_data.txt' in folder 'Data'.
+    
+    data_gal = np.loadtxt('../Data/galaxy_survey_data.txt', skiprows=1)
+    
+    k_gal: np.array(float) = data_gal[:, 0]
+    
+    P_gal: np.array(float) = data_gal[:, 1]
+    
+    ErrorP_gal: np.array(float) = data_gal[:, 2]
+    
+    #Read and assign the data from 'WMAP_ACT_data.txt' in folder 'Data'.
+    
+    data_ACT = np.loadtxt('../Data/WMAP_ACT_data.txt', skiprows=1)
+    
+    k_ACT: np.array(float) = data_ACT[:, 0]
+    
+    P_ACT: np.array(float) = data_ACT[:, 1]
+    
+    P_upper: np.array(float) = data_ACT[:, 2]
+        
+    #Read and assign the data from 'Ly_alpha.txt' in folder 'Data'.
+    
+    data_Ly = np.loadtxt('../Data/Ly_alpha.txt', skiprows=1)
+    
+    k_Ly: np.array(float) = data_Ly[:, 0]
+    
+    P_Ly: np.array(float) = data_Ly[:, 1]
+    
+    DeltaP_Ly: np.array(float) = data_Ly[:, 2]
+        
     #Read the data from 'cosmology.txt' in folder 'Results'.
     
     data = np.loadtxt('../Results/cosmology.txt')
@@ -218,9 +192,9 @@ def Matter_PowerSpectrum(polarization: bool):
     
     #k_eq: wavenumber when there is radiation and matter equality.
     
-    k_eq: float = Hp_eq*1e5/(sc.constants.c*sc.constants.h) #h/Mpc
+    k_eq: float = Hp_eq*1e5/(sc.constants.c*0.67) #h/Mpc
     
-    #Make the second plot.
+    #Make the plot.
         
     plt.figure()
     plt.plot(k, Matter_PS, label='Theory prediction')
@@ -231,7 +205,7 @@ def Matter_PowerSpectrum(polarization: bool):
     plt.errorbar(k_Ly, P_Ly, DeltaP_Ly, label=r'Lyman $\alpha$ foresyt',\
                  ls='none', marker='.', capsize=2)
     plt.vlines(k_eq, plt.ylim()[0], plt.ylim()[1], label=r'$k_{eq}$',\
-               ls='--')
+               ls='--', color='black')
     plt.xlabel(r'Wavenumber $k$ [$h$/Mpc]')
     plt.ylabel(r'$P(k)$ [(Mpc/$h$)$^3$]')
     plt.title('The total matter power-spectrum')
@@ -268,39 +242,42 @@ def other_plots():
     plt.plot(keta0, Theta_20, label=r'$\Theta_{20}(k)$')
     plt.plot(keta0, Theta_200, label=r'$\Theta_{200}(k)$')
     plt.plot(keta0, Theta_2000, label=r'$\Theta_{2000}(k)$')
-    plt.xlabel(r'$k\eta_0$ []')
+    plt.xlabel(r'$k\eta_0$')
     plt.ylabel(r'$\Theta_\ell$')
-    plt.title(r'$\Theta_ell$ for different $\ell$ values')
+    plt.title(r'$\Theta_\ell$ for different $\ell$ values')
     plt.grid()
     plt.legend()
-    plt.savefig('../Plots/Milestone IV/theta_l.pdf')
+    plt.savefig('../Plots/Milestone IV/Theta_l.pdf')
     
     plt.figure()
-    plt.plot(k, Theta_2**2/k, label=r'$\Theta_2(k)$')
-    plt.plot(k, Theta_20**2/k, label=r'$\Theta_{20}(k)$')
-    plt.plot(k, Theta_200**2/k, label=r'$\Theta_{200}(k)$')
-    plt.plot(k, Theta_2000**2/k, label=r'$\Theta_{2000}(k)$')
-    plt.xlabel(r'$k$ []')
-    plt.ylabel(r'$\Theta_\ell^2$')
-    plt.title(r'$\Theta_ell^2/k$ for different $\ell$ values')
+    plt.plot(k, Theta_2**2/k, label=r'$|\Theta_2(k)|^2/k$')
+    plt.plot(k, Theta_20**2/k, label=r'$|\Theta_{20}(k)|^2/k$')
+    plt.plot(k, Theta_200**2/k, label=r'$|\Theta_{200}(k)|^2/k$')
+    plt.plot(k, Theta_2000**2/k, label=r'$|\Theta_{2000}(k)|^2/k$')
+    plt.xlabel(r'$k$ [m$^{-1}$]')
+    plt.ylabel(r'$|\Theta_\ell(k)|^2/k$')
+    plt.title(r'$\Theta_\ell^2/k$ for different $\ell$ values')
     plt.grid()
     plt.legend()
-    plt.savefig('../Plots/Milestone IV/theta_l.pdf')
+    plt.savefig('../Plots/Milestone IV/Theta_l_over_k.pdf')
     
 def CMB_map():
         
-    nside = 128
-    # Read the CMB power spectrum 'cells.txt' in folder 'Results'.
+    nside = 2**10
+    #Read the CMB power spectrum 'cells.txt' in folder 'Results'.
     data = np.loadtxt('../Results/cells.txt')
-    # Extract the first column as l values
+    #Extract the first column as l values
     ell = data[:, 0].astype(int)
-    # Extract the second column as Cl values
-    C_ell = data[:, 1]*(2*np.pi)/(ell*(ell+1))
-    # Generate random spherical harmonic coefficients
+    #Extract the second column as Cl values
+    C_ell = data[:, 1]*(2*np.pi)/(ell*(ell+1))/(2.7255*1e6)**2
+    #Set the random seed to a specific value so the map is always the same
+    np.random.seed(0)
+    #Generate random spherical harmonic coefficients
     alm = hp.synalm(C_ell, lmax=np.max(ell), new=True)
-    # Convert the spherical harmonic coefficients to a map
+    #Convert the spherical harmonic coefficients to a map
     cmb_map = hp.alm2map(alm, nside)
-    hp.mollview(cmb_map)
+    hp.mollview(cmb_map, title='The Cosmic Microwave Background',\
+                remove_dip=True, cmap=plt.colormaps['coolwarm'])
     plt.show()
     
 def milestone4(polarization: bool):
@@ -327,11 +304,11 @@ def milestone4(polarization: bool):
     
     #Plot the CMB power-spectrum.
     
-    CMB_PowerSpectrum()
+    CMB_PowerSpectrum(polarization)
     
     #Plot the matter power-spectrum.
     
-    Matter_PowerSpectrum(polarization)
+    Matter_PowerSpectrum()
     
     #Plot the CMB map.
     
