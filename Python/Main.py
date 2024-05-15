@@ -75,14 +75,16 @@ def main():
     Milestone3.milestone3(polarization)
     
     print('\nMilestone III has been concluded.\n')
+
+    #Uncomment when Milestone IV is completed
     
     #Run the code related to computing the CMB and matter power-spectra.
     
-    Milestone4.milestone4(polarization)
+    #Milestone4.milestone4(polarization)
     
-    print('Milestone IV has been concluded.\n')
+    #print('Milestone IV has been concluded.\n')
     
-    print('The project has been concluded.')
+    #print('The project has been concluded.')
     
 #Run the main function of the project and execute the visualization of data.
 
