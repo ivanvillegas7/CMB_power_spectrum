@@ -13,7 +13,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-#import healpy as hp
+import healpy as hp
 
 import auxiliar as aux
 
@@ -77,17 +77,27 @@ def Matter_PowerSpectrum(polarization: bool):
         None.
     """
     
-    #Read the data from 'cells.txt' in folder 'Results'.
+    #Read the data from 'cells.txt' and 'Matter_PS.txt' in folder 'Results'
     
-    data = np.loadtxt('../Results/cells.txt')
+    data_Cells = np.loadtxt('../Results/cells.txt')
     
     #ell: multipole moment.
     
-    ell: np.array(float) = data[:, 0]
+    ell: np.array(float) = data_Cells[:, 0]
     
     #C_ell: power-spectrum.
     
-    C_ell_TT: np.array(float) = data[:, 1]
+    C_ell_TT: np.array(float) = data_Cells[:, 1]
+    
+    data_MPS = np.loadtxt('../Results/Matter_PS.txt')
+    
+    #k: wavenumber.
+    
+    k: np.array(float) = data_MPS[:, 0]
+    
+    #Matter_PS: matter power-spectrum.
+    
+    Matter_PS: np.array(float) = data_MPS[:, 1]
     
     #Read and assign the data from 'galaxy_survey_data.txt' in folder 'Data'.
     
@@ -213,6 +223,7 @@ def Matter_PowerSpectrum(polarization: bool):
     #Make the second plot.
         
     plt.figure()
+    plt.plot(k, Matter_PS, label='Theory prediction')
     plt.errorbar(k_gal, P_gal, ErrorP_gal, label='SDSS Galaxies (DR7 LRG)',\
                  ls='none', marker='.', capsize=2)
     plt.errorbar(k_ACT, P_ACT, P_upper, label='CMB (WMAP+ACT)', ls='none',\
@@ -230,35 +241,63 @@ def Matter_PowerSpectrum(polarization: bool):
     plt.grid()
     plt.savefig('../Plots/Milestone IV/Total matter PS.pdf')
     
+def other_plots():
+    
+    data = np.loadtxt('../Results/Matter_PS.txt')
+    
+    #k: wavenumber.
+    
+    k: np.array(float) = data[:, 0]
+    
+    #keta0: k times eta_0.
+    
+    keta0: np.array(float) = data[:, 2]
+    
+    #Theta_l: photon temperature multipoles.
+    
+    Theta_2: np.array(float) = data[:, 3]
+    
+    Theta_20: np.array(float) = data[:, 4]
+    
+    Theta_200: np.array(float) = data[:, 5]
+    
+    Theta_2000: np.array(float) = data[:, 6]
+    
+    plt.figure()
+    plt.plot(keta0, Theta_2, label=r'$\Theta_2(k)$')
+    plt.plot(keta0, Theta_20, label=r'$\Theta_{20}(k)$')
+    plt.plot(keta0, Theta_200, label=r'$\Theta_{200}(k)$')
+    plt.plot(keta0, Theta_2000, label=r'$\Theta_{2000}(k)$')
+    plt.xlabel(r'$k\eta_0$ []')
+    plt.ylabel(r'$\Theta_\ell$')
+    plt.title(r'$\Theta_ell$ for different $\ell$ values')
+    plt.grid()
+    plt.legend()
+    plt.savefig('../Plots/Milestone IV/theta_l.pdf')
+    
+    plt.figure()
+    plt.plot(k, Theta_2**2/k, label=r'$\Theta_2(k)$')
+    plt.plot(k, Theta_20**2/k, label=r'$\Theta_{20}(k)$')
+    plt.plot(k, Theta_200**2/k, label=r'$\Theta_{200}(k)$')
+    plt.plot(k, Theta_2000**2/k, label=r'$\Theta_{2000}(k)$')
+    plt.xlabel(r'$k$ []')
+    plt.ylabel(r'$\Theta_\ell^2$')
+    plt.title(r'$\Theta_ell^2/k$ for different $\ell$ values')
+    plt.grid()
+    plt.legend()
+    plt.savefig('../Plots/Milestone IV/theta_l.pdf')
+    
 def CMB_map():
-    
-    import healpy as hp
-    
-    print('This is an example')
-    NSIDE = 32
-    print("Approximate resolution at NSIDE {} is {:.2} deg".format(NSIDE, hp.nside2resol(NSIDE, arcmin=True)/60))
-    NPIX = hp.nside2npix(NSIDE)
-    print(NPIX)
-    m = np.arange(NPIX)
-    hp.mollview(m, title="Mollview image RING")
-    hp.graticule()
-    vec = hp.ang2vec(np.pi / 2, np.pi * 3 / 4)
-    print(vec)
-    ipix_disc = hp.query_disc(nside=32, vec=vec, radius=np.radians(10))
-    m = np.arange(NPIX)
-    m[ipix_disc] = m.max()
-    hp.mollview(m, title="Mollview image RING")
-    theta, phi = np.degrees(hp.pix2ang(nside=32, ipix=[0, 1, 2, 3, 4]))
-    m = np.arange(NPIX)
-    hp.mollview(m, nest=True, title="Mollview image NESTED")
-    
-    print('Lets try to generate the CMB map.')
-    
+        
     nside = 128
-    # Read the CMB power spectrum from a FITS file
-    cl = hp.read_cl('../Results/cells.txt')[:, 1]
+    # Read the CMB power spectrum 'cells.txt' in folder 'Results'.
+    data = np.loadtxt('../Results/cells.txt')
+    # Extract the first column as l values
+    ell = data[:, 0].astype(int)
+    # Extract the second column as Cl values
+    C_ell = data[:, 1]*(2*np.pi)/(ell*(ell+1))
     # Generate random spherical harmonic coefficients
-    alm = hp.synalm(cl, lmax=3*nside-1, new=True)
+    alm = hp.synalm(C_ell, lmax=np.max(ell), new=True)
     # Convert the spherical harmonic coefficients to a map
     cmb_map = hp.alm2map(alm, nside)
     hp.mollview(cmb_map)
@@ -282,6 +321,10 @@ def milestone4(polarization: bool):
         None.
     """
     
+    #Plot theta_l plots.
+    
+    other_plots()
+    
     #Plot the CMB power-spectrum.
     
     CMB_PowerSpectrum()
@@ -289,5 +332,9 @@ def milestone4(polarization: bool):
     #Plot the matter power-spectrum.
     
     Matter_PowerSpectrum(polarization)
+    
+    #Plot the CMB map.
+    
+    CMB_map()
   
-#milestone4(False)
+milestone4(False)
