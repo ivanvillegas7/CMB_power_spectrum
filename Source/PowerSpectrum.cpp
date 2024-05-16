@@ -277,7 +277,7 @@ double PowerSpectrum::get_matter_power_spectrum(const double x, const double k_m
   double Phi     = pert->get_Phi(x, k_mpc);
 
   // Calculate Delta_M:
-  double Delta_M = 2.*pow(Constants.c*k_mpc/cosmo->get_h(), 2)*Phi*exp(x)/(3.*OmegaM*pow(H0, 2));
+  double Delta_M = 2.*pow(Constants.c*k_mpc, 2)*Phi*exp(x)/(3.*OmegaM*pow(H0, 2));
 
   // Calculate P(k,x).
   double pofk   = pow(Delta_M, 2)*primordial_power_spectrum(k_mpc);
