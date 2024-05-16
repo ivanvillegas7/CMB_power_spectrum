@@ -123,12 +123,12 @@ def CMB_PowerSpectrum(polarization: bool):
                      label=r'High $\ell$ TE data', marker='.', capsize=2)
     plt.xlabel(r'Multipole $\ell$')
     plt.ylabel(r'$\ell(\ell+1)C_\ell/2\pi$ [$\mu$K$^2$]')
-    plt.title('Matter power-spectrum')
+    plt.title('CMB power-spectrum')
     plt.xscale('log')
     plt.yscale('log')
     plt.legend()
     plt.grid()
-    plt.savefig('../Plots/Milestone IV/Matter PS.pdf')
+    plt.savefig('../Plots/Milestone IV/CMB PS.pdf')
     
 def Matter_PowerSpectrum():
     
