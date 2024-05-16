@@ -22,7 +22,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-import healpy as hp
+
 
 import auxiliar as aux
 
@@ -80,6 +80,10 @@ def CMB_PowerSpectrum(polarization: bool):
     DeltaD_up_highTT: np.array(float) = data_highTT[:, 3]
     
     if polarization:
+
+        C_ell_TE: np.array(float) = data_Cells[:, 2]
+
+        C_ell_EE: np.array(float) = data_Cells[:, 3]
         
         #Read and assign the data from 'high_EE.txt' in folder 'Data'.
     
@@ -108,13 +112,17 @@ def CMB_PowerSpectrum(polarization: bool):
     #Make the plot.
         
     plt.figure()
-    plt.plot(ell, C_ell_TT, label='Theory prediction')
+    if not polarization:
+        plt.plot(ell, C_ell_TT, label='Theory prediction')
     plt.errorbar(l_lowTT, D_l_lowTT, yerr=[DeltaD_down_lowTT, DeltaD_up_lowTT],\
-                 ls='none', label=r'Low $\ell$ TT data', marker='.', capsize=2)
+                ls='none', label=r'Low $\ell$ TT data', marker='.', capsize=2)
     plt.errorbar(l_highTT, D_l_highTT,\
-                 yerr=[DeltaD_down_highTT, DeltaD_up_highTT], ls='none',\
-                 label=r'High $\ell$ TT data', marker='.', capsize=2)
+                yerr=[DeltaD_down_highTT, DeltaD_up_highTT], ls='none',\
+                label=r'High $\ell$ TT data', marker='.', capsize=2)
     if polarization:
+        plt.plot(ell, C_ell_TT, label=r'$D_\ell^{TT}$')
+        plt.plot(ell, C_ell_TE, label=r'$D_\ell^{TE}$')
+        plt.plot(ell, C_ell_EE, label=r'$D_\ell^{EE}$')
         plt.errorbar(l_highEE, D_l_highEE,\
                      yerr=[DeltaD_down_highEE, DeltaD_up_highEE], ls='none',\
                      label=r'High $\ell$ EE data', marker='.', capsize=2)
@@ -125,7 +133,6 @@ def CMB_PowerSpectrum(polarization: bool):
     plt.ylabel(r'$\ell(\ell+1)C_\ell/2\pi$ [$\mu$K$^2$]')
     plt.title('CMB power-spectrum')
     plt.xscale('log')
-    plt.yscale('log')
     plt.legend()
     plt.grid()
     plt.savefig('../Plots/Milestone IV/CMB PS.pdf')
@@ -296,7 +303,7 @@ def CMB_map():
     Returns:
         None.
     """
-    
+    import healpy as hp
     nside = 2**10
     
     #Read the CMB power spectrum 'cells.txt' in folder 'Results'.
@@ -355,9 +362,9 @@ def milestone4(polarization: bool):
     #Plot the matter power-spectrum.
     
     Matter_PowerSpectrum()
-    
+
     #Plot the CMB map.
     
-    CMB_map()
+    #CMB_map()
   
-#milestone4(False)
+milestone4(False)
