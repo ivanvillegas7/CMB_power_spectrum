@@ -35,14 +35,14 @@ class PowerSpectrum {
     // Extra stuff needed in the code.
     const double n_bessel     = 25.;    // Samples per oscillation for the Bessel function
     const double n_x_los      = 400.; // Samples per oscillation of the integrand in the line of sight integral
-    //const double n_k_ps       = 32.;  // Sample per oscillation when integrating over k
+    const double n_k_ps       = 32.;  // Sample per oscillation when integrating over k
     
     const double x_start     = Constants.x_start;
     const double x_start_los = -8.;    // Time before recombination from which we integrate the line of sight integral
     const double x_end       = Constants.x_end;
     const double x_end_los   = 0.0;
 
-    const double eta0 = cosmo -> eta_of_x(0.0);
+    const double eta0 = cosmo->eta_of_x(0.0);
     
     // The ells's we will compute Theta_ell and Cell for
     Vector ells{ 

@@ -47,7 +47,10 @@ void PowerSpectrum::solve(){
   // TODO: Integration to get Cell by solving dCell^f/dlogk = Delta(k)*f_ell(k)^2
   // Implement solve_for_cell.
   //=========================================================================
-  auto cell_TT = solve_for_cell(log_k_array, thetaT_ell_of_k_spline, thetaT_ell_of_k_spline);
+  double dk_ps = 2.*M_PI / (eta0 * n_k_ps);
+  int npts_ps = (k_max - k_min)/dk_ps;
+  Vector log_k_ps_array = Utils::linspace(log(k_min), log(k_max), npts_ps);
+  auto cell_TT = solve_for_cell(log_k_ps_array, thetaT_ell_of_k_spline, thetaT_ell_of_k_spline);
   cell_TT_spline.create(ells, cell_TT, "Cell_TT_of_ell");
   
   //=========================================================================
@@ -139,11 +142,9 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
     double k_value = k_array[i_k]; // k-value for each iteration
     for(int i_l=0; i_l < ells.size(); i_l++){
       //double ell = ells[i_l]; // ell-value for each iteration
-      //std::cout<<"Problem is below this line when i_l="<<i_l<<std::endl;
       Vector integrand(x_array.size());
       for(int i=0; i < x_array.size(); i++){
         integrand[i] = source_function(x_array[i], k_value)*j_ell_splines[i_l](k_value*(eta0-cosmo->eta_of_x(x_array[i])));
-        //std::cout<<"Problem is below this line when i="<<i<<std::endl;
       }
 
       // Store the result for Source_ell(k) in results[ell][ik].
@@ -333,8 +334,8 @@ void PowerSpectrum::output_MPS(const std::string filename) const{
 
   std::ofstream fp(filename.c_str());
   auto print_data = [&] (const double k) {
-    fp << k*Constants.Mpc/cosmo->get_h()                        << " ";
-    fp << get_matter_power_spectrum(0.0, k)*pow(cosmo->get_h(), 3) << " ";
+    fp << k*Constants.Mpc/cosmo->get_h()                                  << " ";
+    fp << get_matter_power_spectrum(0.0, k)*pow(cosmo->get_h(), 3)        << " ";
     fp << k*eta0                                                          << " ";
     fp << get_ThetaT(0, k)                                                << " ";
     fp << get_ThetaT(10, k)                                               << " ";
