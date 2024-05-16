@@ -2,7 +2,9 @@
 
 ## The Cosmic Microwave Background and the Large Scale Structure of our Universe
 
-This repository will store the code used to compute the CMB power spectrum. I will update it as I progress with this project for the course AST5220 - Cosmology II of the University of Oslo (UiO). The structure of the repository and the code is based on Hans A. Whinter's (@HAWinther, https://cmb.wintherscoming.no/index.php). This repository contains all the needed files for runnig the project, however, only the code related to the second milestone has been completed. At the moment, the code can only solve the cosmological background, make a MCMC fit to the given supernova data and solve the recombinatioon history of the Universe.
+This repository will store the code used to compute the CMB power spectrum. I will update it as I progress with this project for the course AST5220 - Cosmology II of the University of Oslo (UiO). The structure of the repository and the code is based on Hans A. Whinter's (@HAWinther, https://cmb.wintherscoming.no/index.php). This repository contains all the needed files for runnig the project, solving the cosmological background, making a MCMC fit to the given supernova data, solving the recombination history and solving the evolution of the Universe, as well as computing the CMB power-spectrum.
+
+however, only the code related to the thi milestone has been completed. At the moment, the code can only solve the cosmological background, make a MCMC fit to the given supernova data and solve the recombinatioon history of the Universe.
 
 ## Compiling and running
 
