@@ -34,7 +34,8 @@ See [this](https://solarianprogrammer.com/) for how to install it on a Windows m
   
   -LIBS = -L$(HOME)/local/lib -lgsl -lgslcblas
 
-- If this fails with "libgsl.so not found" then run the command: export LD\_LIBRARY\_PATH="$LD\_LIBRARY\_PATH:$HOME/local/lib"
+- If this fails with "libgsl.so not found" then run the command:
+  export LD\_LIBRARY\_PATH="$LD\_LIBRARY\_PATH:$HOME/local/lib"
 
 and try to run ./cmb again and it should work. To avoid having to run this command every time you open a new terminal open the $HOME/.bashrc file and add this line to the end of the file and it will load everytime you open a new window.
 
