@@ -27,9 +27,9 @@ void PowerSpectrum::solve(){
   //=========================================================================
   // TODO: Choose the range of k's and the resolution to compute Theta_ell(k).
   //=========================================================================
-  double dk = 2.*M_PI/(eta0*n_k);
-  Vector k_array=Utils::linspace(k_min, k_max, (k_max-k_min)/dk);
-  Vector log_k_array = log(k_array);
+  double dk          = 2.*M_PI/(eta0*n_k);
+  Vector k_array     = Utils::linspace(k_min, k_max, (k_max-k_min)/dk);
+  Vector log_k_array = Utils::linspace(log(k_min), log(k_max), 2*(k_max-k_min)/dk);
 
   //=========================================================================
   // TODO: Make splines for j_ell. 
@@ -243,10 +243,10 @@ Vector PowerSpectrum::solve_for_cell(
     Vector integrand(log_k_array.size());
     for(int i=0; i < log_k_array.size(); i++){
       double k_value = exp(log_k_array[i]);
-      integrand[i]   = primordial_power_spectrum(k_value)*abs(f_ell_spline[il](k_value)*g_ell_spline[il](k_value));
+      integrand[i]   = pow(k_value, 2)*primordial_power_spectrum(k_value)*abs(f_ell_spline[il](k_value)*g_ell_spline[il](k_value));
     }
 
-    result[il] = 4.*M_PI*integrate(dlogk, integrand);
+    result[il] = 2.*integrate(dlogk, integrand)/M_PI;
   }
 
   return result;
@@ -257,7 +257,7 @@ Vector PowerSpectrum::solve_for_cell(
 //====================================================
 
 double PowerSpectrum::primordial_power_spectrum(const double k) const{
-  return A_s*pow(Constants.Mpc*k/kpivot_mpc, n_s-1.)*2.*pow(M_PI, 2)/pow(Constants.Mpc*k, 3);
+  return A_s*pow(k*Constants.Mpc/kpivot_mpc, n_s-1.)*2.*pow(M_PI, 2)/pow(k*Constants.Mpc, 3);
 }
 
 //====================================================
@@ -333,8 +333,8 @@ void PowerSpectrum::output_MPS(const std::string filename) const{
 
   std::ofstream fp(filename.c_str());
   auto print_data = [&] (const double k) {
-    fp << k*Constants.Mpc/(Constants.hbar*2*M_PI)                         << " ";
-    fp << get_matter_power_spectrum(0.0, k)*pow(Constants.hbar*2*M_PI, 3) << " ";
+    fp << k*Constants.Mpc/cosmo->get_h()                        << " ";
+    fp << get_matter_power_spectrum(0.0, k)*pow(cosmo->get_h(), 3) << " ";
     fp << k*eta0                                                          << " ";
     fp << get_ThetaT(0, k)                                                << " ";
     fp << get_ThetaT(10, k)                                               << " ";
