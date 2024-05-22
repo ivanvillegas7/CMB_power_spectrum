@@ -365,6 +365,4 @@ def milestone4(polarization: bool):
 
     #Plot the CMB map.
     
-    #CMB_map()
-  
-milestone4(False)
+    CMB_map()
