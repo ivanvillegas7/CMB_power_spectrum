@@ -218,7 +218,7 @@ double PowerSpectrum::integrate(double dx, Vector y_array){
 
 //====================================================
 // Compute Cell (could be TT or TE or EE):
-// Cell = Int_0^inf*4*π*P(k)f_ell*g_ell*dk/k.
+// Cell = Int_0^inf*4*π*P(k)*f_ell*g_ell*dk/k.
 //====================================================
 Vector PowerSpectrum::solve_for_cell(
     Vector & log_k_array,
@@ -240,11 +240,10 @@ Vector PowerSpectrum::solve_for_cell(
     Vector integrand(log_k_array.size());
     for(int i=0; i < log_k_array.size(); i++){
       double k_value = exp(log_k_array[i]);
-      //integrand[i]   = get_matter_power_spectrum(0.0, k_value)*pow(Constants.Mpc, -3)*abs(f_ell_spline[i_l](k_value)*g_ell_spline[i_l](k_value));
-      integrand[i]   = get_matter_power_spectrum(0.0, k_value)*pow(Constants.Mpc, -3)*abs(f_ell_spline[i_l](k_value)*g_ell_spline[i_l](k_value))/k_value;
-    }
+      integrand[i]   = get_matter_power_spectrum(0.0, k_value)*pow(Constants.Mpc, -2)*f_ell_spline[i_l](k_value)*g_ell_spline[i_l](k_value);
+      }
 
-    result[i_l] = 4.*M_PI*integrate(exp(dlogk), integrand);
+    result[i_l] = 4.*M_PI*integrate(dlogk, integrand);
   }
 
   return result;
