@@ -47,10 +47,7 @@ void PowerSpectrum::solve(){
   // TODO: Integration to get Cell by solving dCell^f/dlogk = Delta(k)*f_ell(k)^2
   // Implement solve_for_cell.
   //=========================================================================
-  double dk_ps = 2.*M_PI / (eta0 * n_k_ps);
-  int npts_ps = (k_max - k_min)/dk_ps;
-  Vector log_k_ps_array = Utils::linspace(log(k_min), log(k_max), npts_ps);
-  auto cell_TT = solve_for_cell(log_k_ps_array, thetaT_ell_of_k_spline, thetaT_ell_of_k_spline);
+  auto cell_TT = solve_for_cell(log_k_array, thetaT_ell_of_k_spline, thetaT_ell_of_k_spline);
   cell_TT_spline.create(ells, cell_TT, "Cell_TT_of_ell");
   
   //=========================================================================
@@ -142,9 +139,11 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
     double k_value = k_array[i_k]; // k-value for each iteration
     for(int i_l=0; i_l < ells.size(); i_l++){
       //double ell = ells[i_l]; // ell-value for each iteration
+      //std::cout<<"Problem is below this line when i_l="<<i_l<<std::endl;
       Vector integrand(x_array.size());
       for(int i=0; i < x_array.size(); i++){
         integrand[i] = source_function(x_array[i], k_value)*j_ell_splines[i_l](k_value*(eta0-cosmo->eta_of_x(x_array[i])));
+        //std::cout<<"Problem is below this line when i="<<i<<std::endl;
       }
 
       // Store the result for Source_ell(k) in results[ell][ik].
@@ -231,8 +230,6 @@ Vector PowerSpectrum::solve_for_cell(
   // TODO: Integrate Cell = Int*4*π*P(k)*f_ell*g_ell*dk/k, or equivalently
   // solve the ODE system dCell/dlogk = 4*π*P(k)*f_ell*g_ell.
   //============================================================================
-
-  // I choose to do the dCell/dlogk.
   
   Vector result(nells);
   int N        = log_k_array.size();
@@ -240,14 +237,14 @@ Vector PowerSpectrum::solve_for_cell(
 
   // Loop over and integrate for all ells.
   for(int i_l=0; i_l < nells; i_l++){
-    double ell = ells[i_l];
     Vector integrand(log_k_array.size());
     for(int i=0; i < log_k_array.size(); i++){
       double k_value = exp(log_k_array[i]);
-      integrand[i]   = pow(k_value, 2)*primordial_power_spectrum(k_value)*abs(f_ell_spline[i_l](k_value)*g_ell_spline[i_l](k_value));
+      //integrand[i]   = get_matter_power_spectrum(0.0, k_value)*pow(Constants.Mpc, -3)*abs(f_ell_spline[i_l](k_value)*g_ell_spline[i_l](k_value));
+      integrand[i]   = get_matter_power_spectrum(0.0, k_value)*pow(Constants.Mpc, -3)*abs(f_ell_spline[i_l](k_value)*g_ell_spline[i_l](k_value))/k_value;
     }
 
-    result[i_l] = (2./M_PI)*integrate(exp(dlogk), integrand);
+    result[i_l] = 4.*M_PI*integrate(exp(dlogk), integrand);
   }
 
   return result;
@@ -258,11 +255,11 @@ Vector PowerSpectrum::solve_for_cell(
 //====================================================
 
 double PowerSpectrum::primordial_power_spectrum(const double k) const{
-  return A_s*pow(k*Constants.Mpc/kpivot_mpc, n_s-1.)*2.*pow(M_PI, 2)/pow(k*Constants.Mpc/cosmo->get_h(), 3);
+  return A_s*pow(k*Constants.Mpc/kpivot_mpc, n_s-1.)*2.*pow(M_PI, 2)/pow(k*Constants.Mpc, 3);
 }
 
 //====================================================
-// P(k) in units of (Mpc/h)^3:
+// P(k) in units of (Mpc)^3:
 //====================================================
 
 double PowerSpectrum::get_matter_power_spectrum(const double x, const double k_mpc) const{
@@ -277,7 +274,7 @@ double PowerSpectrum::get_matter_power_spectrum(const double x, const double k_m
   double Phi     = pert->get_Phi(x, k_mpc);
 
   // Calculate Delta_M:
-  double Delta_M = 2.*pow(Constants.c*k_mpc, 2)*Phi*exp(x)/(3.*OmegaM*pow(H0, 2));
+  double Delta_M = 2.*pow(Constants.c*k_mpc/H0, 2.)*Phi*exp(x)/(3.*OmegaM);
 
   // Calculate P(k,x).
   double pofk   = pow(Delta_M, 2)*primordial_power_spectrum(k_mpc);
@@ -314,8 +311,8 @@ void PowerSpectrum::output(std::string filename) const{
   const int ellmax = int(ells[ells.size()-1]);
   auto ellvalues   = Utils::linspace(2, ellmax, ellmax-1);
   auto print_data  = [&] (const double ell) {
-    double normfactor  = ((ell*(ell+1.))/(2.0*M_PI))*pow(1e6*cosmo->get_TCMB(), 2);
-    double normfactorN = ((ell*(ell+1.))/(2.0*M_PI))*pow(1e6*cosmo->get_TCMB()*pow(4./11., 1./3.), 2);
+    double normfactor  = (ell*(ell+1.))/(2.0*M_PI)*pow(1e6*cosmo->get_TCMB(), 2);
+    double normfactorN = (ell*(ell+1.))/(2.0*M_PI)*pow(1e6*cosmo->get_TCMB()*pow(4./11., 1./3.), 2);
     double normfactorL = (ell*(ell+1.))*(ell*(ell+1.))/(2.*M_PI);
     fp << ell                               << " ";
     fp << cell_TT_spline(ell)*normfactor    << " ";
@@ -334,8 +331,8 @@ void PowerSpectrum::output_MPS(const std::string filename) const{
 
   std::ofstream fp(filename.c_str());
   auto print_data = [&] (const double k) {
-    fp << k*Constants.Mpc/cosmo->get_h()                                  << " ";
-    fp << get_matter_power_spectrum(0.0, k)                               << " ";
+    fp << k*Constants.Mpc/cosmo->get_h()                        << " ";
+    fp << get_matter_power_spectrum(0.0, k)*pow(cosmo->get_h(), 3) << " ";
     fp << k*eta0                                                          << " ";
     fp << get_ThetaT(0, k)                                                << " ";
     fp << get_ThetaT(10, k)                                               << " ";
