@@ -22,7 +22,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-
+import healpy as hp
 
 import auxiliar as aux
 
@@ -218,7 +218,7 @@ def Matter_PowerSpectrum():
                  ls='none', marker='.', capsize=2)
     plt.errorbar(k_ACT, P_ACT, P_upper, label='CMB (WMAP+ACT)', ls='none',\
                  marker='.', capsize=2)
-    plt.errorbar(k_Ly, P_Ly, DeltaP_Ly, label=r'Lyman $\alpha$ foresyt',\
+    plt.errorbar(k_Ly, P_Ly, DeltaP_Ly, label=r'Lyman $\alpha$ forest',\
                  ls='none', marker='.', capsize=2)
     plt.vlines(k_eq, plt.ylim()[0], plt.ylim()[1], label=r'$k_{eq}$',\
                ls='--', color='black')
@@ -303,7 +303,7 @@ def CMB_map():
     Returns:
         None.
     """
-    import healpy as hp
+    
     nside = 2**10
     
     #Read the CMB power spectrum 'cells.txt' in folder 'Results'.
@@ -316,7 +316,7 @@ def CMB_map():
     
     #Extract the second column as Cl values
     
-    C_ell = data[:, 1]*(2*np.pi)/(ell*(ell+1))/(2.7255*1e6)**2
+    C_ell = data[:, 1]*(2*np.pi)/(ell*(ell+1))/((2.7255*1e6)**2)
     
     #Set the random seed to a specific value so the map is always the same
     
@@ -331,7 +331,7 @@ def CMB_map():
     cmb_map = hp.alm2map(alm, nside)
     
     hp.mollview(cmb_map, title='The Cosmic Microwave Background',\
-                remove_dip=True, cmap=plt.colormaps['coolwarm'])
+                cmap=plt.colormaps['coolwarm'], units='K')
     
     plt.savefig('../Plots/Milestone IV/CMB map.pdf')
     
