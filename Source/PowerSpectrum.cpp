@@ -141,9 +141,11 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
     double k_value = k_array[i_k]; // k-value for each iteration
     for(int i_l=0; i_l < ells.size(); i_l++){
       //double ell = ells[i_l]; // ell-value for each iteration
+      //std::cout<<"Problem is below this line when i_l="<<i_l<<std::endl;
       Vector integrand(x_array.size());
       for(int i=0; i < x_array.size(); i++){
         integrand[i] = source_function(x_array[i], k_value)*j_ell_splines[i_l](k_value*(eta0-cosmo->eta_of_x(x_array[i])));
+        //std::cout<<"Problem is below this line when i="<<i<<std::endl;
       }
 
       // Store the result for Source_ell(k) in results[ell][ik].
@@ -199,7 +201,7 @@ void PowerSpectrum::line_of_sight_integration(Vector & k_array){
     // Do the line of sight integration.
     Vector2D thetaE_ell_of_k = line_of_sight_integration_single(k_array, source_function_E);
 
-    // Spline the result and store it in thetaT_ell_of_k_spline.
+    // Spline the result and store it in thetaE_ell_of_k_spline.
     for(int i_l=0; i_l < nells; i_l++){
       thetaE_ell_of_k_spline[i_l].create(k_array, thetaE_ell_of_k[i_l]);
     }
@@ -277,7 +279,7 @@ double PowerSpectrum::get_matter_power_spectrum(const double x, const double k_m
   double Delta_M = 2.*pow(Constants.c*k_mpc/H0, 2.)*Phi*exp(x)/(3.*OmegaM);
 
   // Calculate P(k,x).
-  double pofk   = pow(Delta_M, 2)*primordial_power_spectrum(k_mpc)*2.*pow(M_PI, 2)/pow(k_mpc*Constants.Mpc, 3);
+  double pofk    = pow(Delta_M, 2)*primordial_power_spectrum(k_mpc)*2.*pow(M_PI, 2)/pow(k_mpc*Constants.Mpc, 3);
 
   return pofk;
 }
