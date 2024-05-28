@@ -6,7 +6,7 @@ Created on Mon Feb 12 12:11:52 2024
 """
 
 """
-This script contains the main function for the project. IT iports the files
+This script contains the main function for the project. It iports the files
 related to each milestone and calls the main function of the milestone.
 """
 
@@ -84,6 +84,8 @@ def main():
     
     print('The project has been concluded.')
     
-#Run the main function of the project and execute the visualization of data.
-
-main()
+if __name__ == "__main__":
+    
+    #Run the main function of the project and execute the visualization of data.
+    
+    main()

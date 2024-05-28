@@ -9,8 +9,8 @@ Created on Wed Feb 21 12:06:38 2024
 This script contains all the relevant functions for plotting the results of
 running the C++ codes related to computing the CMB power-spectrum.
 
-Here you can find the functions 'CMB_PowerSpectrum()', 'Matter_PowerSpectrum()'
-'other_plots()', 'CMB_map()' and 'milestone4()'.
+Here you can find the functions 'CMB_PS_check()', 'CMB_PowerSpectrum()',
+'Matter_PowerSpectrum()' 'other_plots()', 'CMB_map()' and 'milestone4()'.
 All of them are explained below.
 """
 
@@ -26,6 +26,22 @@ import auxiliar as aux
 
 def CMB_PS_check():
     
+    """
+    Check and plot various components of the CMB power-spectrum.
+
+    This function reads data from different files containing the CMB
+    power-spectrum information for different components such as SW, ISW,
+    Doppler, and Polarization. It then generates a plot to compare these
+    components with the overall theoretical prediction of the CMB
+    power-spectrum.
+
+    Parameters:
+        None.
+
+    Returns:
+        None.
+    """
+    
     #Read the data from 'cells.txt' in folder 'Results'
     
     data_Cells = np.loadtxt('../Results/cells.txt')
@@ -37,30 +53,6 @@ def CMB_PS_check():
     #C_ell: power-spectrum.
     
     C_ell_TT: np.array(float) = data_Cells[:, 1]
-    
-    #Read and assign the data from 'low_TT.txt' in folder 'Data'.
-    
-    data_lowTT = np.loadtxt('../Data/low_TT.txt', skiprows=1)
-    
-    l_lowTT: np.array(float) = data_lowTT[:, 0]
-    
-    D_l_lowTT: np.array(float) = data_lowTT[:, 1]
-    
-    DeltaD_down_lowTT: np.array(float) = data_lowTT[:, 2]
-    
-    DeltaD_up_lowTT: np.array(float) = data_lowTT[:, 3]
-    
-    #Read and assign the data from 'high_TT.txt' in folder 'Data'.
-    
-    data_highTT = np.loadtxt('../Data/high_TT.txt', skiprows=1)
-    
-    l_highTT: np.array(float) = data_highTT[:, 0]
-    
-    D_l_highTT: np.array(float) = data_highTT[:, 1]
-    
-    DeltaD_down_highTT: np.array(float) = data_highTT[:, 2]
-    
-    DeltaD_up_highTT: np.array(float) = data_highTT[:, 3]
     
     #Read the data from 'cells_SW.txt' in folder 'Results'
     
@@ -104,11 +96,6 @@ def CMB_PS_check():
              ls='dashed')
     plt.plot(ell, C_ell_TT_POL, label='Polarization theory prediction',\
              ls='dashed')
-    plt.errorbar(l_lowTT, D_l_lowTT, yerr=[DeltaD_down_lowTT, DeltaD_up_lowTT],\
-                ls='none', label=r'Low $\ell$ TT data', marker='.', capsize=2)
-    plt.errorbar(l_highTT, D_l_highTT,\
-                yerr=[DeltaD_down_highTT, DeltaD_up_highTT], ls='none',\
-                label=r'High $\ell$ TT data', marker='.', capsize=2)
     plt.xlabel(r'Multipole $\ell$')
     plt.ylabel(r'$\ell(\ell+1)C_\ell/2\pi$ [$\mu$K$^2$]')
     plt.title('CMB power-spectrum')

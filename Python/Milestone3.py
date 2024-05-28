@@ -251,7 +251,7 @@ def plot(polarization: bool):
     plt.plot(x, -3*Theta_1_0001, label=r'$v_\gamma(k=0.0001/\text{Mpc})$',\
              color='red', ls='dotted')
     plt.plot(x, v_CDM_1, label=r'$v_\text{CDM}(k=0.1/\text{Mpc})$',\
-             color='orange', ls='solid')
+             color='blue', ls='solid')
     plt.plot(x, v_CDM_01, label=r'$v_\text{CDM}(k=0.01/\text{Mpc})$',\
              color='orange', ls='solid')
     plt.plot(x, v_CDM_001, label=r'$v_\text{CDM}(k=0.001/\text{Mpc})$',\
