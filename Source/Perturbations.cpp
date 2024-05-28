@@ -586,26 +586,35 @@ void Perturbations::compute_source_functions(){
         dP3dx  = get_dTheta_pdx(x,k,3);
       }
       
-
       // Save FLOPs
       double c           = Constants.c;
       double ck_over_Hp  = c*k/Hp;
       double dHp_over_Hp = dHpdx/Hp;
 
-      double ddT2ddx = ck_over_Hp/5.*(2.*dT1dx-3.*dT3dx)-ck_over_Hp*dHpdx/(5.*Hp)*(2*T1-3*T3)+9./10.*(ddtauddx*T2+dtaudx*dT2dx);
+      //double ddT2ddx = ck_over_Hp/5.*(2.*dT1dx-3.*dT3dx)-ck_over_Hp*dHpdx/(5.*Hp)*(2*T1-3*T3)+9./10.*(ddtauddx*T2+dtaudx*dT2dx);
+
+      double ddPiddx_1 = ((2.*k*Constants.c)/(5.*Hp))*(-dHp_over_Hp*T1+dT1dx);
+      double ddPiddx_2 = (3./10.)*(ddtauddx*Pi+dtaudx*dPidx);
+      double ddPiddx_3 = ((3.*k*Constants.c)/(5.*Hp))*(-dHp_over_Hp*(T3+P1+P3)+dT3dx+dP1dx+dP3dx);
+      double ddPiddx   = ddPiddx_1+ddPiddx_2-ddPiddx_3;
+
       
       // Temperature source 
-      double term1     = g*(T0+Psi+Pi/4.)+exp(-tau)*(dPsidx-dPhidx);
-      double term2     = -(1./k*Constants.c)*(dHpdx*g*v_B+Hp*dgdx*v_B+Hp*g*dv_Bdx);
-      double ddPiddx_1 = ((2.*k*Constants.c)/(5.*Hp))*(-dHp_over_Hp*T1+dT1dx)+(3./10.)*(ddtauddx*Pi+dtaudx*dPidx);
-      double ddPiddx_2 = ((3.*k*Constants.c)/(5.*Hp))*(-dHp_over_Hp*(T3+P1+P3)+(dT3dx+dP1dx+dP3dx));
-      double ddPiddx   = ddPiddx_1-ddPiddx_2;
-      double term3     = pow(dHpdx, 2)*g*Pi+Hp*ddHpddx*g*Pi+Hp*dHpdx*dgdx*Pi+Hp*dHpdx*g*dPidx;
-      double term4     = 2*Hp*dHpdx*dgdx*Pi+pow(Hp, 2)*ddgddx*Pi+pow(Hp, 2)*dgdx*dPidx+2*Hp*dHpdx*g*dPidx+pow(Hp, 2)*dgdx*dPidx+pow(Hp, 2)*g*ddPiddx;
-      double term5     = 3./(4.*pow(k*Constants.c, 2.))*(term3+term4);
-      //ST_array[index]  = g/3.;
-      ST_array[index]  = term1+term2+term5;
-      //ST_array[index]  = g*(T0+Psi);
+      double term1     = g*(T0+Psi+Pi/4.);
+      double term2     = exp(-tau)*(dPsidx-dPhidx);
+      double term3     = (1./(k*Constants.c))*(dHpdx*g*v_B+Hp*dgdx*v_B+Hp*g*dv_Bdx);
+      double term4     = (pow(dHpdx, 2)+Hp*ddHpddx)*g*Pi+3*Hp*dHpdx*(dgdx*Pi+g*dPidx)+pow(Hp, 2)*(ddgddx*Pi+2*dgdx*dPidx+g*ddPiddx);
+
+      // For SW term
+      //ST_array[index]  = term1;
+      // For ISW term
+      //ST_array[index]  = term2;
+      // For DOPPLER term
+      //ST_array[index]  = -term3;
+      // For POLARIZATION term (if polarization is included)
+      //ST_array[index]  = term4;
+      // All terms
+      ST_array[index]  = term1+term2-term3+term4;
 
       // Polarization source
       if(Constants.polarization){
