@@ -26,6 +26,88 @@ import healpy as hp
 
 import auxiliar as aux
 
+def CMB_PS_check():
+    
+    #Read the data from 'cells.txt' in folder 'Results'
+    
+    data_Cells = np.loadtxt('../Results/cells.txt')
+    
+    #ell: multipole moment.
+    
+    ell: np.array(float) = data_Cells[:, 0]
+    
+    #C_ell: power-spectrum.
+    
+    C_ell_TT: np.array(float) = data_Cells[:, 1]
+    
+    #Read and assign the data from 'low_TT.txt' in folder 'Data'.
+    
+    data_lowTT = np.loadtxt('../Data/low_TT.txt', skiprows=1)
+    
+    l_lowTT: np.array(float) = data_lowTT[:, 0]
+    
+    D_l_lowTT: np.array(float) = data_lowTT[:, 1]
+    
+    DeltaD_down_lowTT: np.array(float) = data_lowTT[:, 2]
+    
+    DeltaD_up_lowTT: np.array(float) = data_lowTT[:, 3]
+    
+    #Read and assign the data from 'high_TT.txt' in folder 'Data'.
+    
+    data_highTT = np.loadtxt('../Data/high_TT.txt', skiprows=1)
+    
+    l_highTT: np.array(float) = data_highTT[:, 0]
+    
+    D_l_highTT: np.array(float) = data_highTT[:, 1]
+    
+    DeltaD_down_highTT: np.array(float) = data_highTT[:, 2]
+    
+    DeltaD_up_highTT: np.array(float) = data_highTT[:, 3]
+    
+    #Read the data from 'cells_SW.txt' in folder 'Results'
+    
+    data_Cells_SW = np.loadtxt('../Results/cells_SW.txt')
+    
+    #C_ell: power-spectrum.
+    
+    C_ell_TT_SW: np.array(float) = data_Cells_SW[:, 1]
+    
+    #Read the data from 'cells_ISW.txt' in folder 'Results'
+    
+    data_Cells_ISW = np.loadtxt('../Results/cells_ISW.txt')
+    
+    #C_ell: power-spectrum.
+    
+    C_ell_TT_ISW: np.array(float) = data_Cells_ISW[:, 1]
+    
+    #Read the data from 'cells_DOPPLER.txt' in folder 'Results'
+    
+    data_Cells_DOPPLER = np.loadtxt('../Results/cells_DOPPLER.txt')
+    
+    #C_ell: power-spectrum.
+    
+    C_ell_TT_DOPPLER: np.array(float) = data_Cells_DOPPLER[:, 1]
+    
+    #Make the plot.
+        
+    plt.figure()
+    plt.plot(ell, C_ell_TT, label='Theory prediction', ls='solid')
+    plt.plot(ell, C_ell_TT_SW, label='SW theory prediction', ls='dashed')
+    plt.plot(ell, C_ell_TT_ISW, label='ISW theory prediction', ls='dashed')
+    plt.plot(ell, C_ell_TT_DOPPLER, label='DOPPLER theory prediction', ls='dashed')
+    plt.errorbar(l_lowTT, D_l_lowTT, yerr=[DeltaD_down_lowTT, DeltaD_up_lowTT],\
+                ls='none', label=r'Low $\ell$ TT data', marker='.', capsize=2)
+    plt.errorbar(l_highTT, D_l_highTT,\
+                yerr=[DeltaD_down_highTT, DeltaD_up_highTT], ls='none',\
+                label=r'High $\ell$ TT data', marker='.', capsize=2)
+    plt.xlabel(r'Multipole $\ell$')
+    plt.ylabel(r'$\ell(\ell+1)C_\ell/2\pi$ [$\mu$K$^2$]')
+    plt.title('CMB power-spectrum')
+    plt.xscale('log')
+    plt.legend()
+    plt.grid()
+    plt.savefig('../Plots/Milestone IV/CMB PS check.pdf')
+
 def CMB_PowerSpectrum(polarization: bool):
     
     """
@@ -382,4 +464,6 @@ def milestone4(polarization: bool):
     
     CMB_map()
     
-milestone4(False)
+#milestone4(False)
+
+CMB_PS_check()
