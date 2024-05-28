@@ -88,13 +88,24 @@ def CMB_PS_check():
     
     C_ell_TT_DOPPLER: np.array(float) = data_Cells_DOPPLER[:, 1]
     
+    #Read the data from 'cells_POL.txt' in folder 'Results'
+    
+    data_Cells_POL = np.loadtxt('../Results/cells_POL.txt')
+    
+    #C_ell: power-spectrum.
+    
+    C_ell_TT_POL: np.array(float) = data_Cells_POL[:, 1]
+    
     #Make the plot.
         
     plt.figure()
     plt.plot(ell, C_ell_TT, label='Theory prediction', ls='solid')
     plt.plot(ell, C_ell_TT_SW, label='SW theory prediction', ls='dashed')
     plt.plot(ell, C_ell_TT_ISW, label='ISW theory prediction', ls='dashed')
-    plt.plot(ell, C_ell_TT_DOPPLER, label='DOPPLER theory prediction', ls='dashed')
+    plt.plot(ell, C_ell_TT_DOPPLER, label='Doppler theory prediction',\
+             ls='dashed')
+    plt.plot(ell, C_ell_TT_POL, label='Polarization theory prediction',\
+             ls='dashed')
     plt.errorbar(l_lowTT, D_l_lowTT, yerr=[DeltaD_down_lowTT, DeltaD_up_lowTT],\
                 ls='none', label=r'Low $\ell$ TT data', marker='.', capsize=2)
     plt.errorbar(l_highTT, D_l_highTT,\
@@ -463,3 +474,7 @@ def milestone4(polarization: bool):
     #Plot the CMB map.
     
     CMB_map()
+    
+#milestone4(False)
+
+CMB_PS_check()
