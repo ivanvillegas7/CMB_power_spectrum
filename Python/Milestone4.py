@@ -22,8 +22,6 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-import healpy as hp
-
 import auxiliar as aux
 
 def CMB_PS_check():
@@ -411,6 +409,8 @@ def CMB_map():
     Returns:
         None.
     """
+
+    import healpy as hp
     
     nside = 2**10
     
