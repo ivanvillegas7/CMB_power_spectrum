@@ -81,9 +81,9 @@ def CMB_PowerSpectrum(polarization: bool):
     
     if polarization:
 
-        C_ell_TE: np.array(float) = data_Cells[:, 2]
+        C_ell_EE: np.array(float) = data_Cells[:, 2]
 
-        C_ell_EE: np.array(float) = data_Cells[:, 3]
+        C_ell_TE: np.array(float) = data_Cells[:, 3]
         
         #Read and assign the data from 'high_EE.txt' in folder 'Data'.
     
@@ -112,21 +112,12 @@ def CMB_PowerSpectrum(polarization: bool):
     #Make the plot.
         
     plt.figure()
-    plt.plot(ell, C_ell_TT, label='Theory prediction')
+    plt.plot(ell, C_ell_TT, label='Theory prediction', ls='solid')
     plt.errorbar(l_lowTT, D_l_lowTT, yerr=[DeltaD_down_lowTT, DeltaD_up_lowTT],\
                 ls='none', label=r'Low $\ell$ TT data', marker='.', capsize=2)
     plt.errorbar(l_highTT, D_l_highTT,\
                 yerr=[DeltaD_down_highTT, DeltaD_up_highTT], ls='none',\
                 label=r'High $\ell$ TT data', marker='.', capsize=2)
-    if polarization:
-        plt.plot(ell, C_ell_TE, label=r'$D_\ell^{TE}$')
-        plt.plot(ell, C_ell_EE, label=r'$D_\ell^{EE}$')
-        plt.errorbar(l_highEE, D_l_highEE,\
-                     yerr=[DeltaD_down_highEE, DeltaD_up_highEE], ls='none',\
-                     label=r'High $\ell$ EE data', marker='.', capsize=2)
-        plt.errorbar(l_highTE, D_l_highTE,\
-                     yerr=[DeltaD_down_highTE, DeltaD_up_highTE], ls='none',\
-                     label=r'High $\ell$ TE data', marker='.', capsize=2)
     plt.xlabel(r'Multipole $\ell$')
     plt.ylabel(r'$\ell(\ell+1)C_\ell/2\pi$ [$\mu$K$^2$]')
     plt.title('CMB power-spectrum')
@@ -138,7 +129,7 @@ def CMB_PowerSpectrum(polarization: bool):
     if polarization:
         
         plt.figure()
-        plt.plot(ell, C_ell_TE, label='Theory prediction')
+        plt.plot(ell, C_ell_TE, label='Theory prediction', ls='solid')
         plt.errorbar(l_highTE, D_l_highTE,\
                      yerr=[DeltaD_down_highTE, DeltaD_up_highTE], ls='none',\
                      label=r'High $\ell$ TE data', marker='.', capsize=2)
@@ -150,10 +141,10 @@ def CMB_PowerSpectrum(polarization: bool):
         plt.savefig('../Plots/Milestone IV/CMB_TE PS.pdf')
         
         plt.figure()
-        plt.plot(ell, C_ell_TE, label='Theory prediction')
-        plt.errorbar(l_highTE, D_l_highTE,\
-                     yerr=[DeltaD_down_highTE, DeltaD_up_highTE], ls='none',\
-                     label=r'High $\ell$ TE data', marker='.', capsize=2)
+        plt.plot(ell, C_ell_EE, label='Theory prediction')
+        plt.errorbar(l_highEE, D_l_highEE,\
+                     yerr=[DeltaD_down_highEE, DeltaD_up_highEE], ls='none',\
+                     label=r'High $\ell$ EE data', marker='.', capsize=2)
         plt.xlabel(r'Multipole $\ell$')
         plt.ylabel(r'$\ell(\ell+1)C_\ell^{TE}/2\pi$ [$\mu$K$^2$]')
         plt.title('The (E mode) polarization power-spectrum')
@@ -355,7 +346,7 @@ def CMB_map():
     cmb_map = hp.alm2map(alm, nside)
     
     hp.mollview(cmb_map, title='The Cosmic Microwave Background',\
-                cmap=plt.colormaps['coolwarm'], units='K')
+                cmap=plt.colormaps['coolwarm'], unit='K')
     
     plt.savefig('../Plots/Milestone IV/CMB map.pdf')
     
