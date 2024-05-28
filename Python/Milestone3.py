@@ -396,5 +396,3 @@ def milestone3(polarization: bool):
     #Run the function and say if polarization is included.
     
     plot(polarization)
-    
-milestone3(True)
