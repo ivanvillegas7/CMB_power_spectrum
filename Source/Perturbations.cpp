@@ -709,7 +709,7 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   // SET: Scalar quantities (Φ, δ, v, ...)
   double Psi                  = -Phi-12.*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta2+Omega_Nu*Nu2);
   
-  dPhidx                      = Psi-pow(ck_over_Hp, 2)*Phi/3.+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B+4.*Omega_R*exp(-x)*Theta[0]+4.*Omega_Nu*exp(-x)*Nu0)/2;
+  dPhidx                      = Psi-pow(ck_over_Hp, 2)*Phi/3.+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B+4.*Omega_R*exp(-x)*Theta[0]+4.*Omega_Nu*exp(-x)*Nu0)/2.;
   ddelta_Bdx                  = ck_over_Hp*v_B-3.*dPhidx;
   ddelta_CDMdx                = ck_over_Hp*v_CDM-3.*dPhidx;
   dv_CDMdx                    = -v_CDM-ck_over_Hp*Psi;
@@ -717,7 +717,7 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
   // SET: Photon multipoles (Θ_ell)
   dThetadx[0]                 = -ck_over_Hp*Theta[1]-dPhidx;
 
-  double num                  = ((1.-R)*dtaudx+(1+R)*ddtauddx)*(3.*Theta[1]+v_B)-ck_over_Hp*Psi+(1.-dHp_over_Hp)*ck_over_Hp*(-Theta[0]+2.+Theta2)-ck_over_Hp*dThetadx[0];
+  double num                  = ((1.-R)*dtaudx+(1+R)*ddtauddx)*(3.*Theta[1]+v_B)-ck_over_Hp*Psi+(1.-dHp_over_Hp)*ck_over_Hp*(-Theta[0]+2.*Theta2)-ck_over_Hp*dThetadx[0];
   double den                  = (1.+R)*dtaudx+dHp_over_Hp-1.;
   double q                    = -num/den;
 
@@ -729,9 +729,9 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
     const double *Nu            = &y[Constants.ind_start_nu_tc];
     double *dNudx               = &dydx[Constants.ind_start_nu_tc];
     dNudx[0]                    = -ck_over_Hp*Nu[1]-dPhidx;
-    dNudx[1]                    = -ck_over_Hp*Nu[0]/3.-(2./3.)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3.;
+    dNudx[1]                    = ck_over_Hp*Nu[0]/3.-(2./3.)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3.;
     for (int l = 2; l < n_ell_neutrinos_tc-1; l++){
-      dNudx[l]                  = l*ck_over_Hp*Nu[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Nu[l+1]/(2.*l+1.);
+      dNudx[l]                  = ck_over_Hp/(2.*l+1.)*(l*Nu[l-1]-(l+1.)*Nu[l+1]);
     }
     dNudx[n_ell_neutrinos_tc-1] = ck_over_Hp*Nu[n_ell_neutrinos_tc-2]-c*n_ell_neutrinos_tc*Nu[n_ell_neutrinos_tc-1]/(Hp*eta);
   }
@@ -818,7 +818,7 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
 
   // SET: Scalar quantities (Φ, δ, v, ...)
   double Psi               = -Phi-12.*pow(H0/(c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*Nu2);
-  dPhidx                   = Psi-pow(ck_over_Hp, 2)*Phi/3.+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B+4*Omega_R*exp(-x)*Theta[0]+4.*Omega_Nu*exp(-x)*Nu0)/2;
+  dPhidx                   = Psi-pow(ck_over_Hp, 2)*Phi/3.+pow(H0/Hp, 2)*exp(-x)*(Omega_CDM*delta_CDM+Omega_B*delta_B+4*Omega_R*exp(-x)*Theta[0]+4.*Omega_Nu*exp(-x)*Nu0)/2.;
   dv_Bdx                   = -v_B-ck_over_Hp*Psi+dtaudx*R*(3.*Theta[1]+v_B);
   ddelta_Bdx               = ck_over_Hp*v_B-3.*dPhidx;
   dv_CDMdx                 = -v_CDM-ck_over_Hp*Psi;
@@ -829,8 +829,8 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   dThetadx[1]              = ck_over_Hp*Theta[0]/3.-(2./3.)*ck_over_Hp*Theta[2]+ck_over_Hp*Psi/3.+dtaudx*(Theta[1]+v_B/3.);
   for (int l = 2; l < n_ell_theta-1; l++)
   {
-    if (l==2) dThetadx[l]  = l*ck_over_Hp*Theta[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Theta[l+1]/(2.*l+1.)+dtaudx*(Theta[l]-Pi/10.);
-    else dThetadx[l]       = l*ck_over_Hp*Theta[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Theta[l+1]/(2.*l+1.)+dtaudx*Theta[l];    
+    if (l==2) dThetadx[l]  = ck_over_Hp/(2.*l+1.)*(l*Theta[l-1]-(l+1.)*Theta[l+1])+dtaudx*(Theta[l]-Pi/10.);
+    else dThetadx[l]       = ck_over_Hp/(2.*l+1.)*(l*Theta[l-1]-(l+1.)*Theta[l+1])+dtaudx*Theta[l];   
   }
   dThetadx[n_ell_theta-1]  = ck_over_Hp*Theta[n_ell_theta-2]+(dtaudx-c*(n_ell_theta/(Hp*eta)))*Theta[n_ell_theta-1];
 
@@ -842,10 +842,10 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
     for (int l = 2; l < n_ell_thetap-1; l++)
   {
     if (l==2){
-      dTheta_pdx[l]          = l*ck_over_Hp*Theta_p[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Theta_p[l+1]/(2.*l+1.)+dtaudx*(Theta_p[l]-Pi/10.);
+      dTheta_pdx[l]          = ck_over_Hp/(2.*l+1.)*(l*Theta_p[l-1]-(l+1.)*Theta_p[l+1])+dtaudx*(Theta_p[l]-Pi/10.);
     }
     else{
-      dTheta_pdx[l]          = l*ck_over_Hp*Theta_p[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Theta_p[l+1]/(2.*l+1.)+dtaudx*Theta_p[l];
+      dTheta_pdx[l]          = ck_over_Hp/(2.*l+1.)*(l*Theta_p[l-1]-(l+1.)*Theta_p[l+1])+dtaudx*Theta_p[l];
     }
   }
   dTheta_pdx[n_ell_thetap-1] = ck_over_Hp*Theta_p[n_ell_thetap-2]+(dtaudx-c*n_ell_thetap/(Hp*eta))*Theta_p[n_ell_thetap-1];
@@ -858,7 +858,7 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
     dNudx[0]                 = -ck_over_Hp*Nu[1]-dPhidx;
     dNudx[1]                 = ck_over_Hp*Nu[0]/3.-(2./3.)*ck_over_Hp*Nu[2]+ck_over_Hp*Psi/3.;
     for (int l = 2; l < n_ell_neutrinos-1; l++){
-      dNudx[l]               = l*ck_over_Hp*Nu[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Nu[l+1]/(2.*l+1.);
+      dNudx[l]               = ck_over_Hp/(2.*l+1.)*(l*Nu[l-1]-(l+1.)*Nu[l+1]);
     }
     dNudx[n_ell_neutrinos-1] = ck_over_Hp*Nu[n_ell_neutrinos-2]-c*n_ell_neutrinos*Nu[n_ell_neutrinos-1]/(Hp*eta);
   }
