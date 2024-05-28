@@ -444,7 +444,7 @@ def supernova():
     
     #Read the data from 'supernovadata.txt' in folder 'data'. Ignore first row.
     
-    data_sup = np.loadtxt('../data/supernovadata.txt', skiprows=1)
+    data_sup = np.loadtxt('../Data/supernovadata.txt', skiprows=1)
     
     #Assign the different variables to its corresponding data.
     

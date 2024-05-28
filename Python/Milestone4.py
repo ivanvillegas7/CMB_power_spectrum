@@ -355,7 +355,7 @@ def CMB_map():
     cmb_map = hp.alm2map(alm, nside)
     
     hp.mollview(cmb_map, title='The Cosmic Microwave Background',\
-                cmap=plt.colormaps['coolwarm'], unit='K')
+                cmap=plt.colormaps['coolwarm'], units='K')
     
     plt.savefig('../Plots/Milestone IV/CMB map.pdf')
     
