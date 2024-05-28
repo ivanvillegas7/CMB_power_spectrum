@@ -112,15 +112,13 @@ def CMB_PowerSpectrum(polarization: bool):
     #Make the plot.
         
     plt.figure()
-    if not polarization:
-        plt.plot(ell, C_ell_TT, label='Theory prediction')
+    plt.plot(ell, C_ell_TT, label='Theory prediction')
     plt.errorbar(l_lowTT, D_l_lowTT, yerr=[DeltaD_down_lowTT, DeltaD_up_lowTT],\
                 ls='none', label=r'Low $\ell$ TT data', marker='.', capsize=2)
     plt.errorbar(l_highTT, D_l_highTT,\
                 yerr=[DeltaD_down_highTT, DeltaD_up_highTT], ls='none',\
                 label=r'High $\ell$ TT data', marker='.', capsize=2)
     if polarization:
-        plt.plot(ell, C_ell_TT, label=r'$D_\ell^{TT}$')
         plt.plot(ell, C_ell_TE, label=r'$D_\ell^{TE}$')
         plt.plot(ell, C_ell_EE, label=r'$D_\ell^{EE}$')
         plt.errorbar(l_highEE, D_l_highEE,\
@@ -136,6 +134,32 @@ def CMB_PowerSpectrum(polarization: bool):
     plt.legend()
     plt.grid()
     plt.savefig('../Plots/Milestone IV/CMB PS.pdf')
+    
+    if polarization:
+        
+        plt.figure()
+        plt.plot(ell, C_ell_TE, label='Theory prediction')
+        plt.errorbar(l_highTE, D_l_highTE,\
+                     yerr=[DeltaD_down_highTE, DeltaD_up_highTE], ls='none',\
+                     label=r'High $\ell$ TE data', marker='.', capsize=2)
+        plt.xlabel(r'Multipole $\ell$')
+        plt.ylabel(r'$\ell(\ell+1)C_\ell^{TE}/2\pi$ [$\mu$K$^2$]')
+        plt.title('The temperature-polarization cross power-spectrum')
+        plt.legend()
+        plt.grid()
+        plt.savefig('../Plots/Milestone IV/CMB_TE PS.pdf')
+        
+        plt.figure()
+        plt.plot(ell, C_ell_TE, label='Theory prediction')
+        plt.errorbar(l_highTE, D_l_highTE,\
+                     yerr=[DeltaD_down_highTE, DeltaD_up_highTE], ls='none',\
+                     label=r'High $\ell$ TE data', marker='.', capsize=2)
+        plt.xlabel(r'Multipole $\ell$')
+        plt.ylabel(r'$\ell(\ell+1)C_\ell^{TE}/2\pi$ [$\mu$K$^2$]')
+        plt.title('The (E mode) polarization power-spectrum')
+        plt.legend()
+        plt.grid()
+        plt.savefig('../Plots/Milestone IV/CMB_EE PS.pdf')
     
 def Matter_PowerSpectrum():
     
