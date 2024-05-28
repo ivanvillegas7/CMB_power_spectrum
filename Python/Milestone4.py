@@ -467,6 +467,10 @@ def milestone4(polarization: bool):
     
     CMB_PowerSpectrum(polarization)
     
+    #Plot the different components
+    
+    CMB_PS_check()
+    
     #Plot the matter power-spectrum.
     
     Matter_PowerSpectrum()
@@ -474,3 +478,5 @@ def milestone4(polarization: bool):
     #Plot the CMB map.
     
     CMB_map()
+    
+milestone4(False)
