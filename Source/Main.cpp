@@ -40,7 +40,7 @@ int main(int argc, char **argv){
 
   // Do the supernova fits.
   // Make sure you read the comments on the top of src/SupernovaFitting.h
-  mcmc_fit_to_supernova_data("Data/supernovadata.txt", "Results/results_supernovafitting.txt");
+  //mcmc_fit_to_supernova_data("Data/supernovadata.txt", "Results/results_supernovafitting.txt");
 
   // Set up and solve the background
   BackgroundCosmology cosmo(h, OmegaB, OmegaCDM, OmegaK, Neff, TCMB);
