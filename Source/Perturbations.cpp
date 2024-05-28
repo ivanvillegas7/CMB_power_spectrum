@@ -186,7 +186,7 @@ void Perturbations::integrate_perturbations(){
         double *Nu           = &y_tc[Constants.ind_start_nu_tc];
         Nu_array[0][index]   = -Psi_array[index]/2.;
         Nu_array[1][index]   = ck_over_Hp*Psi_array[index]/6.;
-        Nu_array[2][index]   = (Psi_array[index]+Phi)*pow(Constants.c*k*exp(x)/H0, 2)/(12.*Omega_Nu);
+        Nu_array[2][index]   = -(Psi_array[index]+Phi)*pow(Constants.c*k*exp(x)/H0, 2)/(12.*Omega_Nu);
         N2                   = Nu_array[2][index];
         for (int l = 3; l < Constants.n_ell_neutrinos_tc; l++){
           Nu_array[l][index] = ck_over_Hp*Nu_array[l-1][index]/(2.*l+1.);
@@ -722,7 +722,7 @@ int Perturbations::rhs_tight_coupling_ode(double x, double k, const double *y, d
     for (int l = 2; l < n_ell_neutrinos_tc-1; l++){
       dNudx[l]                  = l*ck_over_Hp*Nu[l-1]/(2.*l+1.)-(l+1.)*ck_over_Hp*Nu[l+1]/(2.*l+1.);
     }
-    dNudx[n_ell_neutrinos_tc-1] = ck_over_Hp*Nu[n_ell_neutrinos_tc-2]-c*(n_ell_neutrinos_tc)*Nu[n_ell_neutrinos_tc-1]/(Hp*eta);
+    dNudx[n_ell_neutrinos_tc-1] = ck_over_Hp*Nu[n_ell_neutrinos_tc-2]-c*n_ell_neutrinos_tc*Nu[n_ell_neutrinos_tc-1]/(Hp*eta);
   }
   
   return GSL_SUCCESS;
