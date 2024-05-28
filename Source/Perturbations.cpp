@@ -603,7 +603,7 @@ void Perturbations::compute_source_functions(){
       double term3     = pow(dHpdx, 2)*g*Pi+Hp*ddHpddx*g*Pi+Hp*dHpdx*dgdx*Pi +Hp*dHpdx*g*dPidx;
       double term4     = 2*Hp*dHpdx*dgdx*Pi+pow(Hp, 2)*ddgddx*Pi+pow(Hp, 2)*dgdx*dPidx+2*Hp*dHpdx*g*dPidx+pow(Hp, 2)*dgdx*dPidx+pow(Hp, 2)*g*ddPiddx;
       double term5     = 3./(4.*pow(k, 2.))*(term3+term4);
-      ST_array[index]  = term1+term2+term5;
+      ST_array[index]  = 1.;//term1+term2+term5;
 
       // Polarization source
       if(Constants.polarization){
