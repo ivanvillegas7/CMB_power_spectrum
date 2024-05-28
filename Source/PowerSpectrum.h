@@ -42,7 +42,7 @@ class PowerSpectrum {
     const double x_end       = Constants.x_end;
     const double x_end_los   = 0.0;
 
-    const double eta0 = cosmo -> eta_of_x(0.0);
+    const double eta0 = cosmo->eta_of_x(0.0);
     
     // The ells's we will compute Theta_ell and Cell for
     Vector ells{ 
@@ -55,7 +55,7 @@ class PowerSpectrum {
         1900, 1950, 2000};
 
     // Do trapezoidal integration
-    double integrate(const double dx, const Vector y_array);
+    double integrate(const double dx, const Vector &y_array);
    
     //=====================================================================
     // [1] Create bessel function splines needed for the LOS integration

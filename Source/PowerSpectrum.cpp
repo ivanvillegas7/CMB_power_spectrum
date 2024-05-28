@@ -29,7 +29,9 @@ void PowerSpectrum::solve(){
   //=========================================================================
   double dk          = 2.*M_PI/(eta0*n_k);
   Vector k_array     = Utils::linspace(k_min, k_max, (k_max-k_min)/dk);
-  Vector log_k_array = Utils::linspace(log(k_min), log(k_max), 2*(k_max-k_min)/dk);
+  int n_cell         = 30;
+  double dlogk       = 2.*M_PI/(eta0*n_cell);
+  Vector log_k_array = Utils::linspace(log(k_min), log(k_max), 2*(k_max-k_min)/dlogk);
 
   //=========================================================================
   // TODO: Make splines for j_ell. 
@@ -119,8 +121,8 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
   Vector2D result = Vector2D(ells.size(), Vector(k_array.size()));
 
   // Create arrays
-  double dx = 2.*M_PI/n_x_los;
-  Vector x_array = Utils::linspace(x_start_los, x_end_los, (x_end_los-x_start_los)/dx);
+  Vector x_array = Utils::linspace(x_start_los, x_end_los, n_x_los);
+  double dx = x_array[1]-x_array[0];
   
   std::cout << std::endl;
   for(size_t i_k = 0; i_k < k_array.size(); i_k++){
@@ -207,7 +209,7 @@ void PowerSpectrum::line_of_sight_integration(Vector & k_array){
 }
 
 // Function to integrate.
-double PowerSpectrum::integrate(double dx, Vector y_array){
+double PowerSpectrum::integrate(double dx, const Vector &y_array){
   // Declare and define needed variables.
   double integral_value = 0;
   for(int i=0; i < y_array.size()-1; i++){
@@ -227,20 +229,21 @@ Vector PowerSpectrum::solve_for_cell(
   const int nells      = ells.size();
 
   //============================================================================
-  // TODO: Integrate Cell = Int*4*π*P(k)*f_ell*g_ell*dk/k, or equivalently
-  // solve the ODE system dCell/dlogk = 4*π*P(k)*f_ell*g_ell.
+  // TODO: Integrate Cell = Int*4*π*P_p(k)*f_ell*g_ell*dk/k, or equivalently
+  // solve the ODE system dCell/dlogk = 4*π*P_p(k)*f_ell*g_ell.
   //============================================================================
   
   Vector result(nells);
   int N        = log_k_array.size();
-  double dlogk = (log_k_array[N-1]-log_k_array[0])/N;
+  double dlogk = (log_k_array[N-1]-log_k_array[0])/(N-1);
 
   // Loop over and integrate for all ells.
+  Vector integrand(log_k_array.size());
   for(int i_l=0; i_l < nells; i_l++){
-    Vector integrand(log_k_array.size());
     for(int i=0; i < log_k_array.size(); i++){
       double k_value = exp(log_k_array[i]);
-      integrand[i]   = get_matter_power_spectrum(0.0, k_value)*pow(Constants.Mpc, -2)*abs(f_ell_spline[i_l](k_value)*g_ell_spline[i_l](k_value));
+      double pofk    = primordial_power_spectrum(k_value);
+      integrand[i]   = pofk*abs(f_ell_spline[i_l](k_value)*g_ell_spline[i_l](k_value));
       }
 
     result[i_l] = 4.*M_PI*integrate(dlogk, integrand);
@@ -254,7 +257,7 @@ Vector PowerSpectrum::solve_for_cell(
 //====================================================
 
 double PowerSpectrum::primordial_power_spectrum(const double k) const{
-  return A_s*pow(k*Constants.Mpc/kpivot_mpc, n_s-1.)*2.*pow(M_PI, 2)/pow(k*Constants.Mpc, 3);
+  return A_s*pow(k*Constants.Mpc/kpivot_mpc, n_s-1.);
 }
 
 //====================================================
@@ -276,7 +279,7 @@ double PowerSpectrum::get_matter_power_spectrum(const double x, const double k_m
   double Delta_M = 2.*pow(Constants.c*k_mpc/H0, 2.)*Phi*exp(x)/(3.*OmegaM);
 
   // Calculate P(k,x).
-  double pofk   = pow(Delta_M, 2)*primordial_power_spectrum(k_mpc);
+  double pofk   = pow(Delta_M, 2)*primordial_power_spectrum(k_mpc)*2.*pow(M_PI, 2)/pow(k_mpc*Constants.Mpc, 3);
 
   return pofk;
 }
