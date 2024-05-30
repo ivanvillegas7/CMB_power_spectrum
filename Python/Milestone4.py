@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 
 import auxiliar as aux
 
-def CMB_PS_check():
+def CMB_PS_components():
     
     """
     Check and plot various components of the CMB power-spectrum.
@@ -102,7 +102,7 @@ def CMB_PS_check():
     plt.xscale('log')
     plt.legend()
     plt.grid()
-    plt.savefig('../Plots/Milestone IV/CMB PS check.pdf')
+    plt.savefig('../Plots/Milestone IV/CMB PS components.pdf')
 
 def CMB_PowerSpectrum(polarization: bool):
     
@@ -456,7 +456,7 @@ def milestone4(polarization: bool):
     
     #Plot the different components
     
-    CMB_PS_check()
+    CMB_PS_components()
     
     #Plot the matter power-spectrum.
     
