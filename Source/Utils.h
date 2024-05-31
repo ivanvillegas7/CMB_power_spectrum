@@ -58,8 +58,8 @@ extern struct ConstantsAndUnits {
   // For integration of perturbations (number of equations and positions in arrays)
   const int n_scalars           = 5;
   const int n_ell_theta         = 8;
-  const int n_ell_thetap        = 8 * polarization;
-  const int n_ell_neutrinos     = 8 * neutrinos;
+  const int n_ell_thetap        = n_ell_theta * polarization;
+  const int n_ell_neutrinos     = n_ell_theta * neutrinos;
   const int n_ell_tot_full      = n_scalars + n_ell_theta + n_ell_thetap + n_ell_neutrinos;
   const int ind_deltacdm        = 0; 
   const int ind_deltab          = 1;
