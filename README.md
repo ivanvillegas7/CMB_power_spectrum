@@ -2,7 +2,9 @@
 
 ## The Cosmic Microwave Background and the Large Scale Structure of our Universe
 
-This repository will store the code used to compute the CMB power spectrum. I will update it as I progress with this project for the course AST5220 - Cosmology II of the University of Oslo (UiO). The structure of the repository and the code is based on Hans A. Whinter's (@HAWinther, https://cmb.wintherscoming.no/index.php). This repository contains all the needed files for runnig the project, solving the cosmological background, making a MCMC fit to the given supernova data, solving the recombination history and solving the evolution of the Universe, as well as computing the CMB power-spectrum.
+This repository will store the code used to compute the CMB power spectrum, a project for the course AST5220 - Cosmology II of the University of Oslo (UiO). The structure of the repository and the code is based on Hans A. Whinter's (@HAWinther, https://cmb.wintherscoming.no/index.php). This repository contains all the needed files for runnig the project, solving the cosmological background, making a MCMC fit to the given supernova data, solving the recombination history and solving the evolution of the Universe, as well as computing the CMB power-spectrum, th ematter power-spectrum and generating a CMB map.
+
+At the moment, the code is only available at the Master's degree version, i.e., it does not include neutrinos, Helium, reionization nor photon polarization. I will try to upgrade to the PhD version as soon as I have time to retake this project.
 
 ## Compiling and running
 
@@ -45,4 +47,4 @@ After running the code, you will need to run the Python codes, simply running Ma
 
 ## Read the reports
 
-The folder named 'Reports' will store the reports of each milestone. At the moment, only the reports for Milestone I (I: Solving the cosmological background.pdf), Milestone II (II: Recombination history of the Universe.pdf) and Milestone III (III: Evolution of structure in the Universe.pdf) are available. Also a report summarizing the three articles is available (Computing the CMB power spectrum.pdf).
+The folder named 'Reports' will store the reports of each milestone. All the reports, for Milestone I (I: Solving the cosmological background.pdf), Milestone II (II: Recombination history of the Universe.pdf), Milestone III (III: Evolution of structure in the Universe.pdf) and Milestone IV (IV: The CMB and matter power-spectra.pdf), are available. Also a report summarizing the four articles is available (Computing the CMB power spectrum.pdf).
