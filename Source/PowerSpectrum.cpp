@@ -29,7 +29,7 @@ void PowerSpectrum::solve(){
   //=========================================================================
   double dk          = 2.*M_PI/(eta0*n_k);
   Vector k_array     = Utils::linspace(k_min, k_max, (k_max-k_min)/dk);
-  int n_cell         = 30;
+  int n_cell         = n_k;
   double dlogk       = 2.*M_PI/(eta0*n_cell);
   Vector log_k_array = Utils::linspace(log(k_min), log(k_max), 2*(k_max-k_min)/dlogk);
 
