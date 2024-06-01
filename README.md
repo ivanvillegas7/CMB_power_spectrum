@@ -45,6 +45,6 @@ and try to run ./cmb again and it should work. To avoid having to run this comma
 
 After running the code, you will need to run the Python codes, simply running Main.py. This will generate relevant plots and will print some relevant information. If you want to ploit the results, you will need to install 'healpy'. You can do it simply running "conda install healpy" in your favourite conda distribution.
 
-## Read the reports
+## Further documentation
 
-The folder named 'Reports' will store the reports of each milestone. All the reports, for Milestone I (I: Solving the cosmological background.pdf), Milestone II (II: Recombination history of the Universe.pdf), Milestone III (III: Evolution of structure in the Universe.pdf) and Milestone IV (IV: The CMB and matter power-spectra.pdf), are available. Also a report summarizing the four articles is available (Computing the CMB power spectrum.pdf).
+The folder named 'Reports' will store the reports of each milestone. All the reports, for Milestone I (I: Solving the cosmological background.pdf), Milestone II (II: Recombination history of the Universe.pdf), Milestone III (III: Evolution of structure in the Universe.pdf) and Milestone IV (IV: The CMB and matter power-spectra.pdf), are available. Also an article summarizing the four reports is available (Computing the CMB power spectrum.pdf).
