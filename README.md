@@ -43,7 +43,7 @@ and try to run ./cmb again and it should work. To avoid having to run this comma
 
 ## Plot the results
 
-After running the code, you will need to run the Python codes, simply running Main.py. This will generate relevant plots and will print some relevant information. If you want to ploit the results, you will need to install 'healpy'. You can do it simply running "conda install healpy" in your favourite conda distribution.
+After running the code, you will need to run the Python codes, simply running Main.py. This will generate relevant plots and will print some relevant information. If you want to plot the results, you will need to install 'healpy'. You can do it simply running "conda install healpy" in your favourite conda distribution.
 
 ## Further documentation
 
