@@ -465,3 +465,10 @@ def milestone4(polarization: bool):
     #Plot the CMB map.
     
     CMB_map()
+
+if __name__ == "__main__":
+    
+    #Run the main function of the script and execute the visualization of data.
+    
+    milestone4()
+    

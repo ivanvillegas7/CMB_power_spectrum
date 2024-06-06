@@ -229,4 +229,10 @@ def milestone2():
     #Run the functions.
     
     plots()
+
+if __name__ == "__main__":
+    
+    #Run the main function of the script and execute the visualization of data.
+    
+    milestone2()
     

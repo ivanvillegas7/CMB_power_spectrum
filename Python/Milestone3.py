@@ -396,3 +396,10 @@ def milestone3(polarization: bool):
     #Run the function and say if polarization is included.
     
     plot(polarization)
+
+if __name__ == "__main__":
+    
+    #Run the main function of the script and execute the visualization of data.
+    
+    milestone3()
+    

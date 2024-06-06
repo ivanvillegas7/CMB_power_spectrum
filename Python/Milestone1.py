@@ -527,3 +527,10 @@ def milestone1():
     #Run the functions.
     
     supernova()
+
+if __name__ == "__main__":
+    
+    #Run the main function of the script and execute the visualization of data.
+    
+    milestone1()
+    
