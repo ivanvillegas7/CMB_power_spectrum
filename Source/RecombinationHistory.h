@@ -17,6 +17,12 @@ class RecombinationHistory{
     
     // Helium fraction
     double Yp;
+
+    // Reionization parameters
+    const double z_reion         = 8.;
+    const double Deltaz_reion    = 0.5;
+    const double z_He_reion      = 3.5;
+    const double Deltaz_He_reion = 0.5;
  
     // The start and end points for recombination arrays (can be modified)
     const double x_start  = Constants.x_start;

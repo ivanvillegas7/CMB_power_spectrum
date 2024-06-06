@@ -114,8 +114,22 @@ void RecombinationHistory::solve_number_density_electrons(){
       peebles_Xe_ode.solve(dXedx, x_array_current, peebles_ini);
       auto solution = peebles_Xe_ode.get_data_by_component(0);
       double Xe_now = solution.back();
-      Xe_arr[i]=Xe_now;
-      ne_arr[i]=Xe_now*get_number_density_H(x_array[i]);
+      if (Constants.reionization)
+      {
+        // Consider reionization
+        const double f_He            = Yp/(4.*(1.-Yp));
+        const double y_reion         = pow(1+z_reion, 3./2.);
+        const double Deltay_reion    = (3./2.)*sqrt(1+z_reion)*Deltaz_reion;
+        const double y               = exp(-3.*x_array[i]/2.);
+        const double z               = exp(x_array[i])-1.;
+
+        Xe_arr[i] = Xe_now+((1.+f_He)/2.)*(1.+tanh((y_reion-y)/Deltay_reion));//+(f_He/2.)*(1.+tanh((z_He_reion-z)/Deltaz_He_reion));
+      }
+      else{
+        Xe_arr[i] = Xe_now;
+      }
+      
+      ne_arr[i] = Xe_arr[i]*get_number_density_B(x_array[i]);
     }
   }
 
@@ -131,7 +145,6 @@ void RecombinationHistory::solve_number_density_electrons(){
     // Check for nan and negative values and set to zero. 
     double Xe_current_non_neg_zero_nan = Xe_current < 1e-9 || std::isnan(Xe_current) ? 0.0 : Xe_current;
     Xe_arr_only_Saha[i] = Xe_current_non_neg_zero_nan;
-    //std::cout<<x_array[i]<<" Only Saha: "<<Xe_arr_only_Saha[i]<<" "<<log(Xe_arr_only_Saha[i])<<" "<<exp(log(Xe_arr_only_Saha[i]))<<"\n";
   }
 
   // Spline the result in logarithmic form. Used in get Xe_of_x and ne_of_x methods
@@ -159,6 +172,8 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   const double hbar      = Constants.hbar;
   const double m_H       = Constants.m_H;
   const double epsilon_0 = Constants.epsilon_0;
+  const double xhi_0     = Constants.xhi0;
+  const double xhi_1     = Constants.xhi1;
   const double H0_over_h = Constants.H0_over_h;
 
   // Fetch cosmological parameters
@@ -166,37 +181,75 @@ std::pair<double,double> RecombinationHistory::electron_fraction_from_saha_equat
   const double nB  = get_number_density_B(x);
   const double nH  = get_number_density_H(x);
 
-  //Save FLOPS
+  // Save FLOPS
   const double E_TB       = T_B*k_b;
   const double eps_over_T = epsilon_0/E_TB;
+  const double X0_over_T = xhi_0/E_TB;
+  const double X1_over_T = xhi_1/E_TB;
+  const double brakets = m_e*pow(c, 2.)*E_TB/(2.*M_PI);
 
-  // Electron fraction and number density
-  double Xe = 0.0;
-  
-  //=============================================================================
-  // TODO: Compute Xe and ne from the Saha equation
-  //=============================================================================
-
-  // Right hand side of Saha equation
-  const double brakets = m_e*pow(c, 2.)*E_TB/(2.*M_PI); 
-  const double rhs_Saha = pow(1./(c*hbar), 3)*brakets*sqrt(brakets)*exp(-eps_over_T)/nH;
-
-  // Calculate Xe
-
-  // If near endpoint, take care of instability and set solution to basically zero
-  if (rhs_Saha<1e-20) Xe = 1e-20;
-
-  // Determine if we have to use the Taylor approximation in the second order equation
-  else if (rhs_Saha>1e+9) Xe = 1.0;
-
-  else {
-    if (4.0/rhs_Saha<1e-9) Xe = 1.0;
+  if (Constants.Helium)
+  {
     
-    else Xe = rhs_Saha*(-1.+sqrt(1.0+4.0/rhs_Saha))/2.0;
+    // Guess fe
+    double fe     = 1.;
+    double fe_old = 0.;
+
+    //=============================================================================
+    // TODO: Compute Xe and ne from the Saha equation
+    //=============================================================================
+
+    while (abs(fe-fe_old)>=pow(10., -4))
+    {
+      double ne = fe*nB;
+
+      // x_H+ from Saha equation for H+
+      double big_term = brakets*sqrt(brakets)*exp(-eps_over_T)*pow(1./(c*hbar), 3);
+      double x_H      = big_term/(ne+big_term);
+
+      // x_He's from Saha equation for He
+      double big_term0 = brakets*sqrt(brakets)*exp(-X0_over_T)*pow(1./(c*hbar), 3);
+      double big_term1 = brakets*sqrt(brakets)*exp(-X1_over_T)*pow(1./(c*hbar), 3);
+      double x_He_1    = 2.*big_term0/(ne+2.*big_term0+8.*big_term0*big_term1/ne);
+      double x_He_2    = 4.*big_term1*x_He_1/ne;
+
+      fe_old = fe;
+      fe     = (2*x_He_2+x_He_1)*Yp/4.+x_H*(1.-Yp);
+    }
+
+    // Return electron fraction and number density
+    return std::pair<double,double>(fe/(1.-Yp), fe*nB);
   }
 
-  // Return electron fraction and number density
-  return std::pair<double,double>(Xe, Xe*nH);
+  else{
+
+    // Electron fraction and number density
+    double Xe = 0.0;
+    
+    //=============================================================================
+    // TODO: Compute Xe and ne from the Saha equation
+    //=============================================================================
+
+    // Right hand side of Saha equation
+    const double rhs_Saha = pow(1./(c*hbar), 3)*brakets*sqrt(brakets)*exp(-eps_over_T)/nH;
+
+    // Calculate Xe
+
+    // If near endpoint, take care of instability and set solution to basically zero
+    if (rhs_Saha<1e-20) Xe = 1e-20;
+
+    // Determine if we have to use the Taylor approximation in the second order equation
+    else if (rhs_Saha>1e+9) Xe = 1.0;
+
+    else {
+      if (4.0/rhs_Saha<1e-9) Xe = 1.0;
+      
+      else Xe = rhs_Saha*(-1.+sqrt(1.0+4.0/rhs_Saha))/2.0;
+    }
+
+    // Return electron fraction and number density
+    return std::pair<double,double>(Xe, Xe*nH);
+  }
 }
 
 //====================================================
@@ -416,14 +469,28 @@ double RecombinationHistory::sound_horizon_of_x(double x) const{
 void RecombinationHistory::info() const{
   std::cout<<"\n";
   std::cout<<"Info about recombination/reionization history class:\n";
-  std::cout<<"Yp:          "<<Yp<<"\n";
+  std::cout<<"Yp:                   "<<Yp<<"\n";
+  if (Constants.reionization)
+  {
+    std::cout<<"z_reion:              "<<z_reion<<"\n";
+    std::cout<<"Δz_reion:             "<<Deltaz_reion<<"\n";
+    std::cout<<"z_He_reion:           "<<z_He_reion<<"\n";
+    std::cout<<"Δz_He_reion:          "<<Deltaz_He_reion<<"\n";
+  }
+  else{
+    std::cout<<"z_reion:              "<<"0"<<"\n";
+    std::cout<<"Δz_reion:             "<<"0"<<"\n";
+    std::cout<<"z_He_reion:           "<<"0"<<"\n";
+    std::cout<<"Δz_He_reion:          "<<"0"<<"\n";
+  }
+  
   std::cout<<std::endl;
 }
 void RecombinationHistory::sound_horizon() const{
   std::cout<<"Sound horizon at decoupling:\n";
   std::cout<<"r_s≡s(x_decoupling) = "<<sound_horizon_of_x(x_Saha_to_Peebles)/Constants.Mpc<<" Mpc"<<"\n";
   std::cout<<"x_decoupling = "<<x_Saha_to_Peebles<<"\n";
-  std::cout<<"Index at decoupling:  "<<idx_Peebles_transition<<"\n";
+  std::cout<<"Index at decoupling: "<<idx_Peebles_transition<<"\n";
   std::cout<<std::endl;
 } 
 

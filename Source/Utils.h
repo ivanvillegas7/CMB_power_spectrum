@@ -51,9 +51,11 @@ extern struct ConstantsAndUnits {
   const double x_start = log(1e-8);
   const double x_end   = 0.0;
 
-  // Include polarization and/or neutrinos?
-  const bool polarization  = false;
+  // Include neutrinos, Helium, reionization and/or polarization?
   const bool neutrinos     = false;
+  const bool Helium        = false;
+  const bool reionization  = false;
+  const bool polarization  = false;
 
   // For integration of perturbations (number of equations and positions in arrays)
   const int n_scalars           = 5;
