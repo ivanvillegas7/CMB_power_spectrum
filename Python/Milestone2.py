@@ -121,8 +121,8 @@ def plots():
     plt.savefig('../Plots/Milestone II/tau and derivatives.pdf')
     
     plt.figure()
-    plt.plot(x, g_tilde/max(abs(g_tilde)), label=r'$\tilde{g}$'+\
-                                                 r'/|$\tilde{g}$|$_\text{max}$')
+    plt.plot(x, g_tilde/max(abs(g_tilde)),\
+             label=r'$\tilde{g}$/|$\tilde{g}$|$_\text{max}$')
     plt.plot(x, dg_tilde/max(abs(dg_tilde)),\
              label=r'$\frac{\text{d}\tilde{g}}{\text{d}x}$'+\
                    r'/|$\frac{\text{d}\tilde{g}}{\text{d}x}$|$_\text{max}$')
