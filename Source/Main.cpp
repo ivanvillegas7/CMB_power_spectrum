@@ -25,13 +25,11 @@ int main(int argc, char **argv){
   double TCMB        = 2.7255;
 
   // Recombination parameters
-
   double Yp          = 0.0;
   if (Constants.Helium)
   {
     Yp               = 0.245;
   }
-  
 
   // Power-spectrum parameters
   double A_s         = 2.1e-9;
