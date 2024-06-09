@@ -8,7 +8,7 @@ At the moment, the code is only available at the Master's degree version, i.e., 
 
 ## Compiling and running
 
-Edit the Makefile adding the right paths and compile the code running [ make ]. The code runs from Main.cpp and then proceeds to go through the different milestones one by one untill we have the CMB power spectra in the end. If you get it compiled then run it as [ ./cmb ]. If you want to compile this on your computer you need to install the [GSL library](ftp://ftp.gnu.org/gnu/gsl/) first.
+Edit the Makefile adding the right paths and compile the code running [ make ]. The code runs from Main.cpp and then proceeds to go through the different milestones one by one untill we have the CMB power spectra in the end. If you get it compiled then run it as [ ./cmb ]. If you want to compile this on your computer you need to install the [GSL](ftp://ftp.gnu.org/gnu/gsl/) library first.
 
 ## How to install GSL
 
