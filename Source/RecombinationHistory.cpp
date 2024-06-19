@@ -114,21 +114,20 @@ void RecombinationHistory::solve_number_density_electrons(){
       peebles_Xe_ode.solve(dXedx, x_array_current, peebles_ini);
       auto solution = peebles_Xe_ode.get_data_by_component(0);
       double Xe_now = solution.back();
+      Xe_arr[i] = Xe_now;
       if (Constants.reionization)
       {
         // Consider reionization
-        const double f_He            = Yp/(4.*(1.-Yp));
-        const double y_reion         = pow(1+z_reion, 3./2.);
-        const double Deltay_reion    = (3./2.)*sqrt(1+z_reion)*Deltaz_reion;
         const double y               = exp(-3.*x_array[i]/2.);
         const double z               = exp(x_array[i])-1.;
 
-        Xe_arr[i] = Xe_now+((1.+f_He)/2.)*(1.+tanh((y_reion-y)/Deltay_reion));//+(f_He/2.)*(1.+tanh((z_He_reion-z)/Deltaz_He_reion));
+        // Add the recombination terms
+        Xe_arr[i] += ((1.+f_He)/2.)*(1.+tanh((y_reion-y)/Deltay_reion))+(f_He/2.)*(1.+tanh((z_He_reion-z)/Deltaz_He_reion));
+        
+        // From Callin 2006:
+        //const double f               = (1./M_PI)*atan(10.*(10.-z)/0.2)+1./2.;
+        //Xe_arr[i] = Xe_arr[i]*(1.-f)+f;
       }
-      else{
-        Xe_arr[i] = Xe_now;
-      }
-      
       ne_arr[i] = Xe_arr[i]*get_number_density_B(x_array[i]);
     }
   }
@@ -343,7 +342,9 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
 
   Vector dtau(npts_rec_arrays);
 
-  for (int i=0; i < npts_rec_arrays; i++) dtau[i] = -Constants.c*ne_of_x(x_array[i])*Constants.sigma_T/(cosmo->H_of_x(x_array[i]));
+  for (int i=0; i < npts_rec_arrays; i++){
+    dtau[i] = -Constants.c*ne_of_x(x_array[i])*Constants.sigma_T/(cosmo->H_of_x(x_array[i]));
+  }
 
   dtau_of_x_spline.create(x_array, dtau, "dτ");
 
@@ -353,13 +354,17 @@ void RecombinationHistory::solve_for_optical_depth_tau(){
 
   Vector g_tilde_array(npts_rec_arrays, 0.0);
 
-  for (int i = 0; i < npts_rec_arrays; i++) g_tilde_array[i]=-dtaudx_of_x(x_array[i])*exp(-tau_of_x(x_array[i]));
+  for (int i=0; i < npts_rec_arrays; i++){
+    g_tilde_array[i] = -dtaudx_of_x(x_array[i])*exp(-tau_of_x(x_array[i]));
+  }
 
   g_tilde_of_x_spline.create(x_array, g_tilde_array, "g̃");
 
   Vector dg_tilde(npts_rec_arrays);
 
-  for(int i=0; i < npts_rec_arrays; i++) dg_tilde[i] = exp(-tau_of_x(x_array[i]))*(dtaudx_of_x(x_array[i])*dtaudx_of_x(x_array[i])-ddtauddx_of_x(x_array[i]));
+  for(int i=0; i < npts_rec_arrays; i++){
+    dg_tilde[i] = exp(-tau_of_x(x_array[i]))*(dtaudx_of_x(x_array[i])*dtaudx_of_x(x_array[i])-ddtauddx_of_x(x_array[i]));
+  }
   
   dg_tilde_of_x_spline.create(x_array, dg_tilde, "dg̃");
 
@@ -478,10 +483,7 @@ void RecombinationHistory::info() const{
     std::cout<<"Δz_He_reion:          "<<Deltaz_He_reion<<"\n";
   }
   else{
-    std::cout<<"z_reion:              "<<"0"<<"\n";
-    std::cout<<"Δz_reion:             "<<"0"<<"\n";
-    std::cout<<"z_He_reion:           "<<"0"<<"\n";
-    std::cout<<"Δz_He_reion:          "<<"0"<<"\n";
+    std::cout<<"Reionization has not been included:\n";
   }
   
   std::cout<<std::endl;

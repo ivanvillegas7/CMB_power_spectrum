@@ -23,6 +23,9 @@ class RecombinationHistory{
     const double Deltaz_reion    = 0.5;
     const double z_He_reion      = 3.5;
     const double Deltaz_He_reion = 0.5;
+    const double f_He            = Yp/(4.*(1.-Yp));
+    const double y_reion         = pow(1.+z_reion, 3./2.);
+    const double Deltay_reion    = (3./2.)*sqrt(1+z_reion)*Deltaz_reion;
  
     // The start and end points for recombination arrays (can be modified)
     const double x_start  = Constants.x_start;

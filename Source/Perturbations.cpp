@@ -54,6 +54,7 @@ void Perturbations::integrate_perturbations(){
 
   double H0 = cosmo->get_H0();
 
+  #pragma omp parallel for schedule(dynamic, 1)
   // Loop over all wavenumbers
   for(int ik = 0; ik < n_k; ik++){
 
@@ -840,16 +841,16 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
     double *dTheta_pdx     = &dydx[Constants.ind_start_thetap];
     dTheta_pdx[0]          = -ck_over_Hp*Theta_p[1]+dtaudx*(Theta_p[0]-Pi/2.);
     for (int l = 2; l < n_ell_thetap-1; l++)
-  {
-    if (l==2){
-      dTheta_pdx[l]          = ck_over_Hp*(l*Theta_p[l-1]-(l+1.)*Theta_p[l+1])/(2.*l+1.)+dtaudx*(Theta_p[l]-Pi/10.);
+    {
+      if (l==2){
+        dTheta_pdx[l]          = ck_over_Hp*(l*Theta_p[l-1]-(l+1.)*Theta_p[l+1])/(2.*l+1.)+dtaudx*(Theta_p[l]-Pi/10.);
+      }
+      else{
+        dTheta_pdx[l]          = ck_over_Hp*(l*Theta_p[l-1]-(l+1.)*Theta_p[l+1])/(2.*l+1.)+dtaudx*Theta_p[l];
+      }
     }
-    else{
-      dTheta_pdx[l]          = ck_over_Hp*(l*Theta_p[l-1]-(l+1.)*Theta_p[l+1])/(2.*l+1.)+dtaudx*Theta_p[l];
+    dTheta_pdx[n_ell_thetap-1] = ck_over_Hp*Theta_p[n_ell_thetap-2]+(dtaudx-(c*n_ell_thetap/(Hp*eta)))*Theta_p[n_ell_thetap-1];
     }
-  }
-  dTheta_pdx[n_ell_thetap-1] = ck_over_Hp*Theta_p[n_ell_thetap-2]+(dtaudx-(c*n_ell_thetap/(Hp*eta)))*Theta_p[n_ell_thetap-1];
-  }
 
   // SET: Neutrino mutlipoles (Nu_ell)
   if(neutrinos){

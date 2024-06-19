@@ -52,10 +52,10 @@ extern struct ConstantsAndUnits {
   const double x_end   = 0.0;
 
   // Include neutrinos, Helium, reionization and/or polarization?
-  const bool neutrinos     = false;
-  const bool Helium        = false;
-  const bool reionization  = false;
-  const bool polarization  = false;
+  const bool neutrinos     = true;
+  const bool Helium        = true;
+  const bool reionization  = true;
+  const bool polarization  = true;
 
   // For integration of perturbations (number of equations and positions in arrays)
   const int n_scalars           = 5;

@@ -125,6 +125,8 @@ Vector2D PowerSpectrum::line_of_sight_integration_single(
   double dx = x_array[1]-x_array[0];
   
   std::cout << std::endl;
+  
+  #pragma omp parallel for schedule(dynamic, 1)
   for(size_t i_k = 0; i_k < k_array.size(); i_k++){
 
     //=============================================================================
