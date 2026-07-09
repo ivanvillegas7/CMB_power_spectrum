@@ -49,4 +49,4 @@ You can also only make the plots for each milestone independently by running the
 
 ## Further documentation
 
-The folder named `Reports` will store the reports of each milestone. All the reports, for Milestone I (I: Solving the cosmological background.pdf), Milestone II (II: Recombination history of the Universe.pdf), Milestone III (III: Evolution of structure in the Universe.pdf) and Milestone IV (IV: The CMB and matter power-spectra.pdf), are available. Also an article summarizing the four reports is available (Computing the CMB power spectrum.pdf).
+The folder named `Reports` will store the reports of each milestone. All the reports, for Milestone I (`I: Solving the cosmological background.pdf`), Milestone II (`II: Recombination history of the Universe.pdf`), Milestone III (`III: Evolution of structure in the Universe.pdf`) and Milestone IV (`IV: The CMB and matter power-spectra.pdf`), are available. Also an article summarizing the four reports is available (`Computing the CMB power spectrum.pdf`).
