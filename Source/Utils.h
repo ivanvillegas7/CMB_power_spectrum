@@ -45,17 +45,38 @@ extern struct ConstantsAndUnits {
   
   // Min and max k-value
   const double k_min = 0.00005 / Mpc;
-  const double k_max = 0.3     / Mpc;
+  // Extended so the matter power-spectrum theory curve covers essentially
+  // the full Lyman-alpha forest data range (k ~ 0.2-2.5 h/Mpc). Using
+  // h=0.67: k_max = 3 h/Mpc = 3*0.67/Mpc = 2.01/Mpc. Note this also further
+  // increases the cost of the perturbation solve and the CMB line-of-sight
+  // integration, since both share this k range.
+  const double k_max = 2.01    / Mpc;
   
   // Min and max x-value
   const double x_start = log(1e-8);
   const double x_end   = 0.0;
 
   // Include neutrinos, Helium, reionization and/or polarization?
-  const bool neutrinos     = false;
-  const bool Helium        = false;
-  const bool reionization  = false;
-  const bool polarization  = false;
+  const bool neutrinos     = true;
+  const bool Helium        = true;
+  const bool reionization  = true;
+  const bool polarization  = true;
+
+  // Whether to compute (and output cells_SW/ISW/DOPPLER/POL.txt) the
+  // individual Sachs-Wolfe / ISW / Doppler / polarization contributions to
+  // C_ell^TT. This costs 4 extra line-of-sight integrations (the most
+  // expensive step in the pipeline); turn off to save time when this
+  // breakdown isn't needed.
+  const bool compute_PS_components   = true;
+
+  // Whether to run the MCMC fit to the supernova data (Milestone I). Off by
+  // default, since it's slow and mostly useful only the first time / when
+  // the supernova data itself changes.
+  const bool compute_supernova_MCMC  = true;
+
+  // Whether to send a Telegram notification (see Python/notification.py)
+  // when the simulation finishes.
+  const bool send_notification       = true;
 
   // For integration of perturbations (number of equations and positions in arrays)
   const int n_scalars           = 5;

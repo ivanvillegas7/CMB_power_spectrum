@@ -42,6 +42,7 @@ void RecombinationHistory::solve_number_density_electrons(){
   
   Vector Xe_arr_only_Saha = Xe_arr;
   Vector ne_arr           = Xe_arr;
+  Vector Xe_recomb_arr    = Xe_arr; // Pure Peebles recombination trajectory, without reionization added back in
 
   // Save index of when leaving Saha regime and start using Peebles
   double Xe_Peebles_transition = 0.0;
@@ -85,6 +86,7 @@ void RecombinationHistory::solve_number_density_electrons(){
       Xe_arr[i]           = Xe_current;
       ne_arr[i]           = ne_current;
       Xe_arr_only_Saha[i] = Xe_current; // Keep the solutions obtained by Saha eq only
+      Xe_recomb_arr[i]    = Xe_current; // Pure recombination trajectory (no reionization)
     } 
     
     else {
@@ -96,9 +98,16 @@ void RecombinationHistory::solve_number_density_electrons(){
       // Implement rhs_peebles_ode
       //==============================================================
 
-      // Integrate equation from x(i-1) to x(i) and fetch Xe(i)
+      // Integrate equation from x(i-1) to x(i) and fetch Xe(i). NB: use the
+      // pure recombination trajectory (Xe_recomb_arr), NOT Xe_arr, as the
+      // starting point: Xe_arr may already include the reionization
+      // contribution added below, and the tanh reionization term is a
+      // function of x only (not a rate to integrate), so it must never be
+      // fed back into the Peebles ODE as an initial condition - otherwise
+      // it gets added again at every one of the ~1e5 grid points instead of
+      // being evaluated once per point, and Xe grows without bound.
       Vector x_array_current{x_array[i-1],x_array[i]};
-      double Xe_current = Xe_arr[i-1];
+      double Xe_current = Xe_recomb_arr[i-1];
 
       // The Peebles ODE equation
       ODESolver peebles_Xe_ode;
@@ -114,12 +123,13 @@ void RecombinationHistory::solve_number_density_electrons(){
       peebles_Xe_ode.solve(dXedx, x_array_current, peebles_ini);
       auto solution = peebles_Xe_ode.get_data_by_component(0);
       double Xe_now = solution.back();
+      Xe_recomb_arr[i] = Xe_now;
       Xe_arr[i] = Xe_now;
       if (Constants.reionization)
       {
         // Consider reionization
         const double y               = exp(-3.*x_array[i]/2.);
-        const double z               = exp(x_array[i])-1.;
+        const double z               = exp(-x_array[i])-1.;
 
         // Add the recombination terms
         Xe_arr[i] += ((1.+f_He)/2.)*(1.+tanh((y_reion-y)/Deltay_reion))+(f_He/2.)*(1.+tanh((z_He_reion-z)/Deltaz_He_reion));
@@ -128,7 +138,8 @@ void RecombinationHistory::solve_number_density_electrons(){
         //const double f               = (1./M_PI)*atan(10.*(10.-z)/0.2)+1./2.;
         //Xe_arr[i] = Xe_arr[i]*(1.-f)+f;
       }
-      ne_arr[i] = Xe_arr[i]*get_number_density_B(x_array[i]);
+      // NB: Xe is defined relative to n_H (not n_B): ne = Xe * n_H
+      ne_arr[i] = Xe_arr[i]*get_number_density_H(x_array[i]);
     }
   }
 
@@ -149,10 +160,12 @@ void RecombinationHistory::solve_number_density_electrons(){
   // Spline the result in logarithmic form. Used in get Xe_of_x and ne_of_x methods
   Vector log_Xe_arr           = log(Xe_arr);
   Vector log_ne_arr           = log(ne_arr);
+  Vector log_Xe_recomb_arr    = log(Xe_recomb_arr);
   
   log_Xe_of_x_spline.create(x_array,log_Xe_arr,"log Xe");
   Xe_of_x_spline_only_Saha.create(x_array,Xe_arr_only_Saha,"Xe Saha");
   log_ne_of_x_spline.create(x_array,log_ne_arr,"log ne");
+  log_Xe_recomb_of_x_spline.create(x_array,log_Xe_recomb_arr,"log Xe recomb only");
 
   Utils::EndTiming("Electron fraction (Xe)");
 }
@@ -442,6 +455,11 @@ double RecombinationHistory::Xe_of_x(double x) const{
   return exp(log_Xe_of_x_spline(x));
 }
 
+double RecombinationHistory::Xe_of_x_recomb_only(double x) const{
+
+  return exp(log_Xe_recomb_of_x_spline(x));
+}
+
 double RecombinationHistory::Xe_of_x_Saha_approx(double x) const{
   return Xe_of_x_spline_only_Saha(x);
 }
@@ -497,6 +515,29 @@ void RecombinationHistory::sound_horizon() const{
 } 
 
 //====================================================
+// Write flags and derived scalars to file so that
+// Python never has to ask the user for them
+//====================================================
+void RecombinationHistory::output_info(const std::string filename) const{
+  std::ofstream fp(filename.c_str());
+  fp << "neutrinos "     << Constants.neutrinos    << "\n";
+  fp << "Helium "        << Constants.Helium       << "\n";
+  fp << "reionization "  << Constants.reionization << "\n";
+  fp << "polarization "  << Constants.polarization << "\n";
+  fp << "compute_PS_components "  << Constants.compute_PS_components  << "\n";
+  fp << "compute_supernova_MCMC " << Constants.compute_supernova_MCMC << "\n";
+  fp << "send_notification "      << Constants.send_notification      << "\n";
+  fp << "idx_decoupling " << idx_Peebles_transition << "\n";
+  fp << "x_decoupling "   << x_Saha_to_Peebles      << "\n";
+  fp << "r_s_Mpc "        << sound_horizon_of_x(x_Saha_to_Peebles)/Constants.Mpc << "\n";
+  if(Constants.reionization){
+    fp << "z_reion "       << z_reion       << "\n";
+    fp << "Deltaz_reion "  << Deltaz_reion  << "\n";
+  }
+  fp.close();
+}
+
+//====================================================
 // Output the data computed to file
 //====================================================
 void RecombinationHistory::output(const std::string filename) const{
@@ -515,6 +556,7 @@ void RecombinationHistory::output(const std::string filename) const{
     fp << ddgddx_tilde_of_x(x)           << " ";
     fp << Xe_of_x_Saha_approx(x)         << " ";
     fp << cosmo->t_of_x(x)               << " ";
+    fp << Xe_of_x_recomb_only(x)         << " ";
     fp << "\n";
   };
   std::for_each(x_array.begin(), x_array.end(), print_data);

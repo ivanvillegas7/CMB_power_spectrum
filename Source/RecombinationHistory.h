@@ -72,6 +72,11 @@ class RecombinationHistory{
     // Splines contained in this class
     Spline log_Xe_of_x_spline{"X_e"};
     Spline Xe_of_x_spline_only_Saha{"X_e Saha"};
+    // Pure Peebles recombination trajectory, with reionization never added
+    // back in - used as the correct reference for the freeze-out residual,
+    // which today's Xe_of_x(0) no longer represents once reionization has
+    // been switched on (it returns to ~1+f_He then, not the tiny residual).
+    Spline log_Xe_recomb_of_x_spline{"X_e recomb only"};
     Spline log_ne_of_x_spline{"n_e"};
     Spline tau_of_x_spline{"τ"}; 
     Spline dtau_of_x_spline{"dτ"}; 
@@ -99,6 +104,11 @@ class RecombinationHistory{
     // Output some data to file
     void output(const std::string filename) const;
 
+    // Output the flags (neutrinos, Helium, reionization, polarization) and
+    // derived scalars (decoupling index, sound horizon, ...) that the Python
+    // plotting scripts need, so they never have to be typed in by hand
+    void output_info(const std::string filename) const;
+
     // Get functions that we must implement
     double tau_of_x(double x) const;
     double dtaudx_of_x(double x) const;
@@ -107,6 +117,9 @@ class RecombinationHistory{
     double dgdx_tilde_of_x(double x) const;
     double ddgddx_tilde_of_x(double x) const;
     double Xe_of_x(double x) const;
+    // Xe from the pure recombination trajectory only, with no reionization
+    // added back in - always gives the correct freeze-out residual value.
+    double Xe_of_x_recomb_only(double x) const;
     double Xe_of_x_Saha_approx(double x) const;
     double ne_of_x(double x) const;
     double get_Yp() const;

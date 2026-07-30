@@ -188,5 +188,5 @@ void mcmc_fit_to_supernova_data(std::string supernovadata_filename, std::string 
   std::cout << "Minimum chi^2 found " << chi2_min << " ";
   for(int i = 0; i < nparam; i++)
     std::cout << best_parameters[i] << " ";
-  std::cout << "\n";
+  std::cout << "\n\n";
 }

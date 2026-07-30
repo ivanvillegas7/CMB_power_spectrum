@@ -174,9 +174,17 @@ void Perturbations::integrate_perturbations(){
         Theta_array[l][index] = -l/(2.*l+1.)*ck_over_Hp/dtaudx*Theta_array[l-1][index];
       }
       if(Constants.polarization){
-        Theta_p_array[0][index]   = 5.*Theta[2]/4.;
-        Theta_p_array[1][index]   = -ck_over_Hp*Theta[2]/(4.*dtaudx);
-        Theta_p_array[2][index]   = Theta[2]/4.;
+        // NB: use Theta_array[2][index] (the properly reconstructed
+        // tight-coupling quadrupole, just computed above), NOT the raw
+        // pointer Theta[2]. During tight coupling only Theta[0] and
+        // Theta[1] are valid ODE state entries (n_ell_theta_tc=2); since
+        // n_ell_thetap_tc=0, Theta[2] silently aliases onto Nu[0] (the
+        // neutrino monopole) instead of being out-of-bounds noise, which
+        // made Theta_p (and, further down, Psi, which has the same bug)
+        // blow up at early times/high k.
+        Theta_p_array[0][index]   = 5.*Theta_array[2][index]/4.;
+        Theta_p_array[1][index]   = -ck_over_Hp*Theta_array[2][index]/(4.*dtaudx);
+        Theta_p_array[2][index]   = Theta_array[2][index]/4.;
         for (int l = 3; l < Constants.n_ell_thetap; l++)
         {
           Theta_p_array[l][index] = -l*ck_over_Hp*Theta_p_array[l-1][index]/((2.*l+1.)*dtaudx);
@@ -184,16 +192,23 @@ void Perturbations::integrate_perturbations(){
       }
       double N2 = 0.0;
       if(Constants.neutrinos){
-        double *Nu           = &y_tc[Constants.ind_start_nu_tc];
-        Nu_array[0][index]   = -Psi_array[index]/2.;
-        Nu_array[1][index]   = ck_over_Hp*Psi_array[index]/6.;
-        Nu_array[2][index]   = -(Psi_array[index]+Phi)*pow(Constants.c*k*exp(x)/H0, 2)/(12.*Omega_Nu);
-        N2                   = Nu_array[2][index];
-        for (int l = 3; l < Constants.n_ell_neutrinos_tc; l++){
-          Nu_array[l][index] = ck_over_Hp*Nu_array[l-1][index]/(2.*l+1.);
+        // Nu[0..n_ell_neutrinos_tc-1] were already properly integrated by
+        // the tight-coupling ODE (see rhs_tight_coupling_ode) - just copy
+        // them here, exactly like Theta[0]/Theta[1] above. They must NOT be
+        // recomputed with the initial-condition formula at every x (that
+        // formula is only valid once, at x_start): doing so also reads
+        // Psi_array[index], which has not been set yet at this index,
+        // and made both Psi and the neutrino quadrupole blow up at early
+        // times/high k.
+        double *Nu = &y_tc[Constants.ind_start_nu_tc];
+        for (int l = 0; l < Constants.n_ell_neutrinos_tc; l++){
+          Nu_array[l][index] = Nu[l];
         }
+        N2 = Nu[2];
       }
-      Psi_array[index]       = -Phi-12.*pow(H0/(Constants.c*k*exp(x)), 2)*(Omega_R*Theta[2]+Omega_Nu*N2);
+      // NB: Theta_array[2][index] (reconstructed above), not the raw
+      // Theta[2] pointer - see the comment above the polarization block.
+      Psi_array[index]       = -Phi-12.*pow(H0/(Constants.c*k*exp(x)), 2)*(Omega_R*Theta_array[2][index]+Omega_Nu*N2);
     }
     // Now fill rest of arrays from the full regime 
     for (int ix = index_end_tc; ix < n_x; ix++){
@@ -223,7 +238,7 @@ void Perturbations::integrate_perturbations(){
 
       // Calculate quantities
       Phi_array[index]            = Phi;
-      Psi_array[index]            = -Phi-12.*pow(H0/(Constants.c*k*exp(x)), 2)*OmegaR*Theta[2]+OmegaNu*N2;
+      Psi_array[index]            = -Phi-12.*pow(H0/(Constants.c*k*exp(x)), 2)*(OmegaR*Theta[2]+OmegaNu*N2);
       delta_CDM_array[index]      = delta_CDM;
       delta_B_array[index]        = delta_B;
       v_CDM_array[index]          = v_CDM;
@@ -460,7 +475,7 @@ Vector Perturbations::set_ic_after_tight_coupling(
 
   // SET: Photon polarization perturbations (Theta_p_ell)
   if(polarization){
-    double *Theta_p          = &y[Constants.ind_start_thetap_tc];
+    double *Theta_p          = &y[Constants.ind_start_thetap];
     Theta_p[0]               = 5.*Theta[2]/4.;
     Theta_p[1]               = -ck_over_Hp*Theta[2]/(4.*dtaudx);
     Theta_p[2]               = Theta[2]/4.;
@@ -473,7 +488,7 @@ Vector Perturbations::set_ic_after_tight_coupling(
   // SET: Neutrino perturbations (N_ell)
   if(neutrinos){
     const double *Nu_tc      = &y_tc[Constants.ind_start_nu_tc];
-    double *Nu               = &y[Constants.ind_start_nu_tc];
+    double *Nu               = &y[Constants.ind_start_nu];
     for (int l = 0; l < n_ell_neutrinos; l++)
     {
       Nu[l]                  = Nu_tc[l];
@@ -527,9 +542,34 @@ void Perturbations::compute_source_functions(){
   Vector ST_array(k_array.size()*x_array.size());
   Vector SE_array(k_array.size()*x_array.size());
 
+  // Storage for the individual SW/ISW/Doppler/polarization contributions
+  Vector ST_SW_array(k_array.size()*x_array.size());
+  Vector ST_ISW_array(k_array.size()*x_array.size());
+  Vector ST_DOPPLER_array(k_array.size()*x_array.size());
+  Vector ST_POL_array(k_array.size()*x_array.size());
+
+  // eta(x=0) (conformal time today) never changes: compute it once instead
+  // of on every single (x,k) pair inside the loop below
+  const double eta0 = cosmo->eta_of_x(0.0);
+
   // Compute source functions
   for(auto ix = 0; ix < x_array.size(); ix++){
     const double x = x_array[ix];
+
+    // Fetch functions from BackgroundCosmology and Recombination that only
+    // depend on x, not k: compute them once per x instead of once per (x,k)
+    // pair (they were being re-evaluated n_k times for nothing before)
+    const double Hp        = cosmo->Hp_of_x(x);
+    const double dHpdx     = cosmo->dHpdx_of_x(x);
+    const double ddHpddx   = cosmo->ddHpddx_of_x(x);
+    const double tau       = rec->tau_of_x(x);
+    const double dtaudx    = rec->dtaudx_of_x(x);
+    const double ddtauddx  = rec->ddtauddx_of_x(x);
+    const double g         = rec->g_tilde_of_x(x);
+    const double dgdx      = rec->dgdx_tilde_of_x(x);
+    const double ddgddx    = rec->ddgddx_tilde_of_x(x);
+    const double eta_x     = cosmo->eta_of_x(x);
+
     for(auto ik = 0; ik < k_array.size(); ik++){
       const double k = k_array[ik];
 
@@ -540,19 +580,6 @@ void Perturbations::compute_source_functions(){
       //=============================================================================
       // TODO: Compute the source functions
       //=============================================================================
-
-      // Fetch functions from BackgroundCosmology
-      double Hp      = cosmo->Hp_of_x(x);
-      double dHpdx   = cosmo->dHpdx_of_x(x);
-      double ddHpddx = cosmo->ddHpddx_of_x(x);
-
-      // Fetch functions from Recombination
-      double tau      = rec->tau_of_x(x);
-      double dtaudx   = rec->dtaudx_of_x(x);
-      double ddtauddx = rec->ddtauddx_of_x(x);
-      double g        = rec->g_tilde_of_x(x);
-      double dgdx     = rec->dgdx_tilde_of_x(x);
-      double ddgddx   = rec->ddgddx_tilde_of_x(x);
 
       // Get functions from Perturbation
       double Psi   = get_Psi(x,k);
@@ -617,9 +644,29 @@ void Perturbations::compute_source_functions(){
       // All terms
       ST_array[index]  = term1+term2-term3+term4;
 
+      // Store each term separately too (this is what used to require
+      // recompiling 4 times with a different line uncommented above; now
+      // all 4 contributions are computed and splined in the same run)
+      ST_SW_array[index]      = term1;
+      ST_ISW_array[index]     = term2;
+      ST_DOPPLER_array[index] = -term3;
+      ST_POL_array[index]     = term4;
+
       // Polarization source
       if(Constants.polarization){
-        SE_array[index] = 3.*g*Pi/(4.*pow(k*(cosmo->eta_of_x(0.0)-cosmo->eta_of_x(x)), 2));
+        // As x -> 0 (today), eta_x -> eta0, so k*(eta0-eta_x) -> 0 and this
+        // term would divide by zero exactly at the last grid point (x_end
+        // is exactly 0.0). A single NaN/Inf there poisons the entire 2D
+        // spline fit (and therefore every Theta_E(k), and hence C_ell^EE
+        // and C_ell^TE at every ell, not just near that point). This single
+        // point contributes negligibly to the line-of-sight integral
+        // anyway, so it is simply set to 0 here instead.
+        const double k_delta_eta = k*(eta0-eta_x);
+        if (abs(k_delta_eta) > 1e-10){
+          SE_array[index] = 3.*g*Pi/(4.*pow(k_delta_eta, 2));
+        } else {
+          SE_array[index] = 0.0;
+        }
       }
       else SE_array[index] = 0.0;
     }
@@ -628,6 +675,12 @@ void Perturbations::compute_source_functions(){
   // Spline the source functions
   ST_spline.create (x_array, k_array, ST_array, "Source_Temp_x_k");
   SE_spline.create (x_array, k_array, SE_array, "Source_Pol_x_k");
+
+  // Spline each individual contribution
+  ST_SW_spline.create      (x_array, k_array, ST_SW_array,      "Source_Temp_SW_x_k");
+  ST_ISW_spline.create     (x_array, k_array, ST_ISW_array,     "Source_Temp_ISW_x_k");
+  ST_DOPPLER_spline.create (x_array, k_array, ST_DOPPLER_array, "Source_Temp_DOPPLER_x_k");
+  ST_POL_spline.create     (x_array, k_array, ST_POL_array,     "Source_Temp_POL_x_k");
 
   Utils::EndTiming("Source");
 }
@@ -788,7 +841,7 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
   double Nu2                = 0.0;
   if (neutrinos)
   {
-    const double *Nu        = &y[Constants.ind_start_thetap];
+    const double *Nu        = &y[Constants.ind_start_nu];
     Nu0                     = Nu[0];
     Nu2                     = Nu[2];
   }
@@ -840,7 +893,7 @@ int Perturbations::rhs_full_ode(double x, double k, const double *y, double *dyd
     const double *Theta_p  = &y[Constants.ind_start_thetap];
     double *dTheta_pdx     = &dydx[Constants.ind_start_thetap];
     dTheta_pdx[0]          = -ck_over_Hp*Theta_p[1]+dtaudx*(Theta_p[0]-Pi/2.);
-    for (int l = 2; l < n_ell_thetap-1; l++)
+    for (int l = 1; l < n_ell_thetap-1; l++)
     {
       if (l==2){
         dTheta_pdx[l]          = ck_over_Hp*(l*Theta_p[l-1]-(l+1.)*Theta_p[l+1])/(2.*l+1.)+dtaudx*(Theta_p[l]-Pi/10.);
@@ -907,6 +960,18 @@ double Perturbations::get_dPidx(const double x, const double k) const{
 double Perturbations::get_Source_T(const double x, const double k) const{
   return ST_spline(x,k);
 }
+double Perturbations::get_Source_T_SW(const double x, const double k) const{
+  return ST_SW_spline(x,k);
+}
+double Perturbations::get_Source_T_ISW(const double x, const double k) const{
+  return ST_ISW_spline(x,k);
+}
+double Perturbations::get_Source_T_DOPPLER(const double x, const double k) const{
+  return ST_DOPPLER_spline(x,k);
+}
+double Perturbations::get_Source_T_POL(const double x, const double k) const{
+  return ST_POL_spline(x,k);
+}
 double Perturbations::get_Source_E(const double x, const double k) const{
   return SE_spline(x,k);
 }
@@ -939,6 +1004,8 @@ void Perturbations::info() const{
   std::cout << "k_min (1/Mpc): " << k_min * Constants.Mpc  << "\n";
   std::cout << "k_max (1/Mpc): " << k_max * Constants.Mpc  << "\n";
   std::cout << "n_k:           " << n_k                    << "\n";
+
+  std::cout << "\nPhysics included in this run:\n";
   if(Constants.polarization)
     std::cout << "Polarization has been included.\n";
   else
@@ -948,6 +1015,7 @@ void Perturbations::info() const{
   else
     std::cout << "Neutrinos have not been included.\n";
 
+  std::cout << "\nInternal indexing of the ODE system:\n";
   std::cout << "Information about the perturbation system:\n";
   std::cout << "ind_delta_CDM:      " << Constants.ind_deltacdm         << "\n";
   std::cout << "ind_delta_B:        " << Constants.ind_deltab           << "\n";
@@ -966,6 +1034,7 @@ void Perturbations::info() const{
   }
   std::cout << "n_ell_tot_full:     " << Constants.n_ell_tot_full       << "\n";
 
+  std::cout << "\n";
   std::cout << "Information about the perturbation system in tight coupling:\n";
   std::cout << "ind_deltacdm:       " << Constants.ind_deltacdm_tc      << "\n";
   std::cout << "ind_deltab:         " << Constants.ind_deltab_tc        << "\n";

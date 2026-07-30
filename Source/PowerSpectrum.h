@@ -103,6 +103,18 @@ class PowerSpectrum {
     Spline cell_TE_spline{"cell_TE_spline"};
     Spline cell_EE_spline{"cell_EE_spline"};
 
+    // Theta_ell(k) splines and C_ell splines for the individual SW / ISW /
+    // Doppler / polarization contributions to C_ell^TT
+    std::vector<Spline> thetaSW_ell_of_k_spline;
+    std::vector<Spline> thetaISW_ell_of_k_spline;
+    std::vector<Spline> thetaDOPPLER_ell_of_k_spline;
+    std::vector<Spline> thetaPOL_ell_of_k_spline;
+
+    Spline cell_TT_SW_spline{"cell_TT_SW_spline"};
+    Spline cell_TT_ISW_spline{"cell_TT_ISW_spline"};
+    Spline cell_TT_DOPPLER_spline{"cell_TT_DOPPLER_spline"};
+    Spline cell_TT_POL_spline{"cell_TT_POL_spline"};
+
   public:
 
     // Constructors
@@ -133,6 +145,13 @@ class PowerSpectrum {
 
     // Output Cells in units of l(l+1)/2pi (μK)^2
     void output(std::string filename) const;
+    // Output the individual SW/ISW/Doppler/polarization contributions to
+    // C_ell^TT, each in its own file (units of l(l+1)/2pi (μK)^2)
+    void output_components(
+        std::string SW_filename,
+        std::string ISW_filename,
+        std::string DOPPLER_filename,
+        std::string POL_filename) const;
     // Output matter power-spectrum in units of (Mpc/h)^3
     void output_MPS(std::string filename) const;
 
