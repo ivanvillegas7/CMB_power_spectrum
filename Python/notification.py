@@ -26,8 +26,8 @@ def bot_texter(bot_message, file_data=None, file_name=None, caption=None):
         requests.Response
     """
 
-    bot_token = '6271360875:AAGRCeeFGOpzw7EAnE_Koj8pwqLU1WldlAk'
-    bot_chatID = '5908125195'
+    bot_token = 'XXXXXXXXXXXXX'
+    bot_chatID = 'XXXXXXXXXX'
 
     if file_data is not None and file_name is not None: #send a picture
         send_file = 'https://api.telegram.org/bot' + bot_token + '/sendDocument?chat_id=' + bot_chatID
@@ -42,18 +42,3 @@ def bot_texter(bot_message, file_data=None, file_name=None, caption=None):
         response = requests.get(send_text)
 
     return response
-
-
-
-"""
-bot_texter('The simulation has finished:') #for text
-
-#For images
-buffer = io.BytesIO()
-plt.savefig(buffer, format='jpg')
-buffer.seek(0)
-
-image_base64 = base64.b64encode(buffer.getvalue()).decode()
-
-bot_texter('Look', file_data=buffer.getvalue(), file_name='plots.jpg')
-"""
