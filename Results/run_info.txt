@@ -1,0 +1,12 @@
+neutrinos 1
+Helium 1
+reionization 1
+polarization 1
+compute_PS_components 1
+compute_supernova_MCMC 1
+send_notification 1
+idx_decoupling 60032
+x_decoupling -7.36227
+r_s_Mpc 112.309
+z_reion 8
+Deltaz_reion 0.5
