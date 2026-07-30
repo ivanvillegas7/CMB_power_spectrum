@@ -18,6 +18,10 @@ All of them are explained below.
 
 import numpy as np
 
+import auxiliar as aux
+
+# auxiliar picks the matplotlib backend (Agg / TkAgg) before pyplot is
+# imported anywhere, so import it first to avoid GUI backend warnings.
 import matplotlib.pyplot as plt
 
 def plots():
@@ -42,6 +46,11 @@ def plots():
     #Read the data from 'recombination.txt' in folder 'Results'.
     
     data = np.loadtxt('../Results/recombination.txt')
+    
+    #Check if reionization has been included, reading the flag written by
+    #the C++ code instead of asking the user.
+    
+    reionization: bool = bool(aux.read_flags()['reionization'])
     
     #Assign the different variables to its corresponding data.
     
@@ -81,6 +90,11 @@ def plots():
     
     X_e_Saha: np.array(float) = data[:, 9]
     
+    #X_e_recomb: pure recombination-only X_e (no reionization added back
+    #in) - the correct reference for the freeze-out residual value.
+    
+    X_e_recomb: np.array(float) = data[:, 11]
+    
     #Indeces for decoupling and last scattering
     
     last_scattering: int
@@ -94,8 +108,19 @@ def plots():
     plt.figure()
     plt.plot(x, X_e, label=r'$X_e$')
     plt.plot(x, X_e_Saha, label=r'$X_e$ from Saha equation', ls='dashed')
-    plt.hlines(X_e[-1]-1e-5, x[0], x[-1], ls='dotted',\
-               label=r'$X_e$(Freeze-out)$\approx$'+f'{X_e[-1]*1e4:.3f}'+\
+    if reionization:
+        #With reionization, X_e(x) rises again at low x, so X_e(today)
+        #is NOT the freeze-out residual anymore - show the pure
+        #recombination-only trajectory (no reionization) as a reference,
+        #which makes clear that the late-time rise is due to reionization,
+        #not a continuation of recombination itself.
+        plt.plot(x, X_e_recomb, label=r'$X_e$ without reionization',\
+                 ls='dashdot', color='gray')
+    #The freeze-out residual is always correctly read from the pure
+    #recombination-only trajectory, whether or not reionization is on.
+    freeze_out_value = X_e_recomb[-1]
+    plt.hlines(freeze_out_value, x[0], x[-1], ls='dotted',\
+               label=r'$X_e$(Freeze-out)$\approx$'+f'{freeze_out_value*1e4:.3f}'+\
                    r'$\cdot10^{-4}$', color='red')
     plt.vlines(x[recombination], 1e-4, 2, ls='dotted', label='Recombination',\
                color='purple')
@@ -104,10 +129,10 @@ def plots():
     plt.ylabel(r'$X_e$')
     plt.title(r'$X_e$ against $x$')
     plt.yscale("log")
+    plt.legend()
     plt.xlim(x[0], x[-1])
     plt.ylim(1e-4, 2)
-    plt.legend()
-    plt.savefig('../Plots/Milestone II/X_e.pdf')
+    aux.show_or_save('../Plots/Milestone II/X_e.pdf')
     
     plt.figure()
     plt.plot(x, tau, label=r'$\tau$')
@@ -118,7 +143,7 @@ def plots():
     plt.yscale("log")
     plt.grid(True)
     plt.legend()
-    plt.savefig('../Plots/Milestone II/tau and derivatives.pdf')
+    aux.show_or_save('../Plots/Milestone II/tau and derivatives.pdf')
     
     plt.figure()
     plt.plot(x, g_tilde/max(abs(g_tilde)),\
@@ -137,7 +162,7 @@ def plots():
     plt.legend()
     plt.ylim(-1.1, 1.1)
     plt.xlim(-7.4, -6.4)
-    plt.savefig('../Plots/Milestone II/g_tilde and derivatives.pdf')
+    aux.show_or_save('../Plots/Milestone II/g_tilde and derivatives.pdf')
     
 def tables():
     
@@ -191,7 +216,12 @@ def tables():
     #half-way recombination using the Saha approximation and and end of the
     #recombination time.
     
-    decoupling: int = int(input('\nIndex at decoupling: '))
+    #Read the decoupling index computed by the C++ code (RecombinationHistory
+    #::output_info()) instead of typing it in by hand.
+    
+    flags = aux.read_flags()
+    
+    decoupling: int = flags['idx_decoupling']
     
     last_scattering: int = np.argmin(np.abs(tau-1))
     
@@ -229,6 +259,11 @@ def milestone2():
     #Run the functions.
     
     plots()
+    
+    #Show every plot from this milestone in a floating window, if requested
+    #(CMB_SHOW_PLOTS=1); does nothing otherwise.
+    
+    aux.finalize_plots()
 
 if __name__ == "__main__":
     

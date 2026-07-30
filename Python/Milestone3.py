@@ -18,9 +18,13 @@ All of them are explained below.
 
 import numpy as np
 
+import auxiliar as aux
+
+# auxiliar picks the matplotlib backend (Agg / TkAgg) before pyplot is
+# imported anywhere, so import it first to avoid GUI backend warnings.
 import matplotlib.pyplot as plt
 
-def plot(polarization: bool):
+def plot():
     
     """
     This function generates and saves different plots based on the data
@@ -50,27 +54,20 @@ def plot(polarization: bool):
           of the universe.
 
     Parameters:
-        polarization (bool): says if the photonpolarization has been taken
-                             into account.
+        None.
+
     Returns:
         None.
     """
         
-    #Check if neutrinos have been included.
+    #Check if neutrinos and polarization have been included, reading the
+    #flags written by the C++ code instead of asking the user.
         
-    neutrinos_txt: str
+    flags = aux.read_flags()
     
-    neutrinos_txt = input('\nDid you include neutrinos? [Yes, no]: ')
+    neutrinos: bool = bool(flags['neutrinos'])
     
-    neutrinos: bool
-    
-    if neutrinos_txt.lower()=='no':
-        
-        neutrinos = False
-        
-    else:
-        
-        neutrinos = True
+    polarization: bool = bool(flags['polarization'])
     
     #Read the data from 'perturbations_kX.txt' in folder 'Results',
     #where X denotes k=0.X.
@@ -198,92 +195,96 @@ def plot(polarization: bool):
     #Make the different plots
     
     plt.figure()
-    plt.plot(x, 4*Theta_0_1, label=r'$\delta_\gamma(k=0.1/\text{Mpc})$',\
+    plt.plot(x, abs(4*Theta_0_1), label=r'$\delta_\gamma(k=0.1/\text{Mpc})$',\
              color='blue', ls='dotted')
-    plt.plot(x, 4*Theta_0_01, label=r'$\delta_\gamma(k=0.01/\text{Mpc})$',\
+    plt.plot(x, abs(4*Theta_0_01), label=r'$\delta_\gamma(k=0.01/\text{Mpc})$',\
              color='orange', ls='dotted')
-    plt.plot(x, 4*Theta_0_001, label=r'$\delta_\gamma(k=0.001/\text{Mpc})$',\
+    plt.plot(x, abs(4*Theta_0_001), label=r'$\delta_\gamma(k=0.001/\text{Mpc})$',\
              color='green', ls='dotted')
-    plt.plot(x, 4*Theta_0_0001, label=r'$\delta_\gamma(k=0.0001/\text{Mpc})$',\
+    plt.plot(x, abs(4*Theta_0_0001), label=r'$\delta_\gamma(k=0.0001/\text{Mpc})$',\
              color='red', ls='dotted')
-    plt.plot(x, delta_CDM_1, label=r'$\delta_\text{CDM}(k=0.1/\text{Mpc})$',\
+    plt.plot(x, abs(delta_CDM_1), label=r'$\delta_\text{CDM}(k=0.1/\text{Mpc})$',\
              color='blue', ls='solid')
-    plt.plot(x, delta_CDM_01, label=r'$\delta_\text{CDM}(k=0.01/\text{Mpc})$',\
+    plt.plot(x, abs(delta_CDM_01), label=r'$\delta_\text{CDM}(k=0.01/\text{Mpc})$',\
              color='orange', ls='solid')
-    plt.plot(x, delta_CDM_001, label=r'$\delta_\text{CDM}(k=0.001/\text{Mpc})$',\
+    plt.plot(x, abs(delta_CDM_001), label=r'$\delta_\text{CDM}(k=0.001/\text{Mpc})$',\
              color='green', ls='solid')
-    plt.plot(x, delta_CDM_0001, label=r'$\delta_\text{CDM}(k=0.0001/\text{Mpc})$',\
+    plt.plot(x, abs(delta_CDM_0001), label=r'$\delta_\text{CDM}(k=0.0001/\text{Mpc})$',\
              color='red', ls='solid')
-    plt.plot(x, delta_B_1, label=r'$\delta_\text{B}(k=0.1/\text{Mpc})$',\
+    plt.plot(x, abs(delta_B_1), label=r'$\delta_\text{B}(k=0.1/\text{Mpc})$',\
              color='blue', ls='dashed')
-    plt.plot(x, delta_B_01, label=r'$\delta_\text{B}(k=0.01/\text{Mpc})$',\
+    plt.plot(x, abs(delta_B_01), label=r'$\delta_\text{B}(k=0.01/\text{Mpc})$',\
              color='orange', ls='dashed')
-    plt.plot(x, delta_B_001, label=r'$\delta_\text{B}(k=0.001/\text{Mpc})$',\
+    plt.plot(x, abs(delta_B_001), label=r'$\delta_\text{B}(k=0.001/\text{Mpc})$',\
              color='green', ls='dashed')
-    plt.plot(x, delta_B_0001, label=r'$\delta_\text{B}(k=0.0001/\text{Mpc})$',\
+    plt.plot(x, abs(delta_B_0001), label=r'$\delta_\text{B}(k=0.0001/\text{Mpc})$',\
              color='red', ls='dashed')
     if neutrinos:
-        plt.plot(x, 4*Nu_0_1, label=r'$\delta_\nu(k=0.1/\text{Mpc})$',\
+        plt.plot(x, abs(4*Nu_0_1), label=r'$\delta_\nu(k=0.1/\text{Mpc})$',\
                  color='blue', ls='dashdot')
-        plt.plot(x, 4*Nu_0_01, label=r'$\delta_\nu(k=0.01/\text{Mpc})$',\
+        plt.plot(x, abs(4*Nu_0_01), label=r'$\delta_\nu(k=0.01/\text{Mpc})$',\
                  color='orange', ls='dashdot')
-        plt.plot(x, 4*Nu_0_001, label=r'$\delta_\nu(k=0.001/\text{Mpc})$',\
+        plt.plot(x, abs(4*Nu_0_001), label=r'$\delta_\nu(k=0.001/\text{Mpc})$',\
                  color='green', ls='dashdot')
-        plt.plot(x, 4*Nu_0_0001, label=r'$\delta_\nu(k=0.0001/\text{Mpc})$',\
+        plt.plot(x, abs(4*Nu_0_0001), label=r'$\delta_\nu(k=0.0001/\text{Mpc})$',\
                  color='red', ls='dashdot')
+    #Log scale is the right choice here: delta_i spans many orders of
+    #magnitude over time. It is plotted as |delta_i| (not delta_i) because
+    #delta_gamma/delta_B/delta_nu oscillate through zero (acoustic
+    #oscillations) once real physics is on, and a log scale of a signed,
+    #oscillating quantity would just show gaps every time it crosses zero.
     plt.yscale('log')
     plt.xlabel(r'$x$')
-    plt.ylabel(r'Density perturbation ($\delta_i$)')
+    plt.ylabel(r'Density perturbation ($|\delta_i|$)')
     plt.title(r'Evolution of density perturbations over time ($x$)')
-    plt.legend()
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     plt.grid(True)
-    plt.xlim(x[0], x[-1])
-    plt.ylim(0.1, plt.ylim()[1])
-    plt.savefig('../Plots/Milestone III/density perturbations.pdf')
+    aux.show_or_save('../Plots/Milestone III/density perturbations.pdf')
     
     plt.figure()
-    plt.plot(x, -3*Theta_1_1, label=r'$v_\gamma(k=0.1/\text{Mpc})$',\
+    plt.plot(x, abs(-3*Theta_1_1), label=r'$v_\gamma(k=0.1/\text{Mpc})$',\
              color='blue', ls='dotted')
-    plt.plot(x, -3*Theta_1_01, label=r'$v_\gamma(k=0.01/\text{Mpc})$',\
+    plt.plot(x, abs(-3*Theta_1_01), label=r'$v_\gamma(k=0.01/\text{Mpc})$',\
              color='orange', ls='dotted')
-    plt.plot(x, -3*Theta_1_001, label=r'$v_\gamma(k=0.001/\text{Mpc})$',\
+    plt.plot(x, abs(-3*Theta_1_001), label=r'$v_\gamma(k=0.001/\text{Mpc})$',\
+             color='green', ls='dotted')
+    plt.plot(x, abs(-3*Theta_1_0001), label=r'$v_\gamma(k=0.0001/\text{Mpc})$',\
              color='red', ls='dotted')
-    plt.plot(x, -3*Theta_1_0001, label=r'$v_\gamma(k=0.0001/\text{Mpc})$',\
-             color='red', ls='dotted')
-    plt.plot(x, v_CDM_1, label=r'$v_\text{CDM}(k=0.1/\text{Mpc})$',\
+    plt.plot(x, abs(v_CDM_1), label=r'$v_\text{CDM}(k=0.1/\text{Mpc})$',\
              color='blue', ls='solid')
-    plt.plot(x, v_CDM_01, label=r'$v_\text{CDM}(k=0.01/\text{Mpc})$',\
+    plt.plot(x, abs(v_CDM_01), label=r'$v_\text{CDM}(k=0.01/\text{Mpc})$',\
              color='orange', ls='solid')
-    plt.plot(x, v_CDM_001, label=r'$v_\text{CDM}(k=0.001/\text{Mpc})$',\
+    plt.plot(x, abs(v_CDM_001), label=r'$v_\text{CDM}(k=0.001/\text{Mpc})$',\
              color='green', ls='solid')
-    plt.plot(x, v_CDM_0001, label=r'$v_\text{CDM}(k=0.0001/\text{Mpc})$',\
+    plt.plot(x, abs(v_CDM_0001), label=r'$v_\text{CDM}(k=0.0001/\text{Mpc})$',\
              color='red', ls='solid')
-    plt.plot(x, v_B_1, label=r'$v_\text{B}(k=0.1/\text{Mpc})$',\
+    plt.plot(x, abs(v_B_1), label=r'$v_\text{B}(k=0.1/\text{Mpc})$',\
              color='blue', ls='dashed')
-    plt.plot(x, v_B_01, label=r'$v_\text{B}(k=0.01/\text{Mpc})$',\
+    plt.plot(x, abs(v_B_01), label=r'$v_\text{B}(k=0.01/\text{Mpc})$',\
              color='orange', ls='dashed')
-    plt.plot(x, v_B_001, label=r'$v_\text{B}(k=0.001/\text{Mpc})$',\
+    plt.plot(x, abs(v_B_001), label=r'$v_\text{B}(k=0.001/\text{Mpc})$',\
              color='green', ls='dashed')
-    plt.plot(x, v_B_0001, label=r'$v_\text{B}(k=0.0001/\text{Mpc})$',\
+    plt.plot(x, abs(v_B_0001), label=r'$v_\text{B}(k=0.0001/\text{Mpc})$',\
              color='red', ls='dashed')
     if neutrinos:
-        plt.plot(x, -3*Nu_1_1, label=r'$v_\nu(k=0.1/\text{Mpc})$',\
+        plt.plot(x, abs(-3*Nu_1_1), label=r'$v_\nu(k=0.1/\text{Mpc})$',\
                  color='blue', ls='dashdot')
-        plt.plot(x, -3*Nu_1_01, label=r'$v_\nu(k=0.01/\text{Mpc})$',\
+        plt.plot(x, abs(-3*Nu_1_01), label=r'$v_\nu(k=0.01/\text{Mpc})$',\
                  color='orange', ls='dashdot')
-        plt.plot(x, -3*Nu_1_001, label=r'$v_\nu(k=0.001/\text{Mpc})$',\
+        plt.plot(x, abs(-3*Nu_1_001), label=r'$v_\nu(k=0.001/\text{Mpc})$',\
                  color='green', ls='dashdot')
-        plt.plot(x, -3*Nu_1_0001, label=r'$v_\nu(k=0.0001/\text{Mpc})$',\
+        plt.plot(x, abs(-3*Nu_1_0001), label=r'$v_\nu(k=0.0001/\text{Mpc})$',\
                  color='red', ls='dashdot')
+    #Same reasoning as the density perturbations plot: log scale for the
+    #dynamic range, |v_i| instead of v_i because these also oscillate
+    #through zero.
     plt.yscale('log')
     plt.xlabel(r'$x$')
-    plt.ylabel(r'Velocity perturbation ($v_i$)')
+    plt.ylabel(r'Velocity perturbation ($|v_i|$)')
     plt.title(r'Evolution of velocity perturbations over time ($x$)')
-    plt.legend()
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     plt.grid(True)
-    plt.xlim(x[0], x[-1])
-    #plt.ylim(0.1, plt.ylim()[1])
-    plt.savefig('../Plots/Milestone III/velocity perturbations.pdf')
+    aux.show_or_save('../Plots/Milestone III/velocity perturbations.pdf')
     
     plt.figure()
     plt.plot(x, Theta_2_1, label=r'$\Theta_2(k=0.1/\text{Mpc})$',\
@@ -303,13 +304,16 @@ def plot(polarization: bool):
                  color='green', ls='dashdot')
         plt.plot(x, Nu_2_0001, label=r'$\mathcal{N}_2(k=0.0001/\text{Mpc})$',\
                  color='red', ls='dashdot')
+    #Linear scale is the right choice here (unlike density/velocity): the
+    #quadrupoles oscillate around zero and stay within a couple orders of
+    #magnitude, so there's no wide dynamic range to justify a log scale, and
+    #a log scale would hide the sign changes that are physically meaningful.
     plt.xlabel(r'$x$')
     plt.ylabel(r'Quadrupoles')
     plt.title(r'Evolution of quadrupoles over time ($x$)')
-    plt.legend()
+    plt.legend(loc='best')
     plt.grid(True)
-    plt.xlim(-10, x[-1])
-    plt.savefig('../Plots/Milestone III/quadrupoles.pdf')
+    aux.show_or_save('../Plots/Milestone III/quadrupoles.pdf')
     
     plt.figure()
     plt.plot(x, Phi_1, label=r'$\Phi(k=0.1/\text{Mpc})$', color='blue')
@@ -324,51 +328,54 @@ def plot(polarization: bool):
     plt.plot(x, Phi_0001, label=r'$\Phi(k=0.0001/\text{Mpc})$', color='red')
     plt.plot(x, Phi_0001+Psi_0001, color='red', ls='dashed',\
              label=r'$\Phi(k=0.0001/\text{Mpc})+\Psi(k=0.0001/\text{Mpc})$')
+    #Linear scale here too: Phi and Psi are meant to show they stay roughly
+    #O(1) (approximately constant/mildly oscillating) rather than spanning
+    #decades, which is the whole point of this plot.
     plt.xlabel(r'$x$')
     plt.ylabel(r'Potentials')
     plt.title(r'Evolution of potentials over time ($x$)')
-    plt.legend()
+    plt.legend(loc='best')
     plt.grid(True)
-    plt.xlim(x[0], x[-1])
-    plt.savefig('../Plots/Milestone III/potentials.pdf')
+    aux.show_or_save('../Plots/Milestone III/potentials.pdf')
         
     if polarization:
         
         plt.figure()
-        plt.plot(x, ThetaP_0_1, label=r'$\Theta_0^P(k=0.1/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_0_1), label=r'$\Theta_0^P(k=0.1/\text{Mpc})$',\
                  color='blue')
-        plt.plot(x, ThetaP_0_01, label=r'$\Theta_0^P(k=0.01/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_0_01), label=r'$\Theta_0^P(k=0.01/\text{Mpc})$',\
                  color='orange')
-        plt.plot(x, ThetaP_0_001, label=r'$\Theta_0^P(k=0.001/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_0_001), label=r'$\Theta_0^P(k=0.001/\text{Mpc})$',\
                  color='green')
-        plt.plot(x, ThetaP_0_0001, label=r'$\Theta_0^P(k=0.0001/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_0_0001), label=r'$\Theta_0^P(k=0.0001/\text{Mpc})$',\
                  color='red')
-        plt.plot(x, ThetaP_1_1, label=r'$\Theta_1^P(k=0.1/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_1_1), label=r'$\Theta_1^P(k=0.1/\text{Mpc})$',\
                  color='blue', ls='dashed')
-        plt.plot(x, ThetaP_1_01, label=r'$\Theta_1^P(k=0.01/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_1_01), label=r'$\Theta_1^P(k=0.01/\text{Mpc})$',\
                  color='orange', ls='dashed')
-        plt.plot(x, ThetaP_1_001, label=r'$\Theta_1^P(k=0.001/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_1_001), label=r'$\Theta_1^P(k=0.001/\text{Mpc})$',\
                  color='green', ls='dashed')
-        plt.plot(x, ThetaP_1_0001, label=r'$\Theta_1^P(k=0.0001/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_1_0001), label=r'$\Theta_1^P(k=0.0001/\text{Mpc})$',\
                  color='red', ls='dashed')
-        plt.plot(x, ThetaP_2_1, label=r'$\Theta_2^P(k=0.1/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_2_1), label=r'$\Theta_2^P(k=0.1/\text{Mpc})$',\
                  color='blue', ls='dotted')
-        plt.plot(x, ThetaP_2_01, label=r'$\Theta_2^P(k=0.01/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_2_01), label=r'$\Theta_2^P(k=0.01/\text{Mpc})$',\
                  color='orange', ls='dotted')
-        plt.plot(x, ThetaP_2_001, label=r'$\Theta_2^P(k=0.001/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_2_001), label=r'$\Theta_2^P(k=0.001/\text{Mpc})$',\
                  color='green', ls='dotted')
-        plt.plot(x, ThetaP_2_0001, label=r'$\Theta_2^P(k=0.0001/\text{Mpc})$',\
+        plt.plot(x, abs(ThetaP_2_0001), label=r'$\Theta_2^P(k=0.0001/\text{Mpc})$',\
                  color='red', ls='dotted')
+        #Same reasoning as density/velocity: log scale for the dynamic
+        #range, absolute value because Theta^P oscillates through zero.
         plt.yscale('log')
         plt.xlabel(r'$x$')
-        plt.ylabel(r'Polarization multipoles')
+        plt.ylabel(r'Polarization multipoles ($|\Theta_\ell^P|$)')
         plt.title(r'Evolution of polarization multipoles over time ($x$)')
-        plt.legend()
+        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
         plt.grid(True)
-        plt.xlim(x[0], x[-1])
-        plt.savefig('../Plots/Milestone III/polarization.pdf')
+        aux.show_or_save('../Plots/Milestone III/polarization.pdf')
         
-def milestone3(polarization: bool):
+def milestone3():
     
     """
     This function serves as the entry point for running the tasks and functions
@@ -387,15 +394,20 @@ def milestone3(polarization: bool):
     milestone.
 
     Parameters:
-        polarization (bool): says if the photonpolarization has been taken
-                             into account.
+        None.
+
     Returns:
         None.
     """
     
-    #Run the function and say if polarization is included.
+    #Run the function. Neutrinos/polarization flags are read from file.
     
-    plot(polarization)
+    plot()
+    
+    #Show every plot from this milestone in a floating window, if requested
+    #(CMB_SHOW_PLOTS=1); does nothing otherwise.
+    
+    aux.finalize_plots()
 
 if __name__ == "__main__":
     

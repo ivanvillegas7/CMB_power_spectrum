@@ -18,9 +18,84 @@ import scipy as sc
 
 import numpy as np
 
+import os
+
+import matplotlib
+
+#Whether to also display figures in a floating window, in addition to saving
+#them to disk as always. OFF by default so that running './cmb' stays fully
+#automatic (no windows popping up, nothing to close by hand). Turn it on
+#with:
+#
+#   CMB_SHOW_PLOTS=1 ./cmb
+#
+#or, to only view the plots of a single milestone without rerunning the C++
+#part:
+#
+#   CMB_SHOW_PLOTS=1 python3 Milestone4.py
+
+SHOW_PLOTS: bool = os.environ.get('CMB_SHOW_PLOTS', '0') == '1'
+
+#Pick the backend BEFORE 'matplotlib.pyplot' gets imported anywhere (the
+#backend can only be chosen once per process). When no window is going to be
+#shown, 'Agg' is used: a purely headless, file-only backend that never talks
+#to Qt/GTK/Wayland, so no GUI warning of any kind can be printed. When a
+#window IS wanted, 'TkAgg' (Tkinter, bundled with Python, no Qt involved) is
+#used instead of the default Qt backend, which is what was printing the
+#"Ignoring XDG_SESSION_TYPE=wayland" warning on Gnome/Wayland.
+
+matplotlib.use('Agg' if not SHOW_PLOTS else 'TkAgg')
+
 import matplotlib.pyplot as plt
 
 from typing import List
+
+def show_or_save(filename: str):
+
+    """
+    Save the current matplotlib figure to 'filename', exactly like
+    plt.savefig() always did. If the environment variable CMB_SHOW_PLOTS=1
+    is set, the figure is also kept open to be displayed in a floating
+    window later (see finalize_plots()), instead of being closed straight
+    away.
+
+    Parameters:
+        filename : str
+            Path (including extension) to save the figure to.
+
+    Returns:
+        None.
+    """
+
+    plt.savefig(filename, bbox_inches='tight')
+
+    if not SHOW_PLOTS:
+
+        #Free the figure's memory immediately, same behaviour as before.
+
+        plt.close()
+
+def finalize_plots():
+
+    """
+    Show every figure created since the last call to finalize_plots(), each
+    in its own floating window, and block until all of them have been
+    closed by hand. Does nothing (and closes nothing) if CMB_SHOW_PLOTS is
+    not set to '1', so the default automated pipeline is unaffected.
+
+    Call this once, at the very end of each milestoneX() function, after
+    all of that milestone's plots have already been created/saved.
+
+    Parameters:
+        None.
+
+    Returns:
+        None.
+    """
+
+    if SHOW_PLOTS and plt.get_fignums():
+
+        plt.show()
 
 #Define function 'plot()'.
 
@@ -115,6 +190,49 @@ def D_L(z: np.array(float), H0: float, Omega_M: float, Omega_K: float,\
                                             Omega_Lambda), x)))
         
     return np.array(d_L)
+
+def read_flags(path: str = '../Results/run_info.txt'):
+
+    """
+    Read the flags (neutrinos, Helium, reionization, polarization) and
+    derived scalars (decoupling index, sound horizon, ...) written by the
+    C++ code to 'Results/run_info.txt'.
+
+    This avoids having to copy values printed to the terminal by the C++
+    code (e.g. 'Index at decoupling') by hand into the Python scripts.
+
+    Parameters:
+        path : str
+            Path to the file written by RecombinationHistory::output_info().
+
+    Returns:
+        dict
+            Dictionary mapping each flag/value name to an int or float.
+    """
+
+    flags = {}
+
+    with open(path) as f:
+
+        for line in f:
+
+            line = line.strip()
+
+            if not line:
+
+                continue
+
+            key, value = line.split(maxsplit=1)
+
+            try:
+
+                flags[key] = int(value)
+
+            except ValueError:
+
+                flags[key] = float(value)
+
+    return flags
 
 def index_equality():
     

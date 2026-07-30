@@ -20,9 +20,11 @@ import scipy as sc
 
 import numpy as np
 
-import matplotlib.pyplot as plt
-
 import auxiliar as aux
+
+# auxiliar picks the matplotlib backend (Agg / TkAgg) before pyplot is
+# imported anywhere, so import it first to avoid GUI backend warnings.
+import matplotlib.pyplot as plt
            
 def cosmology():
     
@@ -146,7 +148,7 @@ def cosmology():
     plt.grid(True)
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}^2\mathcal{H}(x)}{\text{d}x^2}$')
-    plt.savefig('../Plots/Milestone I/ddHp_over_Hp.pdf')
+    aux.show_or_save('../Plots/Milestone I/ddHp_over_Hp.pdf')
     
     plt.figure()
     plt.plot(x, dHp/Hp)
@@ -155,7 +157,7 @@ def cosmology():
     plt.grid(True)
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\frac{1}{\mathcal{H}(x)}\cdot\frac{\text{d}\mathcal{H}(x)}{\text{d}x}$')
-    plt.savefig('../Plots/Milestone I/dHp_over_Hp.pdf')
+    aux.show_or_save('../Plots/Milestone I/dHp_over_Hp.pdf')
     
     plt.figure()
     plt.plot(x, eta*Hp/c)
@@ -164,7 +166,7 @@ def cosmology():
     plt.grid(True)
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\frac{\eta(x)\mathcal{H}(x)}{c}$')
-    plt.savefig('../Plots/Milestone I/eta_times_Hp_over_c.pdf')
+    aux.show_or_save('../Plots/Milestone I/eta_times_Hp_over_c.pdf')
     
     plt.figure()
     plt.plot(x, Hp*10*sc.constants.parsec)
@@ -175,7 +177,7 @@ def cosmology():
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\mathcal{H}(x)$ [$\frac{100 \text{km}}{\text{Mpc s}}$]')
     plt.yscale('log')
-    plt.savefig('../Plots/Milestone I/Hp.pdf')
+    aux.show_or_save('../Plots/Milestone I/Hp.pdf')
 
     plt.figure()
     plt.plot(x, t)
@@ -185,7 +187,7 @@ def cosmology():
     plt.yscale('log')
     plt.xlabel(r'$x$')
     plt.ylabel(r'$t(x)$ [Gyr]')
-    plt.savefig('../Plots/Milestone I/t.pdf')
+    aux.show_or_save('../Plots/Milestone I/t.pdf')
 
     plt.figure()
     plt.plot(x, eta/(1e9*365*24*60*60*c))
@@ -195,7 +197,7 @@ def cosmology():
     plt.yscale('log')
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\frac{\eta(x)}{c}$ [Gyr]')
-    plt.savefig('../Plots/Milestone I/eta_over_c.pdf')
+    aux.show_or_save('../Plots/Milestone I/eta_over_c.pdf')
     
     plt.figure()    
     plt.plot(x, OmegaLambda, label=r'$\Omega_\Lambda$', color='green')
@@ -220,11 +222,11 @@ def cosmology():
     plt.legend()
     plt.title(r'$\Omega_i(x)$ vs $x$')
     plt.grid(True)
-    plt.xlim(-15, 0)
-    plt.ylim(0, 1)
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\Omega_i(x)$')
-    plt.savefig('../Plots/Milestone I/omegas.pdf')
+    plt.xlim(-15, 0)
+    plt.ylim(0, 1)
+    aux.show_or_save('../Plots/Milestone I/omegas.pdf')
     
     #Print the times (x, redshift and cosmological time) when there is a change
     #of domination. Print the age of the Universe and the conformal time today.
@@ -314,7 +316,7 @@ def MCMC_supernova_fit():
     plt.ylabel(r'$\Omega_\Lambda$')
     plt.xlim(0, 1)
     plt.ylim(0, 1.4)
-    plt.savefig('../Plots/Milestone I/supernova_sigmas.pdf')
+    aux.show_or_save('../Plots/Milestone I/supernova_sigmas.pdf')
     
     #Set the number of bins for the histograms.
     
@@ -343,7 +345,7 @@ def MCMC_supernova_fit():
                linestyles='dashed', label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
-    plt.savefig('../Plots/Milestone I/OmegaLambda_hist.pdf')
+    aux.show_or_save('../Plots/Milestone I/OmegaLambda_hist.pdf')
     
     #Define the parameters for the gaussian fit for OmegaM, compute them
     #and get the gaussian distribution.
@@ -367,7 +369,7 @@ def MCMC_supernova_fit():
                label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
-    plt.savefig('../Plots/Milestone I/OmegaM_hist.pdf')
+    aux.show_or_save('../Plots/Milestone I/OmegaM_hist.pdf')
     
     #Define the parameters for the gaussian fit for OmegaK, compute them
     #and get the gaussian distribution.
@@ -391,7 +393,7 @@ def MCMC_supernova_fit():
                label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
-    plt.savefig('../Plots/Milestone I/OmegaK_hist.pdf')
+    aux.show_or_save('../Plots/Milestone I/OmegaK_hist.pdf')
     
     #Define the parameters for the gaussian fit for OmegaK, compute them
     #and get the gaussian distribution.
@@ -415,7 +417,7 @@ def MCMC_supernova_fit():
                label='Best fit value', color='black')
     plt.legend()
     plt.grid(True)
-    plt.savefig('../Plots/Milestone I/H0_hist.pdf')
+    aux.show_or_save('../Plots/Milestone I/H0_hist.pdf')
     
     #Print thge best fitting parameters
 
@@ -489,7 +491,7 @@ def supernova():
     plt.ylabel(r'$d_L(z)$ [Gpc]')
     plt.xlim(0, 1.4)
     plt.ylim(0, 10)
-    plt.savefig('../Plots/Milestone I/supernova_fit.pdf')
+    aux.show_or_save('../Plots/Milestone I/supernova_fit.pdf')
     
     plt.figure()
     plt.errorbar(z, d_L/z, d_L_error/z, marker='.', ls='none',\
@@ -505,7 +507,7 @@ def supernova():
     plt.ylabel(r'$d_L(z)/z$ [Gpc]')
     plt.xlim(0, 1.4)
     plt.ylim(3.5, 8)
-    plt.savefig('../Plots/Milestone I/supernova_fit_over_z.pdf')
+    aux.show_or_save('../Plots/Milestone I/supernova_fit_over_z.pdf')
     
 def milestone1():
     
@@ -527,6 +529,11 @@ def milestone1():
     #Run the functions.
     
     supernova()
+    
+    #Show every plot from this milestone in a floating window, if requested
+    #(CMB_SHOW_PLOTS=1); does nothing otherwise.
+    
+    aux.finalize_plots()
 
 if __name__ == "__main__":
     

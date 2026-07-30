@@ -20,9 +20,25 @@ import scipy as sc
 
 import numpy as np
 
-import matplotlib.pyplot as plt
+import io
 
 import auxiliar as aux
+
+# auxiliar picks the matplotlib backend (Agg / TkAgg) before pyplot is
+# imported anywhere, so import it first to avoid GUI backend warnings.
+import matplotlib.pyplot as plt
+
+try:
+    import notification as notif
+except ImportError:
+    notif = None
+
+#JPG snapshot of the CMB TT power-spectrum figure, captured in
+#CMB_PowerSpectrum() and sent as part of the "simulation finished"
+#Telegram notification at the end of milestone4().
+
+_last_cmb_ps_jpg = None
+_last_cmb_ps_filename = None
 
 def CMB_PS_components():
     
@@ -102,9 +118,9 @@ def CMB_PS_components():
     plt.xscale('log')
     plt.legend()
     plt.grid()
-    plt.savefig('../Plots/Milestone IV/CMB PS components.pdf')
+    aux.show_or_save('../Plots/Milestone IV/CMB PS components.pdf')
 
-def CMB_PowerSpectrum(polarization: bool):
+def CMB_PowerSpectrum():
     
     """
     Plot the Cosmic Microwave Background (CMB) power-spectrum.
@@ -115,11 +131,16 @@ def CMB_PowerSpectrum(polarization: bool):
     prediction of the CMB power-spectrum, along with observational data.
     
     Parameters:
-        polarization (bool): indicates if polarization has been included.
+        None.
 
     Returns:
         None.
     """
+    
+    #Check if polarization has been included, reading the flag written by
+    #the C++ code instead of asking the user.
+    
+    polarization: bool = bool(aux.read_flags()['polarization'])
     
     #Read the data from 'cells.txt' and 'Matter_PS.txt' in folder 'Results'
     
@@ -202,7 +223,36 @@ def CMB_PowerSpectrum(polarization: bool):
     plt.xscale('log')
     plt.legend()
     plt.grid()
-    plt.savefig('../Plots/Milestone IV/CMB PS.pdf')
+    
+    #Capture a JPG snapshot of this figure for the Telegram notification
+    #sent at the end of the whole run (see milestone4()), before
+    #aux.show_or_save() potentially closes it.
+    
+    global _last_cmb_ps_jpg, _last_cmb_ps_filename
+    
+    _cmb_ps_buffer = io.BytesIO()
+    
+    try:
+        
+        #Saving as JPG requires Pillow; fall back to PNG if it's missing.
+        
+        plt.savefig(_cmb_ps_buffer, format='jpg', bbox_inches='tight', facecolor='white')
+        
+        _last_cmb_ps_filename = 'CMB_power_spectrum.jpg'
+        
+    except Exception:
+        
+        _cmb_ps_buffer = io.BytesIO()
+        
+        plt.savefig(_cmb_ps_buffer, format='png', bbox_inches='tight', facecolor='white')
+        
+        _last_cmb_ps_filename = 'CMB_power_spectrum.png'
+    
+    _cmb_ps_buffer.seek(0)
+    
+    _last_cmb_ps_jpg = _cmb_ps_buffer.getvalue()
+    
+    aux.show_or_save('../Plots/Milestone IV/CMB PS.pdf')
     
     if polarization:
         
@@ -216,7 +266,7 @@ def CMB_PowerSpectrum(polarization: bool):
         plt.title('The temperature-polarization cross power-spectrum')
         plt.legend()
         plt.grid()
-        plt.savefig('../Plots/Milestone IV/CMB_TE PS.pdf')
+        aux.show_or_save('../Plots/Milestone IV/CMB_TE PS.pdf')
         
         plt.figure()
         plt.plot(ell, C_ell_EE, label='Theory prediction')
@@ -228,7 +278,7 @@ def CMB_PowerSpectrum(polarization: bool):
         plt.title('The (E mode) polarization power-spectrum')
         plt.legend()
         plt.grid()
-        plt.savefig('../Plots/Milestone IV/CMB_EE PS.pdf')
+        aux.show_or_save('../Plots/Milestone IV/CMB_EE PS.pdf')
     
 def Matter_PowerSpectrum():
     
@@ -322,7 +372,7 @@ def Matter_PowerSpectrum():
     plt.yscale('log')
     plt.legend()
     plt.grid()
-    plt.savefig('../Plots/Milestone IV/Total matter PS.pdf')
+    aux.show_or_save('../Plots/Milestone IV/Total matter PS.pdf')
     
 def other_plots():
     """
@@ -368,7 +418,7 @@ def other_plots():
     plt.title(r'$\Theta_\ell$ for different $\ell$ values')
     plt.grid()
     plt.legend()
-    plt.savefig('../Plots/Milestone IV/Theta_l.pdf')
+    aux.show_or_save('../Plots/Milestone IV/Theta_l.pdf')
     
     plt.figure()
     plt.plot(k, Theta_2**2/k, label=r'$|\Theta_2(k)|^2/k$')
@@ -380,8 +430,52 @@ def other_plots():
     plt.title(r'$\Theta_\ell^2/k$ for different $\ell$ values')
     plt.grid()
     plt.legend()
-    plt.savefig('../Plots/Milestone IV/Theta_l_over_k.pdf')
+    aux.show_or_save('../Plots/Milestone IV/Theta_l_over_k.pdf')
     
+def _planck_cmap():
+
+    """
+    Build the CMB colormap used in Planck's official temperature maps.
+
+    If 'Data/Planck_Parchment_RGB.txt' is present (download it from
+    https://github.com/zonca/paperplots/raw/master/data/Planck_Parchment_RGB.txt
+    and place it in the Data/ folder) it is used directly: it is the exact
+    color table used in the official Planck release. Otherwise, a close
+    hand-built approximation of the same blue -> white/cream -> red
+    "Parchment" diverging scheme is used instead, so the map always looks
+    close to the Planck style even without the external file.
+
+    Parameters:
+        None.
+
+    Returns:
+        matplotlib.colors.Colormap
+    """
+
+    import os
+
+    from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+
+    path = '../Data/Planck_Parchment_RGB.txt'
+
+    if os.path.exists(path):
+
+        cmap = ListedColormap(np.loadtxt(path)/255.)
+
+    else:
+
+        stops = [(0.00, '#0000A0'), (0.15, '#0000FF'), (0.30, '#00AAFF'),
+                  (0.45, '#E6F5FF'), (0.50, '#FFFFF0'), (0.55, '#FFF5B0'),
+                  (0.70, '#FFC000'), (0.85, '#FF4500'), (1.00, '#800000')]
+
+        cmap = LinearSegmentedColormap.from_list('planck_like', stops)
+
+    cmap.set_bad('gray')
+
+    cmap.set_under('white')
+
+    return cmap
+
 def CMB_map():
     """
     Generate a map of the Cosmic Microwave Background (CMB).
@@ -413,24 +507,50 @@ def CMB_map():
     
     C_ell = data[:, 1]*(2*np.pi)/(ell*(ell+1))/((2.7255*1e6)**2)
     
+    #'cells.txt' starts at ell=2 (there is no theoretical prediction for the
+    #monopole or dipole), but healpy expects a 0-indexed array where entry i
+    #is the power at multipole l=i, from l=0 up to l=lmax. Build that array
+    #explicitly here (instead of passing C_ell directly, which would silently
+    #get mis-read as starting from ell=0, shifting every multipole by 2).
+    #Indices 0 and 1 (monopole and dipole) are left at zero: this is also
+    #exactly what is done to the official Planck maps, since the monopole is
+    #just the mean temperature and the observed dipole is dominated by our
+    #own motion relative to the CMB rest frame, not by cosmological structure.
+    
+    ellmax = int(ell.max())
+    
+    Cl = np.zeros(ellmax+1)
+    
+    Cl[ell] = C_ell
+    
     #Set the random seed to a specific value so the map is always the same
     
     np.random.seed(0)
     
     #Generate random spherical harmonic coefficients
     
-    alm = hp.synalm(C_ell, lmax=np.max(ell), new=True)
+    alm = hp.synalm(Cl, lmax=ellmax, new=True)
     
     #Convert the spherical harmonic coefficients to a map
     
     cmb_map = hp.alm2map(alm, nside)
     
-    hp.mollview(cmb_map, title='The Cosmic Microwave Background',\
-                cmap=plt.colormaps['coolwarm'], unit='K')
+    #'alm' (and therefore 'cmb_map') are in dimensionless Delta T/T units,
+    #since Cl was divided by T_CMB^2 above (needed for synalm to behave).
+    #Convert back to physical temperature units (muK, the standard unit for
+    #CMB temperature maps) before plotting, otherwise the colorbar numbers
+    #and the 'unit' label below would be meaningless.
     
-    plt.savefig('../Plots/Milestone IV/CMB map.pdf')
+    T_CMB_muK = 2.7255e6
     
-def milestone4(polarization: bool):
+    cmb_map_muK = cmb_map*T_CMB_muK
+    
+    hp.mollview(cmb_map_muK, title='The Cosmic Microwave Background',\
+                cmap=_planck_cmap(), unit=r'$\mu K$', min=-300, max=300)
+    
+    aux.show_or_save('../Plots/Milestone IV/CMB map.pdf')
+    
+def milestone4():
     
     """
     Execute Milestone IV functionality.
@@ -440,7 +560,7 @@ def milestone4(polarization: bool):
     power-spectrum, matter power-spectrum, and generating a map of the CMB.
 
     Parameters:
-        polarization (bool): indicates if polarization has been included.
+        None.
 
     Returns:
         None.
@@ -452,11 +572,14 @@ def milestone4(polarization: bool):
     
     #Plot the CMB power-spectrum.
     
-    CMB_PowerSpectrum(polarization)
+    CMB_PowerSpectrum()
     
-    #Plot the different components
+    #Plot the different components, if they were computed (see
+    #Constants.compute_PS_components in Source/Utils.h).
     
-    CMB_PS_components()
+    if bool(aux.read_flags().get('compute_PS_components', 1)):
+        
+        CMB_PS_components()
     
     #Plot the matter power-spectrum.
     
@@ -465,6 +588,42 @@ def milestone4(polarization: bool):
     #Plot the CMB map.
     
     CMB_map()
+    
+    #Show every plot from this milestone in a floating window, if requested
+    #(CMB_SHOW_PLOTS=1); does nothing otherwise.
+    
+    aux.finalize_plots()
+    
+    #Let the user know (via Telegram) that the simulation has finished,
+    #attaching the CMB TT power-spectrum as a quick visual summary. Wrapped
+    #in try/except so that a network hiccup or missing internet access never
+    #crashes the pipeline at the very last step.
+    
+    try:
+        
+        send_notification = bool(aux.read_flags().get('send_notification', 1))
+        
+        if not send_notification:
+            
+            pass
+            
+        elif notif is None:
+            
+            print('\nWarning: could not import notification.py (missing the "requests" package?). Notification skipped.')
+            
+        elif _last_cmb_ps_jpg is not None:
+            
+            notif.bot_texter('✅ Simulation finished.',
+                              file_data=_last_cmb_ps_jpg,
+                              file_name=_last_cmb_ps_filename)
+            
+        else:
+            
+            notif.bot_texter('✅ Simulation finished.')
+            
+    except Exception as e:
+        
+        print(f'\nWarning: could not send the Telegram notification ({e}).')
 
 if __name__ == "__main__":
     

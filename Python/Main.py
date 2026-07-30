@@ -6,8 +6,16 @@ Created on Mon Feb 12 12:11:52 2024
 """
 
 """
-This script contains the main function for the project. It iports the files
+This script contains the main function for the project. It imports the files
 related to each milestone and calls the main function of the milestone.
+
+NOTE: since Source/Main.cpp now calls each Milestone script automatically
+(via run_python()) right after the corresponding C++ module finishes, you
+normally do NOT need to run this file by hand anymore. It is kept so the
+whole pipeline can still be regenerated from Python alone (e.g. `python3
+Main.py` from inside the Python/ folder) once Results/ has already been
+populated by `./cmb`, without needing neutrinos/polarization to be typed in:
+they are read automatically from 'Results/run_info.txt'.
 """
 
 #Import all relevant files.
@@ -28,9 +36,6 @@ def main():
     This function coordinates the execution of different milestones in the
     project. It runs the code related to solving the background cosmology of
     the Universe and shows the results related to supernova fitting.
-    
-    Additionally, it can be uncommented to run subsequent milestones as they
-    are completed.
     
     Parameters:
         None.
@@ -55,30 +60,17 @@ def main():
     print('\nMilestone II has been concluded.\n')
     
     #Run the code related to solving the perturbations of the Universe.
+    #Neutrinos/polarization flags are read automatically from
+    #'Results/run_info.txt' inside Milestone3, no user input needed.
     
-    #Check if photon polarization has been included.
-    
-    polarization_txt: str
-    
-    polarization_txt = input('\nDid you include photon polarization? [Yes, no]: ')
-    
-    polarization: bool
-    
-    if polarization_txt.lower()=='no':
-        
-        polarization = False
-        
-    else:
-        
-        polarization = True
-    
-    Milestone3.milestone3(polarization)
+    Milestone3.milestone3()
     
     print('\nMilestone III has been concluded.\n')
     
     #Run the code related to computing the CMB and matter power-spectra.
+    #Same as above: polarization is read automatically from file.
     
-    Milestone4.milestone4(polarization)
+    Milestone4.milestone4()
     
     print('Milestone IV has been concluded.\n')
     
